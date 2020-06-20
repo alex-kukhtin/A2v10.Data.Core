@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace A2v10.Data
 				return default;
 			if (d.TryGetValue(name, out Object result))
 			{
-				if (result is T)
-					return (T)result;
+				if (result is T t)
+					return t;
 			}
 			return default;
 		}
@@ -28,8 +28,8 @@ namespace A2v10.Data
 				return default;
 			if (d.TryGetValue(name, out Object result))
 			{
-				if (result is T)
-					return (T)result;
+				if (result is T t)
+					return t;
 				else
 					throw new InvalidCastException();
 			}
@@ -44,8 +44,8 @@ namespace A2v10.Data
 				return default;
 			if (d.TryGetValue(name, out Object result))
 			{
-				if (result is T)
-					return (T)result;
+				if (result is T t)
+					return t;
 				else
 					throw new InvalidCastException();
 			}
@@ -108,8 +108,8 @@ namespace A2v10.Data
 			Object result = root.EvalExpression(expression, throwIfError);
 			if (result == null)
 				return fallback;
-			if (result is T)
-				return (T)result;
+			if (result is T t)
+				return t;
 			return fallback;
 		}
 
@@ -153,6 +153,5 @@ namespace A2v10.Data
 			}
 			return currentContext;
 		}
-
 	}
 }

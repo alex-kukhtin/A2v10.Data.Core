@@ -1,0 +1,86 @@
+﻿{
+	"_shared": {
+		"TSharedDocument": {
+			"_id": "Id",
+			"_name": "Name",
+			"Id": "Number",
+			"Doc": "Date",
+			"Name": "String",
+			"Agent": "TAgent"
+		},
+		"TAgent": {
+			"Id": "Number",
+			"Name": "String",
+			"Code": "String"
+		}
+	},
+	"Invoices": {
+		"TRoot": {
+			"Documents": "TDocument[]"
+		},
+		"TDocument": {
+			"_extends": "TSharedDocument"
+		}
+	},
+	"Invoice": {
+		"TDocument": {
+			"_extends": "TSharedDocument",
+			"Rows": "TRow[]"
+		},
+		"TRow": {
+			"Id": "Number",
+			"Qty": "Number",
+			"Price": "Number",
+			"Sum": "Number"
+		},
+		"TRoot": {
+			"Document": "TDocument"
+		}
+	},
+	"ComplexModel": {
+		"TDocument": {
+			"Id": "Number",
+			"No": "String",
+			"Date": "Date",
+			"Agent": "TAgent",
+			"Company": "TAgent",
+			"Rows1": "TRow[]",
+			"Rows2": "TRow[]"
+		},
+		"TAgent": {
+			"_id": "Id",
+			"_name": "Name",
+			"Id": "Number",
+			"Name": "String",
+			"Code": "String"
+		},
+		"TProduct": {
+			"_id": "Id",
+			"_name": "Name",
+			"Id": "Number",
+			"Name": "String",
+			"Unit": "TUnit"
+		},
+		"TUnit": {
+			"Id": "Number",
+			"Name": "String"
+		},
+		"TRow": {
+			"_id": "Id",
+			"Id": "Number",
+			"Product": "TProduct",
+			"Qty": "Number",
+			"Price": "Number",
+			"Sum": "Number",
+			"Series1": "TSeries[]"
+		},
+		"TSeries": {
+			"_id": "Id",
+			"Id": "Number",
+			"Price": "Number"
+		},
+		"TRoot": {
+			"Document": "TDocument"
+		}
+	}
+}

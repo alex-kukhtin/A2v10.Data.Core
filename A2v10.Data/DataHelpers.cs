@@ -178,21 +178,19 @@ namespace A2v10.Data
 				return false;
 			if (dataVal == DBNull.Value)
 				return false;
-			Boolean rv;
-			if (dataVal is Boolean)
-				rv = (Boolean)dataVal;
-			else if (dataVal is Int32)
-				rv = ((Int32)dataVal) != 0;
-			else if (dataVal is Int16)
-				rv = ((Int16)dataVal) != 0;
-			else
-				throw new DataLoaderException($"Could not convert {dataVal.GetType()} to Boolean");
-			return rv;
+			return dataVal switch
+			{
+				Boolean boolVal => boolVal,
+				Int32 int32val => int32val != 0,
+				Int16 int16val => int16val != 0,
+				_ => throw new DataLoaderException($"Could not convert {dataVal.GetType()} to Boolean"),
+			};
 		}
 
 		public static Object DateTime2StringWrap(Object val)
 		{
-			if (!(val is DateTime)) return val;
+			if (!(val is DateTime)) 
+				return val;
 			return "\"\\/" +
 				JsonConvert.SerializeObject(val, new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateTimeZoneHandling = DateTimeZoneHandling.Utc }) +
 				"\\/\"";

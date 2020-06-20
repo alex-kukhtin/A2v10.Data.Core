@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 using System.Threading;
 
 namespace A2v10.Data
@@ -15,40 +14,33 @@ namespace A2v10.Data
 	{
 		public override String ToString()
 		{
-			PropertyInfo[] props = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-			StringBuilder sb = new StringBuilder();
-			sb.Append("{");
-			for (Int32 i = 0; i < props.Length; i++)
-			{
-				if (i > 0) sb.Append(", ");
-				sb.Append(props[i].Name);
-				sb.Append("=");
-				sb.Append(props[i].GetValue(this, null));
-			}
-			sb.Append("}");
-			return sb.ToString();
+			var props = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+			var strProps = String.Join(", ", props.Select(p => $"{p.Name}={p.GetValue(this, null)}"));
+			return $"{{{strProps}}}";
 		}
 	}
 
 	public class DynamicProperty
 	{
-		readonly String _name;
-		readonly Type _type;
+		public String Name { get; }
+		public Type Type { get; }
 
 		public DynamicProperty(String name, Type type)
 		{
-			_name = name ?? throw new ArgumentNullException(nameof(name));
-			_type = type ?? throw new ArgumentNullException(nameof(type));
+			Name = name ?? throw new ArgumentNullException(nameof(name));
+			Type = type ?? throw new ArgumentNullException(nameof(type));
 		}
 
-		public String Name => _name;
-		public Type Type => _type;
+		public Boolean Equals(DynamicProperty other)
+		{
+			return Name != other.Name && Type == other.Type;
+		}
 	}
 
 	internal class Signature : IEquatable<Signature>
 	{
-		public DynamicProperty[] properties;
-		public Int32 hashCode;
+		private DynamicProperty[] _properties;
+		public Int32 _hashCode;
 
 		public Signature(Object obj)
 		{
@@ -62,13 +54,14 @@ namespace A2v10.Data
 
 		void Init(IEnumerable<DynamicProperty> properties)
 		{
-			this.properties = properties.ToArray();
-			hashCode = 0;
+			_properties = properties.ToArray();
+			_hashCode = 0;
+
 			foreach (DynamicProperty p in properties)
-			{
-				hashCode ^= p.Name.GetHashCode() ^ p.Type.GetHashCode();
-			}
+				_hashCode ^= p.Name.GetHashCode() ^ p.Type.GetHashCode();
 		}
+
+		public DynamicProperty[] Properties => _properties;
 
 		List<DynamicProperty> GetProperties(Object obj)
 		{
@@ -76,35 +69,41 @@ namespace A2v10.Data
 			var d = obj as IDictionary<String, Object>;
 			foreach (var itm in d)
 			{
-				if (itm.Value is IList<ExpandoObject>)
-					props.Add(new DynamicProperty(itm.Key, typeof(IList<Object>)));
-				else if (itm.Value is ExpandoObject)
-					props.Add(new DynamicProperty(itm.Key, typeof(Object)));
-				else if (itm.Value == null)
-					props.Add(new DynamicProperty(itm.Key, typeof(Object)));
-				else
-					props.Add(new DynamicProperty(itm.Key, itm.Value.GetType()));
+				switch (itm.Value)
+				{
+					case IList<ExpandoObject> _:
+						props.Add(new DynamicProperty(itm.Key, typeof(IList<Object>)));
+						break;
+					case ExpandoObject _:
+					case null:
+						props.Add(new DynamicProperty(itm.Key, typeof(Object)));
+						break;
+					default:
+						props.Add(new DynamicProperty(itm.Key, itm.Value.GetType()));
+						break;
+				}
 			}
 			return props;
 		}
 
 		public override Int32 GetHashCode()
 		{
-			return hashCode;
+			return _hashCode;
 		}
 
 		public override Boolean Equals(Object obj)
 		{
-			return obj is Signature ? Equals((Signature)obj) : false;
+			return obj is Signature signature && Equals(signature);
 		}
 
 		public Boolean Equals(Signature other)
 		{
-			if (properties.Length != other.properties.Length) return false;
-			for (Int32 i = 0; i < properties.Length; i++)
+			if (_properties.Length != other._properties.Length) 
+				return false;
+			for (Int32 i = 0; i < _properties.Length; i++)
 			{
-				if (properties[i].Name != other.properties[i].Name ||
-					properties[i].Type != other.properties[i].Type) return false;
+				if (!_properties[i].Equals(other._properties[i]))
+					return false;
 			}
 			return true;
 		}
@@ -113,75 +112,75 @@ namespace A2v10.Data
 	{
 		public static readonly ClassFactory Instance = new ClassFactory();
 
-		ReaderWriterLock rwLock;
-		Dictionary<Signature, Type> classes;
-		Int32 classCount;
-		readonly ModuleBuilder module;
+		private readonly ReaderWriterLock _rwLock;
+		private readonly Dictionary<Signature, Type> _classes;
+		private readonly ModuleBuilder _module;
+		Int32 _classCount;
+
 		static ClassFactory() { }  // Trigger lazy initialization of static fields
 
 		private ClassFactory()
 		{
 			AssemblyName name = new AssemblyName("DynamicClasses");
 			AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
-			module = assembly.DefineDynamicModule("Module");
-			classes = new Dictionary<Signature, Type>();
-			rwLock = new ReaderWriterLock();
+			_module = assembly.DefineDynamicModule("Module");
+			_classes = new Dictionary<Signature, Type>();
+			_rwLock = new ReaderWriterLock();
 		}
 
 		public Type GetDynamicClass(IEnumerable<DynamicProperty> properties)
 		{
-			rwLock.AcquireReaderLock(Timeout.Infinite);
+			_rwLock.AcquireReaderLock(Timeout.Infinite);
 			try
 			{
 				Signature signature = new Signature(properties);
-				if (!classes.TryGetValue(signature, out Type type))
+				if (!_classes.TryGetValue(signature, out Type type))
 				{
-					type = CreateDynamicClass(signature.properties);
-					classes.Add(signature, type);
+					type = CreateDynamicClass(signature.Properties);
+					_classes.Add(signature, type);
 				}
 				return type;
 			}
 			finally
 			{
-				rwLock.ReleaseReaderLock();
+				_rwLock.ReleaseReaderLock();
 			}
 		}
 
 		Type CreateDynamicClass(DynamicProperty[] properties)
 		{
-			LockCookie cookie = rwLock.UpgradeToWriterLock(Timeout.Infinite);
+			LockCookie cookie = _rwLock.UpgradeToWriterLock(Timeout.Infinite);
 			try
 			{
-				String typeName = "DynamicClass" + (classCount + 1);
-				TypeBuilder tb = this.module.DefineType(typeName, TypeAttributes.Class |
-					TypeAttributes.Public, typeof(DynamicClass));
-				System.Reflection.FieldInfo[] fields = GenerateProperties(tb, properties);
-				Type result = tb.CreateType();
-				classCount++;
+				var typeName = $"DynamicClass{_classCount + 1}";
+				var tb = _module.DefineType(typeName, TypeAttributes.Class | TypeAttributes.Public, typeof(DynamicClass));
+				GenerateProperties(tb, properties);
+				var result = tb.CreateType();
+				_classCount++;
 				return result;
 			}
 			finally
 			{
-				rwLock.DowngradeFromWriterLock(ref cookie);
+				_rwLock.DowngradeFromWriterLock(ref cookie);
 			}
 		}
 
 		System.Reflection.FieldInfo[] GenerateProperties(TypeBuilder tb, DynamicProperty[] properties)
 		{
-			System.Reflection.FieldInfo[] fields = new FieldBuilder[properties.Length];
+			var fields = new FieldBuilder[properties.Length];
 			for (Int32 i = 0; i < properties.Length; i++)
 			{
 				DynamicProperty dp = properties[i];
-				FieldBuilder fb = tb.DefineField("_" + dp.Name, dp.Type, FieldAttributes.Private);
-				PropertyBuilder pb = tb.DefineProperty(dp.Name, PropertyAttributes.HasDefault, dp.Type, null);
-				MethodBuilder mbGet = tb.DefineMethod("get_" + dp.Name,
+				var fb = tb.DefineField("_" + dp.Name, dp.Type, FieldAttributes.Private);
+				var pb = tb.DefineProperty(dp.Name, PropertyAttributes.HasDefault, dp.Type, null);
+				var mbGet = tb.DefineMethod("get_" + dp.Name,
 					MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
 					dp.Type, Type.EmptyTypes);
 				ILGenerator genGet = mbGet.GetILGenerator();
 				genGet.Emit(OpCodes.Ldarg_0);
 				genGet.Emit(OpCodes.Ldfld, fb);
 				genGet.Emit(OpCodes.Ret);
-				MethodBuilder mbSet = tb.DefineMethod("set_" + dp.Name,
+				var mbSet = tb.DefineMethod("set_" + dp.Name,
 					MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
 					null, new Type[] { dp.Type });
 				ILGenerator genSet = mbSet.GetILGenerator();

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -11,8 +11,8 @@ namespace A2v10.Data
 		static Object CreateObjectSimple(Object source, Signature sign, String path)
 		{
 			if (!(source is ExpandoObject))
-				throw new DataDynamicException($"Invalid dynamic object. {sign.ToString()}");
-			var type = ClassFactory.CreateClass(sign.properties);
+				throw new DataDynamicException($"Invalid dynamic object. {sign}");
+			var type = ClassFactory.CreateClass(sign.Properties);
 			var target = System.Activator.CreateInstance(type);
 			SetProperties(source, target, path);
 			return target;
