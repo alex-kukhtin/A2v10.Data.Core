@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -89,8 +89,7 @@ namespace A2v10.Data
 
 		public IDictionary<String, dynamic> GetDynamic()
 		{
-			//return ObjectBuilder.BuildObject(Root as ExpandoObject);
-			throw new NotImplementedException("DynamicDataModel.GetDynamic");
+			return ObjectBuilder.BuildObject(Root as ExpandoObject);
 		}
 
 		IDataHelper _helper;

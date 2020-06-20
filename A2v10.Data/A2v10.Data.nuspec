@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package >
 	<metadata>
-		<id>A2v10.Data</id>
-		<title>A2v10.Data</title>
+		<id>A2v10.Data.Core</id>
+		<title>A2v10.Data.Core</title>
 		<version>10.0.7239</version>
 		<authors>AlexKukhtin</authors>
 		<owners>AlexKukhtin</owners>
