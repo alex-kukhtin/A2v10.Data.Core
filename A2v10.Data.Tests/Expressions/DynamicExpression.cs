@@ -1,14 +1,14 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.DynamicExpression;
+using A2v10.Data.Interfaces;
+using A2v10.Data.Tests.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using A2v10.Data.DynamicExpression;
-using A2v10.Data.Interfaces;
-using A2v10.Data.Tests.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 /*TODO:
  * test invalid cases

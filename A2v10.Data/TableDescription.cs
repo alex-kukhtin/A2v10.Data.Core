@@ -1,11 +1,11 @@
 ﻿// Copyright © 2012-2017 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.Globalization;
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -23,7 +23,7 @@ namespace A2v10.Data
 
 		public ExpandoObject NewRow()
 		{
-			var eo =  new ExpandoObject();
+			var eo = new ExpandoObject();
 			_list.Add(eo);
 			return eo;
 		}

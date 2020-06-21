@@ -1,11 +1,10 @@
 ﻿// Copyright © 2018-2020 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Dynamic;
 using System.IO;
 using System.Xml;
-
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers.Xml
 {
@@ -24,7 +23,8 @@ namespace A2v10.Data.Providers.Xml
 			Record currentRow = null;
 			using (var rdr = System.Xml.XmlReader.Create(stream))
 			{
-				while (rdr.Read()) {
+				while (rdr.Read())
+				{
 					if (rdr.NodeType == XmlNodeType.Element)
 					{
 						level += 1;
@@ -73,7 +73,7 @@ namespace A2v10.Data.Providers.Xml
 		Record ReadRow(System.Xml.XmlReader rdr)
 		{
 			var record = _file.CreateRecord();
-			for (Int32 i= 0; i < rdr.AttributeCount; i++)
+			for (Int32 i = 0; i < rdr.AttributeCount; i++)
 			{
 				rdr.MoveToAttribute(i);
 				ReadValue(record, rdr.Name, rdr.Value);

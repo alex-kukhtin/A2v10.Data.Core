@@ -1,11 +1,11 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
-using System.IO;
-using System.Text;
-
 using A2v10.Data.Providers.Dbf;
+using A2v10.Data.Tests.Configuration;
 using A2v10.Data.Tests.Providers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
+using System.Text;
 
 namespace A2v10.Data.Providers
 {
@@ -13,6 +13,12 @@ namespace A2v10.Data.Providers
 	[TestCategory("Providers")]
 	public class DbfReaderTest
 	{
+		[TestInitialize]
+		public void Setup()
+		{
+			Starter.Init();
+		}
+
 		[TestMethod]
 		public void DbfReadSimpleFile()
 		{
@@ -22,18 +28,19 @@ namespace A2v10.Data.Providers
 			};
 			var rdr = new DbfReader(f);
 
-			using (var file = File.Open("../../testfiles/simple.dbf", FileMode.Open))
+			using (var file = File.Open("testfiles/simple.dbf", FileMode.Open))
 			{
 				rdr.Read(file);
 			}
 
 			var wrt = new DbfWriter(f);
-			using (var file = File.Open("../../testfiles/output.dbf", FileMode.OpenOrCreate|FileMode.Truncate))
+
+			using (var file = File.Create("testfiles/output.dbf"))
 			{
 				wrt.Write(file);
 			}
 
-			ProviderTools.CompareFiles("../../testfiles/simple.dbf", "../../testfiles/output.dbf");
+			ProviderTools.CompareFiles("testfiles/simple.dbf", "testfiles/output.dbf");
 		}
 
 		[TestMethod]
@@ -46,18 +53,19 @@ namespace A2v10.Data.Providers
 
 			var rdr = new DbfReader(f);
 
-			using (var file = File.Open("../../testfiles/ENCODING.dbf", FileMode.Open))
+			using (var file = File.Open("testfiles/ENCODING.dbf", FileMode.Open))
 			{
 				rdr.Read(file);
 			}
 
 			var wrt = new DbfWriter(f);
-			using (var file = File.Open("../../testfiles/output.dbf", FileMode.OpenOrCreate | FileMode.Truncate))
+
+			using (var file = File.Create("testfiles/output.dbf"))
 			{
 				wrt.Write(file);
 			}
 
-			ProviderTools.CompareFiles("../../testfiles/ENCODING.dbf", "../../testfiles/output.dbf");
+			ProviderTools.CompareFiles("testfiles/ENCODING.dbf", "testfiles/output.dbf");
 		}
 
 	}

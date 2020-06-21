@@ -1,12 +1,11 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers.Dbf
 {
@@ -45,7 +44,7 @@ namespace A2v10.Data.Providers.Dbf
 
 		public void Read(BinaryReader rdr)
 		{
-			Char c = (Char)rdr.ReadByte();
+			rdr.ReadByte(); // char
 			Byte y = rdr.ReadByte(); // modified date
 			Byte m = rdr.ReadByte();
 			Byte d = rdr.ReadByte();
@@ -53,7 +52,7 @@ namespace A2v10.Data.Providers.Dbf
 			Int32 numRecords = rdr.ReadInt32();
 			Int16 headerSize = rdr.ReadInt16();
 			Int16 recordSize = rdr.ReadInt16();
-			Byte[] rsvd = rdr.ReadBytes(3 + 13 + 4); // reserved;
+			rdr.ReadBytes(3 + 13 + 4); // reserved;
 			Int32 numFields = (headerSize - 1 - 32) / 32;
 			for (Int32 i = 0; i < numFields; i++)
 			{
@@ -87,19 +86,18 @@ namespace A2v10.Data.Providers.Dbf
 			}
 		}
 
-		FieldType Char2FieldType(Char ch)
+		private static FieldType Char2FieldType(Char ch)
 		{
-			switch (ch)
+			return ch switch
 			{
-				case 'N': return FieldType.Numeric;
-				case 'D': return FieldType.Date;
-				case 'C': return FieldType.Char;
-				case 'M': return FieldType.Memo;
-				case 'L': return FieldType.Boolean;
-				case 'F': return FieldType.Float;
-				default:
-					throw new FormatException($"Invalid field type: '{ch}'");
-			}
+				'N' => FieldType.Numeric,
+				'D' => FieldType.Date,
+				'C' => FieldType.Char,
+				'M' => FieldType.Memo,
+				'L' => FieldType.Boolean,
+				'F' => FieldType.Float,
+				_ => throw new FormatException($"Invalid field type: '{ch}'"),
+			};
 		}
 
 		void ReadHeader(BinaryReader rdr)
@@ -116,13 +114,13 @@ namespace A2v10.Data.Providers.Dbf
 			f.Name = sb.ToString();
 			Char ft = (Char)rdr.ReadByte();
 			f.Type = Char2FieldType(ft);
-			Int32 addr = rdr.ReadInt32();
+			rdr.ReadInt32(); // address
 			f.Size = (Int32)rdr.ReadByte(); // fieldSize;
-			f.Decimal = (Int32) rdr.ReadByte();
+			f.Decimal = (Int32)rdr.ReadByte();
 			rdr.ReadInt16();  // reserved
 			rdr.ReadByte(); // workarea
 			rdr.ReadInt16(); // reserved
-			Byte flag = rdr.ReadByte();
+			rdr.ReadByte(); // flag
 			rdr.ReadBytes(8); // tail
 		}
 
@@ -152,7 +150,7 @@ namespace A2v10.Data.Providers.Dbf
 					case FieldType.Boolean:
 						{
 							Byte bVal = dat[iIndex];
-							fd.BooleanValue = bVal == (Char) 'T';
+							fd.BooleanValue = bVal == (Char)'T';
 						}
 						break;
 					case FieldType.Char:
@@ -197,10 +195,12 @@ namespace A2v10.Data.Providers.Dbf
 							DateTime dt = new DateTime(year, month, day);
 							fd.DateValue = dt;
 						}
-						catch (Exception)
+#pragma warning disable CA1031 // Do not catch general exception types
+						catch (ArgumentException)
 						{
 							fd.DateValue = DateTime.MinValue;
 						}
+#pragma warning restore CA1031 // Do not catch general exception types
 						break;
 				}
 				iIndex += f.Size;

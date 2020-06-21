@@ -1,5 +1,6 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,8 +10,6 @@ using System.Dynamic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -37,7 +36,7 @@ namespace A2v10.Data
 				throw new ArgumentNullException(nameof(localizer));
 		}
 
-		Int32 CommandTimeout => (Int32) _config.CommandTimeout.TotalSeconds;
+		Int32 CommandTimeout => (Int32)_config.CommandTimeout.TotalSeconds;
 
 		#region IDbContext
 		public String ConnectionString(String source)
@@ -160,7 +159,7 @@ namespace A2v10.Data
 
 		public Task<IDbConnection> GetDbConnectionAsync(String source)
 		{
-			return null; 
+			return null;
 		}
 
 		public async Task<SqlConnection> GetConnectionAsync(String source)
@@ -254,7 +253,7 @@ namespace A2v10.Data
 			source = source.Trim();
 			if (source.StartsWith("{{") && source.EndsWith("}}"))
 			{
-				String key = source.Substring(2, source.Length - 4).Trim();
+				String key = source[2..^2].Trim();
 				String def = null;
 				if (key.Contains("??"))
 				{

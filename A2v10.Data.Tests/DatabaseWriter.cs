@@ -1,23 +1,20 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
+using A2v10.Data.Tests.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Dynamic;
 using System.Threading.Tasks;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
-using A2v10.Data.Interfaces;
-using A2v10.Data.Tests.Configuration;
 
 namespace A2v10.Data.Tests
 {
 	[TestClass]
 	public class DatabaseWriter
 	{
-		IDbContext _dbContext;
+		readonly IDbContext _dbContext;
 
 		public DatabaseWriter()
 		{
@@ -52,7 +49,8 @@ namespace A2v10.Data.Tests
 			{
 				dm = await _dbContext.SaveModelAsync(null, "a2test.[NestedObject.Update]", dataToSave);
 			}
-			catch (Exception /*ex*/) {
+			catch (Exception /*ex*/)
+			{
 				throw;
 			}
 

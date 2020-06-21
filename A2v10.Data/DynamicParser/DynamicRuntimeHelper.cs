@@ -43,7 +43,8 @@ namespace A2v10.Data.DynamicExpression
 
 		public static Object MinusOperation(Object elem1, Object elem2)
 		{
-			try { 
+			try
+			{
 				var d1 = Object2Number(elem1);
 				var d2 = Object2Number(elem2);
 				return d1 - d2;
@@ -202,7 +203,9 @@ namespace A2v10.Data.DynamicExpression
 				if (index < 0 || index >= list.Count)
 					throw new IndexOutOfRangeException();
 				return list[index];
-			} else if (elem is ExpandoObject expObj) {
+			}
+			else if (elem is ExpandoObject expObj)
+			{
 				return expObj.Get<Object>(arg.ToString());
 			}
 			return null;

@@ -1,11 +1,10 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
-using System;
-using System.Dynamic;
-using System.Threading.Tasks;
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Tests
 {
@@ -28,14 +27,13 @@ namespace A2v10.Data.Tests
 			md.HasAllProperties("TModel", "Date,UtcDate");
 
 			var now = DateTime.Now;
-			var utcNow = DateTime.UtcNow;
 
 			var dt = new DataTester(dm, "Model");
 			var mdate = dt.GetValue<DateTime>("Date");
 			var mutc = dt.GetValue<DateTime>("UtcDate");
 
 			Assert.IsTrue(Math.Abs((mdate - now).TotalSeconds) < 2);
-			Assert.IsTrue(Math.Abs((mutc- now).TotalSeconds) < 2);
+			Assert.IsTrue(Math.Abs((mutc - now).TotalSeconds) < 2);
 		}
 	}
 }

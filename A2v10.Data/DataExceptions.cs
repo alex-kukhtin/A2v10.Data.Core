@@ -31,7 +31,7 @@ namespace A2v10.Data
 		{
 		}
 
-		public DataWriterException(String message, Exception innerException) 
+		public DataWriterException(String message, Exception innerException)
 			: base(message, innerException)
 		{
 		}
@@ -63,7 +63,7 @@ namespace A2v10.Data
 		}
 	}
 
-	public class DataValidationException: Exception
+	public class DataValidationException : Exception
 	{
 		public DataValidationException(String message)
 			: base(message)

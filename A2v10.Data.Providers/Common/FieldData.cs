@@ -4,7 +4,7 @@ using System;
 
 namespace A2v10.Data.Providers
 {
-	public sealed class FieldData 
+	public sealed class FieldData
 	{
 		public DateTime DateValue { get; set; }
 		public Decimal DecimalValue { get; set; }
@@ -13,7 +13,8 @@ namespace A2v10.Data.Providers
 
 		public FieldType FieldType { get; set; }
 
-		public Object Value {
+		public Object Value
+		{
 			get
 			{
 				switch (FieldType)

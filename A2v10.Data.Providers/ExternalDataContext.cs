@@ -1,12 +1,11 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
-using System;
-using System.Text;
-
 using A2v10.Data.Interfaces;
 using A2v10.Data.Providers.Csv;
 using A2v10.Data.Providers.Dbf;
 using A2v10.Data.Providers.Xml;
+using System;
+using System.Text;
 
 namespace A2v10.Data.Providers
 {

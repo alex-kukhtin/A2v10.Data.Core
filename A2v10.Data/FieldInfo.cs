@@ -123,27 +123,27 @@ namespace A2v10.Data
 
 		public Boolean IsVisible { get { return !String.IsNullOrEmpty(PropertyName); } }
 
-		public Boolean IsArray =>  FieldType == FieldType.Array; 
-		public Boolean IsObject =>  FieldType == FieldType.Object; 
-		public Boolean IsMap => FieldType == FieldType.Map; 
-		public Boolean IsMapObject => FieldType == FieldType.MapObject; 
-		public Boolean IsTree => FieldType == FieldType.Tree; 
-		public Boolean IsGroup =>  FieldType == FieldType.Group;
-		public Boolean IsCrossArray => FieldType == FieldType.CrossArray; 
+		public Boolean IsArray => FieldType == FieldType.Array;
+		public Boolean IsObject => FieldType == FieldType.Object;
+		public Boolean IsMap => FieldType == FieldType.Map;
+		public Boolean IsMapObject => FieldType == FieldType.MapObject;
+		public Boolean IsTree => FieldType == FieldType.Tree;
+		public Boolean IsGroup => FieldType == FieldType.Group;
+		public Boolean IsCrossArray => FieldType == FieldType.CrossArray;
 		public Boolean IsCrossObject => FieldType == FieldType.CrossObject;
 		public Boolean IsCross => IsCrossArray || IsCrossObject;
 
-		public Boolean IsObjectLike =>  IsArray || IsObject || IsTree || IsGroup || IsMap || IsMapObject || IsCrossArray || IsCrossObject;
+		public Boolean IsObjectLike => IsArray || IsObject || IsTree || IsGroup || IsMap || IsMapObject || IsCrossArray || IsCrossObject;
 		public Boolean IsNestedType => IsRefId || IsArray || IsCrossArray || IsCrossObject;
-		public Boolean IsRefId =>  SpecType == SpecType.RefId; 
-		public Boolean IsParentId =>  SpecType == SpecType.ParentId; 
-		public Boolean IsId =>  SpecType == SpecType.Id; 
-		public Boolean IsKey =>  SpecType == SpecType.Key; 
-		public Boolean IsRowCount =>  SpecType == SpecType.RowCount; 
-		public Boolean IsItems =>  SpecType == SpecType.Items; 
-		public Boolean IsGroupMarker => SpecType == SpecType.GroupMarker; 
-		public Boolean IsJson =>  SpecType == SpecType.Json; 
-		public Boolean IsPermissions =>  SpecType == SpecType.Permissions;
+		public Boolean IsRefId => SpecType == SpecType.RefId;
+		public Boolean IsParentId => SpecType == SpecType.ParentId;
+		public Boolean IsId => SpecType == SpecType.Id;
+		public Boolean IsKey => SpecType == SpecType.Key;
+		public Boolean IsRowCount => SpecType == SpecType.RowCount;
+		public Boolean IsItems => SpecType == SpecType.Items;
+		public Boolean IsGroupMarker => SpecType == SpecType.GroupMarker;
+		public Boolean IsJson => SpecType == SpecType.Json;
+		public Boolean IsPermissions => SpecType == SpecType.Permissions;
 		public Boolean IsUtc => SpecType == SpecType.Utc;
 
 		private static void CheckField(String[] parts)

@@ -1,11 +1,9 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-
-using Newtonsoft.Json;
-
-using A2v10.Data.Interfaces;
 
 
 namespace A2v10.Data.Validator
@@ -20,12 +18,12 @@ namespace A2v10.Data.Validator
 		public String Name { get; private set; }
 
 		[JsonIgnore]
-		private static HashSet<String> _specialPropNames = new HashSet<String> {
+		private static readonly HashSet<String> _specialPropNames = new HashSet<String> {
 			"_id", "_name"
 		};
 
 		[JsonIgnore]
-		private Dictionary<String, String> _specialFieldNames = new Dictionary<String, String>();
+		private readonly Dictionary<String, String> _specialFieldNames = new Dictionary<String, String>();
 
 		[JsonIgnore]
 		private Boolean _parsed;
@@ -77,10 +75,10 @@ namespace A2v10.Data.Validator
 			}
 		}
 
-		void CheckSingleFieldType(String name, TypeDictionary types, TypeDictionary sharedTypes)
+		private static void CheckSingleFieldType(String name, TypeDictionary types, TypeDictionary sharedTypes)
 		{
 			if (name.EndsWith("[]"))
-				name = name.Substring(0, name.Length - 2);
+				name = name[0..^2];
 			if (!types.ContainsKey(name) && !sharedTypes.ContainsKey(name))
 				throw new DataValidationException($"Load. Type '{name}' not found");
 		}

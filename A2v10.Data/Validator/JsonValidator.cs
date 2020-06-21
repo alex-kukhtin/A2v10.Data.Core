@@ -1,16 +1,15 @@
 ﻿// Copyright © 2015-2019 Alex Kukhtin. All rights reserved.
 
-using System;
-using Newtonsoft.Json;
-
 using A2v10.Data.Interfaces;
+using Newtonsoft.Json;
+using System;
 using System.IO;
 
 namespace A2v10.Data.Validator
 {
 	public class JsonValidator
 	{
-		private AllModels _models;
+		private readonly AllModels _models;
 
 		public static JsonValidator FromJson(String json)
 		{

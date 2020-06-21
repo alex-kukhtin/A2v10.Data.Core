@@ -227,7 +227,7 @@ namespace A2v10.Data
 							filter = DataHelpers.DateTime2StringWrap(filter);
 						else if (filter is String)
 							filter = _localizer.Localize(filter.ToString());
-						for (Int32 ii = 1; ii<xs.Length; ii++)
+						for (Int32 ii = 1; ii < xs.Length; ii++)
 						{
 							if (ii == xs.Length - 1)
 								fmi.Set(xs[ii], filter);
@@ -298,7 +298,7 @@ namespace A2v10.Data
 				{
 					if (groupKeys == null)
 						groupKeys = new List<Boolean>();
-					Boolean bVal = (dataVal != null) ? (dataVal.ToString() == "1") : false;
+					Boolean bVal = (dataVal != null) && (dataVal.ToString() == "1");
 					groupKeys.Add(bVal);
 					continue;
 				}
@@ -315,8 +315,8 @@ namespace A2v10.Data
 				AddValueToRecord(currentRecord, fi, dataVal);
 				if (fi.IsRowCount)
 				{
-					if (dataVal is Int32)
-						rowCount = (Int32)dataVal;
+					if (dataVal is Int32 int32Val)
+						rowCount = int32Val;
 					else
 						throw new DataLoaderException("Invalid field type for !!RowCount");
 					bHasRowCount = true;
@@ -454,7 +454,7 @@ namespace A2v10.Data
 
 				Int32 fieldLength = 0;
 				if (dt == DataType.String)
-					fieldLength = (Int32) schemaTable.Rows[i]["ColumnSize"];
+					fieldLength = (Int32)schemaTable.Rows[i]["ColumnSize"];
 
 				if (fieldDef.IsComplexField)
 					ProcessComplexMetadata(fieldDef, typeMetadata, dt, fieldLength);
@@ -574,7 +574,7 @@ namespace A2v10.Data
 			if (keyProp == null)
 				throw new DataLoaderException("Key not found in cross object");
 			var pxa = propName.Split('.'); // <Type>.PropName
-										   /*0-key, 1-Property (optional)*/
+			/*0-key, 1-Property (optional)*/
 			var key = Tuple.Create(pxa[0], id);
 			if (!_idMap.TryGetValue(key, out ExpandoObject mapObj))
 				throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");

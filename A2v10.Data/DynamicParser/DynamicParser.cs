@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace A2v10.Data.DynamicExpression
 {
@@ -70,7 +69,7 @@ namespace A2v10.Data.DynamicExpression
 			DoubleBar
 		}
 
-		static readonly Expression trueLiteral =  Expression.Convert(Expression.Constant(true), typeof(Object));
+		static readonly Expression trueLiteral = Expression.Convert(Expression.Constant(true), typeof(Object));
 		static readonly Expression falseLiteral = Expression.Convert(Expression.Constant(false), typeof(Object));
 		static readonly Expression nullLiteral = Expression.Constant(null);
 
@@ -190,7 +189,7 @@ namespace A2v10.Data.DynamicExpression
 		{
 			Expression left = ParseAdditive();
 			while (token.id == TokenId.DoubleEqual ||
-				token.id == TokenId.ExclamationEqual || token.id == TokenId.ExclamationDoubleEqual || 
+				token.id == TokenId.ExclamationEqual || token.id == TokenId.ExclamationDoubleEqual ||
 				token.id == TokenId.GreaterThan || token.id == TokenId.GreaterThanEqual ||
 				token.id == TokenId.LessThan || token.id == TokenId.LessThanEqual)
 			{
@@ -229,7 +228,7 @@ namespace A2v10.Data.DynamicExpression
 				switch (op.id)
 				{
 					case TokenId.Plus:
-						left= Expression.Call(typeof(DynamicRuntimeHelper), "PlusOperation", null, left, right);
+						left = Expression.Call(typeof(DynamicRuntimeHelper), "PlusOperation", null, left, right);
 						break;
 					case TokenId.Minus:
 						left = Expression.Call(typeof(DynamicRuntimeHelper), "MinusOperation", null, left, right);
@@ -322,7 +321,7 @@ namespace A2v10.Data.DynamicExpression
 		{
 			ValidateToken(TokenId.StringLiteral);
 			Char quote = token.text[0];
-			String s = token.text.Substring(1, token.text.Length - 2);
+			String s = token.text[1..^1];
 			Int32 start = 0;
 			while (true)
 			{
@@ -372,7 +371,7 @@ namespace A2v10.Data.DynamicExpression
 			if (keywords.TryGetValue(token.text, out Object value))
 			{
 				NextToken();
-				return (Expression) value;
+				return (Expression)value;
 			}
 			if (symbols.TryGetValue(token.text, out value))
 			{
@@ -645,7 +644,7 @@ namespace A2v10.Data.DynamicExpression
 					throw ParseError(textPos, Res.InvalidCharacter, ch);
 			}
 			token.id = t;
-			token.text = text.Substring(tokenPos, textPos - tokenPos);
+			token.text = text[tokenPos..textPos];
 			token.pos = tokenPos;
 		}
 

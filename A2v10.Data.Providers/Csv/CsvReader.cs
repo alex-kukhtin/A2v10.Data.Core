@@ -1,16 +1,16 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers.Csv
 {
-	public class CsvReader :  IExternalDataReader
+	public class CsvReader : IExternalDataReader
 	{
 		private readonly DataFile _file;
 
@@ -32,7 +32,7 @@ namespace A2v10.Data.Providers.Csv
 				ReadHeader(rdr);
 				Read(rdr);
 			}
-			return _file; 
+			return _file;
 		}
 
 		public ExpandoObject ParseFile(Stream stream, ITableDescription table)
@@ -72,7 +72,7 @@ namespace A2v10.Data.Providers.Csv
 				_backwardChar = '\0';
 			}
 
-			Char readString(Char current)
+			Char readString(Char _)
 			{
 				while (!rdr.EndOfStream)
 				{
@@ -100,7 +100,7 @@ namespace A2v10.Data.Providers.Csv
 
 			while (!rdr.EndOfStream)
 			{
-				Char ch = (Char) rdr.Read();
+				Char ch = (Char)rdr.Read();
 				if (ch == QUOTE)
 				{
 					sb.Append(ch);
@@ -120,7 +120,7 @@ namespace A2v10.Data.Providers.Csv
 				{
 					sb.Append(ch);
 				}
-				
+
 			}
 			return sb.ToString();
 		}
@@ -147,7 +147,7 @@ namespace A2v10.Data.Providers.Csv
 				{ '\t', 0 },
 				{ '|',  0 },
 			};
-			for (Int32 i=0; i<header.Length; i++)
+			for (Int32 i = 0; i < header.Length; i++)
 			{
 				Char ch = header[i];
 				if (delims.TryGetValue(ch, out Int32 cnt))
@@ -157,7 +157,8 @@ namespace A2v10.Data.Providers.Csv
 			list.Sort((v1, v2) => v2.Value.CompareTo(v1.Value)); // desc
 			_file.Delimiter = list[0].Key;
 			var fields = ParseLine(header);
-			for (var i = 0; i < fields.Count; i++) {
+			for (var i = 0; i < fields.Count; i++)
+			{
 				var f = _file.CreateField();
 				f.Name = fields[i];
 			}

@@ -1,12 +1,11 @@
 ﻿// Copyright © 2012-2020 Alex Kukhtin. All rights reserved.
 
 
+using A2v10.Data.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Newtonsoft.Json;
-
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -189,7 +188,7 @@ namespace A2v10.Data
 
 		public static Object DateTime2StringWrap(Object val)
 		{
-			if (!(val is DateTime)) 
+			if (!(val is DateTime))
 				return val;
 			return "\"\\/" +
 				JsonConvert.SerializeObject(val, new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateTimeZoneHandling = DateTimeZoneHandling.Utc }) +

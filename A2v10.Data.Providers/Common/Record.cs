@@ -1,15 +1,15 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers
 {
 	public class Record : IExternalDataRecord
 	{
 		public List<FieldData> DataFields;
-		private IDictionary<String, Int32> _fieldMap;
+		private readonly IDictionary<String, Int32> _fieldMap;
 
 		public Record(IDictionary<String, Int32> fields)
 		{

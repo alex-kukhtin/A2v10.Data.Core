@@ -1,13 +1,12 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.DynamicExpression;
+using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-
-using A2v10.Data.DynamicExpression;
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -75,7 +74,7 @@ namespace A2v10.Data
 			var tp = typeof(T);
 			if (tp.IsNullableType())
 				tp = Nullable.GetUnderlyingType(tp);
-			return (T) Convert.ChangeType(result, tp);
+			return (T)Convert.ChangeType(result, tp);
 		}
 
 		public String CreateScript(IDataScripter scripter)

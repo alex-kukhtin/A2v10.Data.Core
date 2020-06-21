@@ -1,19 +1,20 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 
-using A2v10.Data.Interfaces;
-
 namespace A2v10.Data.Tests
 {
 	public class DataTester
 	{
-		IDataModel _dataModel;
-		readonly ExpandoObject _instance;
-		IList<ExpandoObject> _instanceArray;
+		private readonly IDataModel _dataModel;
+
+		private readonly ExpandoObject _instance;
+		private readonly IList<ExpandoObject> _instanceArray;
+
 		public DataTester(IDataModel dataModel, String expression)
 		{
 			_dataModel = dataModel;

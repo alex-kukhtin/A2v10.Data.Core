@@ -1,12 +1,12 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Data;
 using System.Data.SqlClient;
-using Newtonsoft.Json;
-using A2v10.Data.Interfaces;
+using System.Dynamic;
 using System.Linq;
 
 namespace A2v10.Data
@@ -64,7 +64,7 @@ namespace A2v10.Data
 				var simpleParamName = prm.ParameterName.Substring(1); /*skip @*/
 				if (prm.SqlDbType == SqlDbType.Structured)
 				{
-					if (_tables.TryGetValue(prm.ParameterName, out Tuple<DataTable, String>  table))
+					if (_tables.TryGetValue(prm.ParameterName, out Tuple<DataTable, String> table))
 					{
 						// table parameters (binging by object name)
 						FillDataTable(table.Item1, GetDataForSave(data, table.Item2 /*path*/));
@@ -171,8 +171,9 @@ namespace A2v10.Data
 				String prop = x[i];
 				// RowNumber is 1-based!
 				Boolean isMap = false;
-				if (prop.EndsWith("*")) {
-					prop = prop.Substring(0, prop.Length - 1);
+				if (prop.EndsWith("*"))
+				{
+					prop = prop[0..^1];
 					isMap = true;
 				}
 				if (currentData.TryGetValue(prop, out Object propValue))

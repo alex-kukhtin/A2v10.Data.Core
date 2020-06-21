@@ -27,7 +27,7 @@ namespace A2v10.Data.Providers
 		public Encoding Encoding { get; set; }
 		public Char Delimiter { get; set; }
 
-		public Boolean IsNormalString(String str)
+		public static Boolean IsNormalString(String str)
 		{
 			var arr = str.ToCharArray();
 			Int32 normalCharsCount = 0;
@@ -48,10 +48,11 @@ namespace A2v10.Data.Providers
 			Int32 countASCII = 0;
 			Int32 count866 = 0;
 			Int32 count1251 = 0;
-			for (Int32 i=0; i<chars.Length; i++)
+			for (Int32 i = 0; i < chars.Length; i++)
 			{
 				Byte ch = chars[i];
-				if (ch < 0x80) {
+				if (ch < 0x80)
+				{
 					countASCII += 1;
 					continue;
 				}

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace A2v10.Data
@@ -22,7 +21,7 @@ namespace A2v10.Data
 			return default;
 		}
 
-		public static T GetOrCreate<T>(this ExpandoObject obj, String name) where T: new()
+		public static T GetOrCreate<T>(this ExpandoObject obj, String name) where T : new()
 		{
 			if (!(obj is IDictionary<String, Object> d))
 				return default;
@@ -94,7 +93,7 @@ namespace A2v10.Data
 				d.Add(name, value);
 		}
 
-		public static void SetNotNull(this ExpandoObject obj, String name, Object value) 
+		public static void SetNotNull(this ExpandoObject obj, String name, Object value)
 		{
 			if (value == null)
 				return;

@@ -1,20 +1,20 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
-using System;
-using System.Dynamic;
-using System.Threading.Tasks;
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Tests
 {
 	[TestClass]
 	public class DatabaseModels
 	{
-		IDbContext _dbContext;
+		readonly IDbContext _dbContext;
 		public DatabaseModels()
 		{
 			_dbContext = Starter.Create();

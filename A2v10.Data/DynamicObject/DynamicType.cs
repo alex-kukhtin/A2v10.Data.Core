@@ -98,7 +98,7 @@ namespace A2v10.Data
 
 		public Boolean Equals(Signature other)
 		{
-			if (_properties.Length != other._properties.Length) 
+			if (_properties.Length != other._properties.Length)
 				return false;
 			for (Int32 i = 0; i < _properties.Length; i++)
 			{
@@ -165,7 +165,7 @@ namespace A2v10.Data
 			}
 		}
 
-		System.Reflection.FieldInfo[] GenerateProperties(TypeBuilder tb, DynamicProperty[] properties)
+		private static System.Reflection.FieldInfo[] GenerateProperties(TypeBuilder tb, DynamicProperty[] properties)
 		{
 			var fields = new FieldBuilder[properties.Length];
 			for (Int32 i = 0; i < properties.Length; i++)

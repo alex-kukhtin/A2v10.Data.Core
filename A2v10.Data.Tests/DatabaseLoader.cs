@@ -1,19 +1,21 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
-using System;
-using System.Dynamic;
-using System.Threading.Tasks;
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Tests
 {
 	[TestClass]
 	public class DatabaseLoader
 	{
-		readonly IDbContext _dbContext;
-		public DatabaseLoader()
+		private IDbContext _dbContext;
+
+		[TestInitialize]
+		public void Setup()
 		{
 			_dbContext = Starter.Create();
 		}

@@ -146,9 +146,9 @@ namespace A2v10.Data
 		public static String Update2Metadata(this String source)
 		{
 			if (source.EndsWith(".Update"))
-				return source.Substring(0, source.Length - 7) + ".Metadata";
+				return source[0..^7] + ".Metadata";
 			else if (source.EndsWith(".Update]"))
-				return source.Substring(0, source.Length - 8) + ".Metadata]";
+				return source[0..^8] + ".Metadata]";
 			return source;
 		}
 	}
