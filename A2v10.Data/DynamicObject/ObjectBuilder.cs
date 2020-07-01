@@ -66,11 +66,8 @@ namespace A2v10.Data
 		public static Dictionary<String, Object> BuildObject(ExpandoObject root)
 		{
 			var list = new Dictionary<String, Object>();
-			var rootD = root as IDictionary<String, Object>;
-			foreach (var obj in rootD)
-			{
-				list.Add(obj.Key, CreateObject(obj.Value, obj.Key));
-			}
+			foreach (var (k, v) in root as IDictionary<String, Object>)
+				list.Add(k, CreateObject(v, k));
 			return list;
 		}
 	}
