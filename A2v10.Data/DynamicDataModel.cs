@@ -167,8 +167,8 @@ namespace A2v10.Data
 				}
 				else
 				{
-					foreach (var f in sm.Value.Fields)
-						rootObj.Fields.Add(f.Key, f.Value);
+					foreach (var (k, v) in sm.Value.Fields)
+						rootObj.Fields.Add(k, v);
 				}
 			}
 			foreach (var sr in srcRoot)
@@ -176,8 +176,8 @@ namespace A2v10.Data
 				if (!trgRoot.AddChecked(sr.Key, sr.Value))
 					throw new DataLoaderException($"DataModel.Merge. Item with '{sr.Key}' already has been added");
 			}
-			foreach (var sys in srcSystem)
-				trgSystem.AddChecked(sys.Key, sys.Value);
+			foreach (var (k, v) in srcSystem)
+				trgSystem.AddChecked(k, v);
 		}
 
 		public void Validate(IDataModelValidator validator)

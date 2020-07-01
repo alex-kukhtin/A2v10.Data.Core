@@ -236,10 +236,10 @@ namespace A2v10.Data
 							if (isMap)
 							{
 								var propValD = propValEO as IDictionary<String, Object>;
-								foreach (var kv in propValD)
+								foreach (var (k, v) in propValD)
 								{
-									var mapItem = kv.Value as ExpandoObject;
-									mapItem.Set("CurrentKey", kv.Key);
+									var mapItem = v as ExpandoObject;
+									mapItem.Set("CurrentKey", k);
 									if (parentIndex != null)
 										mapItem.Set("ParentRowNumber", parentIndex.Value + 1);
 									mapItem.SetNotNull("ParentGUID", parentGuid);

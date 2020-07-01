@@ -706,28 +706,28 @@ namespace A2v10.Data
 		public void PostProcess()
 		{
 			_crossMap.Transform();
-			foreach (var cmi in _crossMap)
+			foreach (var (k, v) in _crossMap)
 			{
-				Int32 pos = cmi.Key.IndexOf('.');
-				String typeName = cmi.Key.Substring(0, pos);
+				Int32 pos = k.IndexOf('.');
+				String typeName = k.Substring(0, pos);
 				var typeMeta = GetMetadata(typeName);
 				if (typeMeta == null)
 					throw new DataLoaderException($"Invalid type name {typeMeta}");
-				var crossKeys = cmi.Value.GetCross();
-				var prop = cmi.Value.TargetProp;
+				var crossKeys = v.GetCross();
+				var prop = v.TargetProp;
 
-				if (cmi.Value.IsArray)
+				if (v.IsArray)
 				{
 					typeMeta.AddCross(prop, crossKeys);
 				}
 				else
 				{
 					// CrossObject. TCross.props = Keys with TCross type
-					var crossObjType = $"{cmi.Value.CrossType}Object";
+					var crossObjType = $"{v.CrossType}Object";
 					var crossMeta = GetOrCreateMetadata(crossObjType);
 					foreach (var key in crossKeys)
 					{
-						var fi = new FieldInfo(key, cmi.Value.CrossType);
+						var fi = new FieldInfo(key, v.CrossType);
 						crossMeta.AddField(fi, DataType.String);
 					}
 					typeMeta.SetCrossObject(prop, crossObjType);

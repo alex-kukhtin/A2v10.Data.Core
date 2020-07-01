@@ -36,8 +36,8 @@ namespace A2v10.Data
 			var l = new List<String>();
 			for (Int32 i = 0; i < _keys.Count; i++)
 				l.Add(null);
-			foreach (var x in _keys)
-				l[x.Value] = x.Key;
+			foreach (var (k, v) in _keys)
+				l[v] = k;
 			return l;
 		}
 
@@ -50,10 +50,10 @@ namespace A2v10.Data
 			{
 				var arr = CreateArray(_keyCount);
 				ExpandoObject targetVal = eo.Get<ExpandoObject>(TargetProp);
-				foreach (var key in _keys)
+				foreach (var (k, v) in _keys)
 				{
-					Int32 index = key.Value;
-					arr[index] = targetVal.Get<ExpandoObject>(key.Key);
+					Int32 index = v;
+					arr[index] = targetVal.Get<ExpandoObject>(k);
 				}
 				eo.Set(TargetProp, arr);
 			}

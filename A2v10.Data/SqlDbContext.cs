@@ -432,13 +432,13 @@ namespace A2v10.Data
 				retParam = cmd.Parameters[RET_PARAM_NAME];
 				retParam.Value = DBNull.Value;
 			}
-			foreach (var kv in elem)
+			foreach (var (k, v) in elem)
 			{
-				var paramName = "@" + kv.Key;
+				var paramName = "@" + k;
 				if (sqlParams.Contains(paramName))
 				{
 					var sqlParam = sqlParams[paramName];
-					var sqlVal = kv.Value;
+					var sqlVal = v;
 
 					if (sqlParam.SqlDbType == SqlDbType.VarBinary)
 					{

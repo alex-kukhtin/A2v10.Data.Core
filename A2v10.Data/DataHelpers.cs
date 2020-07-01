@@ -156,9 +156,9 @@ namespace A2v10.Data
 			if (dTarget.Count != 0)
 				return; // skip if already filled
 			var dSource = source as IDictionary<String, Object>;
-			foreach (var itm in dSource)
+			foreach (var (k, v) in dSource)
 			{
-				dTarget.Add(itm.Key, itm.Value);
+				dTarget.Add(k, v);
 			}
 		}
 
