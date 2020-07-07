@@ -54,6 +54,10 @@ namespace A2v10.Data.Providers.Dbf
 			Int16 recordSize = rdr.ReadInt16();
 			rdr.ReadBytes(3 + 13 + 4); // reserved;
 			Int32 numFields = (headerSize - 1 - 32) / 32;
+
+			if (numRecords == 0) // HACK!
+				numRecords = ((int)rdr.BaseStream.Length - headerSize) / recordSize;
+
 			for (Int32 i = 0; i < numFields; i++)
 			{
 				ReadHeader(rdr);

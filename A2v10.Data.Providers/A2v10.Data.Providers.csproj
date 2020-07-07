@@ -7,7 +7,7 @@
     <Company>Alex KukthinAlex Kukthin</Company>
     <Product>A2v10.Data</Product>
     <Copyright>Copyright © 2015-2020 Alex Kukhtin. All rights reserved.</Copyright>
-    <Version>10.0.7241</Version>
+    <Version>10.0.7242</Version>
   </PropertyGroup>
 
   <ItemGroup>
