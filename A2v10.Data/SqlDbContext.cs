@@ -157,9 +157,9 @@ namespace A2v10.Data
 			return cnn;
 		}
 
-		public Task<IDbConnection> GetDbConnectionAsync(String source)
+		public async Task<IDbConnection> GetDbConnectionAsync(String source)
 		{
-			return null;
+			return await GetConnectionAsync(source);
 		}
 
 		public async Task<SqlConnection> GetConnectionAsync(String source)
