@@ -8,8 +8,8 @@ namespace A2v10.Data
 {
 	internal class CrossItem
 	{
-		private readonly List<ExpandoObject> _list = new List<ExpandoObject>();
-		private readonly Dictionary<String, Int32> _keys = new Dictionary<String, Int32>();
+		Dictionary<Object, ExpandoObject> _items = new Dictionary<Object, ExpandoObject>();
+		Dictionary<String, Int32> _keys = new Dictionary<String, Int32>();
 		public String TargetProp { get; }
 		public Boolean IsArray { get; }
 		public String CrossType { get; }
@@ -24,7 +24,9 @@ namespace A2v10.Data
 
 		public void Add(String propName, ExpandoObject target)
 		{
-			_list.Add(target);
+			var id = target.Get<Object>("Id");
+			if (!_items.ContainsKey(id))
+				_items.Add(id, target);
 			if (!_keys.ContainsKey(propName))
 			{
 				_keys.Add(propName, _keys.Count);
@@ -36,8 +38,8 @@ namespace A2v10.Data
 			var l = new List<String>();
 			for (Int32 i = 0; i < _keys.Count; i++)
 				l.Add(null);
-			foreach (var (k, v) in _keys)
-				l[v] = k;
+			foreach (var x in _keys)
+				l[x.Value] = x.Key;
 			return l;
 		}
 
@@ -46,20 +48,21 @@ namespace A2v10.Data
 			if (!IsArray)
 				return;
 			Int32 _keyCount = _keys.Count;
-			foreach (var eo in _list)
+			foreach (var (k, eo) in _items)
 			{
 				var arr = CreateArray(_keyCount);
 				ExpandoObject targetVal = eo.Get<ExpandoObject>(TargetProp);
-				foreach (var (k, v) in _keys)
+				if (targetVal == null)
+					continue; // already array?
+				foreach (var (key, index) in _keys)
 				{
-					Int32 index = v;
-					arr[index] = targetVal.Get<ExpandoObject>(k);
+					arr[index] = targetVal.Get<ExpandoObject>(key);
 				}
 				eo.Set(TargetProp, arr);
 			}
 		}
 
-		static List<ExpandoObject> CreateArray(Int32 cnt)
+		List<ExpandoObject> CreateArray(Int32 cnt)
 		{
 			var l = new List<ExpandoObject>();
 			for (Int32 i = 0; i < cnt; i++)

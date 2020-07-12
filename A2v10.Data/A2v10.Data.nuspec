@@ -3,7 +3,7 @@
 	<metadata>
 		<id>A2v10.Data.Core</id>
 		<title>A2v10.Data.Core</title>
-		<version>10.0.7243</version>
+		<version>10.0.7244</version>
 		<authors>AlexKukhtin</authors>
 		<owners>AlexKukhtin</owners>
 		<projectUrl>https://github.com/alex-kukhtin/A2v10.Data.Core</projectUrl>
@@ -17,7 +17,7 @@
 				<dependency id="Microsoft.Extensions.Configuration.Abstractions" version="3.1.5" />
 				<dependency id="Microsoft.Extensions.Configuration.Binder" version="3.1.5" />
 				<dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="3.1.5" />
-				<dependency id="A2v10.Data.Interfaces" version="10.0.7243" />
+				<dependency id="A2v10.Data.Interfaces" version="10.0.7244" />
 				<dependency id="Newtonsoft.Json" version="12.0.3" />
 				<dependency id="System.Data.SqlClient" version="4.8.1" />
 			</group>
