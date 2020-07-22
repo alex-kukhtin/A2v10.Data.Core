@@ -3,9 +3,9 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<LangVersion>8.0</LangVersion>
-		<AssemblyVersion>10.0.7244.0</AssemblyVersion>
-		<FileVersion>10.0.7244.0</FileVersion>
-		<Version>10.0.7244</Version>
+		<AssemblyVersion>10.0.7245.0</AssemblyVersion>
+		<FileVersion>10.0.7245.0</FileVersion>
+		<Version>10.0.7245</Version>
 		<Product>A2v10.Data</Product>
 		<Authors>Alex Kukthin</Authors>
 		<Copyright>Copyright © 2015-2020 Alex Kukhtin. All rights reserved.</Copyright>

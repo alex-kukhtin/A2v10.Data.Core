@@ -91,7 +91,10 @@ namespace A2v10.Data
 		{
 			if (_cross == null)
 				_cross = new Dictionary<String, IList<String>>();
-			_cross.Add(key, cross);
+			if (_cross.ContainsKey(key))
+				_cross[key] = cross;
+			else
+				_cross.Add(key, cross);
 		}
 
 		public Int32 FieldCount { get { return _fields.Count; } }

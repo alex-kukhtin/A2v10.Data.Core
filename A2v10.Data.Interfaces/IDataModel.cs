@@ -56,6 +56,7 @@ namespace A2v10.Data.Interfaces
 		void Merge(IDataModel src);
 
 		String CreateScript(IDataScripter scripter);
+		void AddRuntimeProperties();
 		IDictionary<String, dynamic> GetDynamic();
 
 		void Validate(IDataModelValidator validator);

@@ -188,5 +188,28 @@ namespace A2v10.Data
 			}
 		}
 
+		public void AddRuntimeProperties()
+		{
+			ExpandoObject rt = null;
+			foreach (var m in Metadata)
+			{
+				IDataMetadata md = m.Value;
+				if (md.HasCross)
+				{
+					if (rt == null)
+						rt = new ExpandoObject();
+					var cross = new ExpandoObject();
+					rt.Add("$cross", cross);
+					var xo = new ExpandoObject();
+					foreach (var ci in md.Cross)
+						xo.Add(ci.Key, ci.Value);
+					cross.Add(m.Key, xo);
+				}
+			}
+			if (rt != null)
+			{
+				Root.Add("$runtime", rt);
+			}
+		}
 	}
 }

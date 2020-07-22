@@ -8,8 +8,8 @@ namespace A2v10.Data
 {
 	internal class CrossItem
 	{
-		Dictionary<Object, ExpandoObject> _items = new Dictionary<Object, ExpandoObject>();
-		Dictionary<String, Int32> _keys = new Dictionary<String, Int32>();
+		readonly Dictionary<Object, ExpandoObject> _items = new Dictionary<Object, ExpandoObject>();
+		readonly Dictionary<String, Int32> _keys = new Dictionary<String, Int32>();
 		public String TargetProp { get; }
 		public Boolean IsArray { get; }
 		public String CrossType { get; }
@@ -48,7 +48,7 @@ namespace A2v10.Data
 			if (!IsArray)
 				return;
 			Int32 _keyCount = _keys.Count;
-			foreach (var (k, eo) in _items)
+			foreach (var (_, eo) in _items)
 			{
 				var arr = CreateArray(_keyCount);
 				ExpandoObject targetVal = eo.Get<ExpandoObject>(TargetProp);

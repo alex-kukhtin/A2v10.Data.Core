@@ -448,6 +448,10 @@ namespace A2v10.Data
 					typeMetadata.AddField(fieldDef, DataType.Number, 0);
 					continue;
 				}
+				if (fieldDef.IsCrossArray)
+				{
+					typeMetadata.AddCross(fieldDef.PropertyName, null);
+				}
 				if (!fieldDef.IsVisible)
 					continue;
 				DataType dt = rdr.GetFieldType(i).Name.TypeName2DataType();
