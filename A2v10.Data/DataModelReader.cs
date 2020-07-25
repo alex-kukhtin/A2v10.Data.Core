@@ -416,7 +416,7 @@ namespace A2v10.Data
 				throw new DataLoaderException($"Invalid element type: '{firstFieldName}'");
 			}
 			var rootMetadata = GetOrCreateMetadata(ROOT);
-			rootMetadata.AddField(objectDef, DataType.Undefined);
+			rootMetadata.AddField(objectDef, DataType.Undefined, SqlDataType.Unknown);
 			// other fields = object fields
 			var typeMetadata = GetOrCreateMetadata(objectDef.TypeName);
 			if (objectDef.IsMain && mainElement == null)
@@ -455,18 +455,19 @@ namespace A2v10.Data
 				if (!fieldDef.IsVisible)
 					continue;
 				DataType dt = rdr.GetFieldType(i).Name.TypeName2DataType();
+				SqlDataType sqlDataType = rdr.GetDataTypeName(i).SqlTypeName2SqlDataType();
 
 				Int32 fieldLength = 0;
 				if (dt == DataType.String)
 					fieldLength = (Int32)schemaTable.Rows[i]["ColumnSize"];
 
 				if (fieldDef.IsComplexField)
-					ProcessComplexMetadata(fieldDef, typeMetadata, dt, fieldLength);
+					ProcessComplexMetadata(fieldDef, typeMetadata, dt, sqlDataType, fieldLength);
 				else if (fieldDef.IsMapObject)
 					ProcessMapObjectMetadata(fieldDef, typeMetadata);
 				else
 				{
-					var fm = typeMetadata.AddField(fieldDef, dt, fieldLength);
+					var fm = typeMetadata.AddField(fieldDef, dt, sqlDataType, fieldLength);
 					if (fieldDef.IsNestedType)
 					{
 						// create metadata for nested object or array
@@ -686,15 +687,15 @@ namespace A2v10.Data
 				_refMap.MergeObject(field.TypeName, id, currentRecord);
 		}
 
-		void ProcessComplexMetadata(FieldInfo fieldInfo, ElementMetadata elem, DataType dt, Int32 fieldLen)
+		void ProcessComplexMetadata(FieldInfo fieldInfo, ElementMetadata elem, DataType dt, SqlDataType sqlType, Int32 fieldLen)
 		{
 			// create metadata for nested type
 			var innerElem = GetOrCreateMetadata(fieldInfo.TypeName);
 			var fna = fieldInfo.PropertyName.Split('.');
 			if (fna.Length != 2)
 				throw new DataLoaderException($"Invalid complex name {fieldInfo.PropertyName}");
-			elem.AddField(new FieldInfo($"{fna[0]}!{fieldInfo.TypeName}"), DataType.Undefined);
-			innerElem.AddField(new FieldInfo(fieldInfo, fna[1]), dt, fieldLen);
+			elem.AddField(new FieldInfo($"{fna[0]}!{fieldInfo.TypeName}"), DataType.Undefined, SqlDataType.Unknown);
+			innerElem.AddField(new FieldInfo(fieldInfo, fna[1]), dt, sqlType, fieldLen);
 		}
 
 		void ProcessMapObjectMetadata(FieldInfo fieldInfo, ElementMetadata elem)
@@ -703,8 +704,8 @@ namespace A2v10.Data
 			var innerElem = GetOrCreateMetadata(mapType);
 			innerElem.MapItemType = fieldInfo.TypeName;
 			foreach (var f in fieldInfo.MapFields)
-				innerElem.AddField(new FieldInfo($"{f}!{fieldInfo.TypeName}"), DataType.Undefined);
-			elem.AddField(new FieldInfo($"{fieldInfo.PropertyName}!{mapType}"), DataType.Undefined);
+				innerElem.AddField(new FieldInfo($"{f}!{fieldInfo.TypeName}"), DataType.Undefined, SqlDataType.Unknown);
+			elem.AddField(new FieldInfo($"{fieldInfo.PropertyName}!{mapType}"), DataType.Undefined, SqlDataType.Unknown);
 		}
 
 		public void PostProcess()
@@ -732,7 +733,7 @@ namespace A2v10.Data
 					foreach (var key in crossKeys)
 					{
 						var fi = new FieldInfo(key, v.CrossType);
-						crossMeta.AddField(fi, DataType.String);
+						crossMeta.AddField(fi, DataType.String, SqlDataType.String);
 					}
 					typeMeta.SetCrossObject(prop, crossObjType);
 					typeMeta.AddCross(prop, crossKeys);

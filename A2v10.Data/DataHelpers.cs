@@ -37,6 +37,55 @@ namespace A2v10.Data
 			throw new DataLoaderException($"Invalid data type {s}");
 		}
 
+		public static SqlDataType SqlTypeName2SqlDataType(this String s)
+		{
+			switch (s)
+			{
+				case "datetime":
+				case "datetime2":
+				case "smalldatetime":
+				case "datetimeoffset":
+					return SqlDataType.DateTime;
+				case "date":
+					return SqlDataType.Date;
+				case "time":
+					return SqlDataType.Time;
+				case "nvarchar":
+				case "varchar":
+				case "nchar":
+				case "char":
+				case "text":
+				case "ntext":
+					return SqlDataType.String;
+				case "bit":
+					return SqlDataType.Bit;
+				case "int":
+				case "smallint":
+				case "tinyint":
+					return SqlDataType.Int;
+				case "bigint":
+					return SqlDataType.Bigint;
+				case "float":
+				case "real":
+					return SqlDataType.Float;
+				case "numeric":
+					return SqlDataType.Numeric;
+				case "decimal":
+					return SqlDataType.Decimal;
+				case "money":
+				case "smallmoney":
+					return SqlDataType.Currency;
+				case "binary":
+				case "varbinary":
+				case "image":
+					return SqlDataType.Binary;
+				case "uniqueidentifier":
+					return SqlDataType.Guid;
+				default:
+					return SqlDataType.Unknown;
+			}
+		}
+
 		public static FieldType TypeName2FieldType(this String s)
 		{
 			switch (s)
