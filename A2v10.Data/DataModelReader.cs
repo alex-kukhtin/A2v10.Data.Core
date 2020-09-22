@@ -79,15 +79,6 @@ namespace A2v10.Data
 			}
 		}
 
-		public void ProcessMetadataAliases(IDataReader rdr)
-		{
-			if (rdr.FieldCount == 0)
-				return;
-			var objectDef = new FieldInfo(GetAlias(rdr.GetName(0)));
-			if (objectDef.TypeName == ALIASES_TYPE)
-				AddAliasesFromReader(rdr);
-		}
-
 		public IDataModel DataModel
 		{
 			get

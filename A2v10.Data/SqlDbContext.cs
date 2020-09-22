@@ -364,8 +364,7 @@ namespace A2v10.Data
 				using var rdr = cmd.ExecuteReader();
 				do
 				{
-					// metadata is not needed (exclude aliases)
-					dataReader.ProcessMetadataAliases(rdr);
+					dataReader.ProcessOneMetadata(rdr);
 					while (rdr.Read())
 					{
 						dataReader.ProcessOneRecord(rdr);
@@ -405,8 +404,7 @@ namespace A2v10.Data
 				using var rdr = await cmd.ExecuteReaderAsync();
 				do
 				{
-					// metadata is not needed (exclude aliases)
-					dataReader.ProcessMetadataAliases(rdr);
+					dataReader.ProcessOneMetadata(rdr);
 					while (await rdr.ReadAsync())
 					{
 						dataReader.ProcessOneRecord(rdr);

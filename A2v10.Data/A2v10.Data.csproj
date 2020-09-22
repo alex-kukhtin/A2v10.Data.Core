@@ -3,9 +3,9 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<LangVersion>8.0</LangVersion>
-		<AssemblyVersion>10.0.7245.0</AssemblyVersion>
-		<FileVersion>10.0.7245.0</FileVersion>
-		<Version>10.0.7245</Version>
+		<AssemblyVersion>10.0.7246.0</AssemblyVersion>
+		<FileVersion>10.0.7246.0</FileVersion>
+		<Version>10.0.7246</Version>
 		<Product>A2v10.Data</Product>
 		<Authors>Alex Kukthin</Authors>
 		<Copyright>Copyright © 2015-2020 Alex Kukhtin. All rights reserved.</Copyright>
@@ -13,11 +13,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.6" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.6" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.8" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-		<PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
 	</ItemGroup>
 
 	<ItemGroup>
