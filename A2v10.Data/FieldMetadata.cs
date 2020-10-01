@@ -139,5 +139,38 @@ namespace A2v10.Data
 			}
 		}
 
+
+		public String TypeScriptName
+		{
+			get
+			{
+				switch (ItemType)
+				{
+					case FieldType.Scalar:
+						switch (DataType)
+						{
+							case DataType.Number:
+							case DataType.String:
+							case DataType.Boolean:
+								return DataType.ToString().ToLowerInvariant();
+							case DataType.Date:
+								return "Date";
+						}
+						return DataType.ToString();
+					case FieldType.Array:
+						return $"IElementArray<{RefObject}>";
+					case FieldType.Tree:
+					case FieldType.Map:
+					case FieldType.MapObject:
+						return RefObject + "[]";
+					case FieldType.Object:
+					case FieldType.Group:
+						return RefObject;
+					default:
+						return DataType.ToString();
+				}
+			}
+		}
+
 	}
 }
