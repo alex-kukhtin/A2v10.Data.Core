@@ -685,7 +685,9 @@ namespace A2v10.Data
 			var fna = fieldInfo.PropertyName.Split('.');
 			if (fna.Length != 2)
 				throw new DataLoaderException($"Invalid complex name {fieldInfo.PropertyName}");
-			elem.AddField(new FieldInfo($"{fna[0]}!{fieldInfo.TypeName}"), DataType.Undefined, SqlDataType.Unknown);
+			var fi = new FieldInfo($"{fna[0]}!{fieldInfo.TypeName}");
+			fi.CheckTypeName();
+			elem.AddField(fi, DataType.Undefined, SqlDataType.Unknown);
 			innerElem.AddField(new FieldInfo(fieldInfo, fna[1]), dt, sqlType, fieldLen);
 		}
 
