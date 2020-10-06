@@ -158,8 +158,8 @@ namespace A2v10.Data
 						}
 						return DataType.ToString();
 					case FieldType.Array:
-						return $"IElementArray<{RefObject}>";
 					case FieldType.Tree:
+						return $"IElementArray<{RefObject}>";
 					case FieldType.Map:
 					case FieldType.MapObject:
 						return RefObject + "[]";
