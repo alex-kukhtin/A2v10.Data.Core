@@ -1,12 +1,20 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Dynamic;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers
 {
+	public enum DataFileFormat
+	{
+		dbf,
+		csv
+	}
+
 	public class DataFile : IExternalDataFile
 	{
 		readonly IList<Field> _fields;
@@ -26,6 +34,7 @@ namespace A2v10.Data.Providers
 
 		public Encoding Encoding { get; set; }
 		public Char Delimiter { get; set; }
+		public DataFileFormat Format { get; set; }
 
 		public static Boolean IsNormalString(String str)
 		{
@@ -123,6 +132,25 @@ namespace A2v10.Data.Providers
 			return f;
 		}
 
+		public Field CreateField(String name, SqlDataType dataType)
+		{
+			var f = new Field()
+			{
+				Name = name
+			};
+			switch (Format)
+			{
+				case DataFileFormat.dbf:
+					f.SetFieldTypeDbf(dataType);
+					break;
+				case DataFileFormat.csv:
+					f.SetFieldTypeCsv(dataType);
+					break;
+			}
+			_fields.Add(f);
+			return f;
+		}
+
 		public Field GetField(Int32 index)
 		{
 			if (index < 0 || index >= _fields.Count)
@@ -183,5 +211,74 @@ namespace A2v10.Data.Providers
 			return _records[index];
 		}
 		public IEnumerable<IExternalDataRecord> Records => _records;
+
+
+		public void FillModel(IDataModel model)
+		{
+			if (model.Metadata == null || !model.Metadata.ContainsKey("TRoot"))
+				throw new ExternalDataException("External data. Empty model");
+			var r = model.Metadata["TRoot"];
+			if (r?.Fields?.Count != 1)
+				throw new ExternalDataException("External data. The model must contain one array");
+			foreach (var prop in r.Fields.Keys)
+			{
+				var f = r.Fields[prop];
+				CreateStructure(model.Metadata[f.RefObject]);
+				var array = model.Eval<IList<ExpandoObject>>(prop);
+				if (array == null)
+					throw new ExternalDataException($"External data. '{prop}' field must be an array");
+				FillData(array);
+				FitStringFields();
+				return;
+			}
+		}
+
+		void CreateStructure(IDataMetadata meta)
+		{
+			foreach (var m in meta.Fields)
+			{
+				CreateField(m.Key, m.Value.SqlDataType);
+			}
+		}
+
+		void FillData(IList<ExpandoObject> list)
+		{
+			foreach (var elem in list)
+			{
+				var de = elem as IDictionary<String, Object>;
+				var r = CreateRecord();
+				for (var i = 0; i < _fields.Count; i++)
+				{
+					var f = _fields[i];
+					var val = de[f.Name];
+					var fd = new FieldData(Format, f.Type, val);
+					r.DataFields.Add(fd);
+				}
+			}
+		}
+
+		void FitStringFields()
+		{
+			if (Format != DataFileFormat.dbf)
+				return;
+			// sets the string field sizes accodring to values
+			for (var i = 0; i < _fields.Count; i++)
+			{
+				var f = _fields[i];
+				if (f.Type != FieldType.Char)
+					continue;
+				var len = 0;
+				foreach (var r in Records)
+				{
+					var fv = r.FieldValue(i);
+					if (fv == null)
+						continue;
+					var sv = fv.ToString();
+					len = Math.Max(len, sv.Length);
+				}
+				f.Size = len + 1;
+			}
+		}
+
 	}
 }

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Providers.Csv;
@@ -49,6 +49,36 @@ namespace A2v10.Data.Providers
 			}
 			return null;
 		}
+
+		public IExternalDataWriter GetWriter(IDataModel model, String format, Encoding enc)
+		{
+			switch (format)
+			{
+				case "dbf":
+					{
+						var dataFileDbf = new DataFile()
+						{
+							Encoding = enc,
+							Format = DataFileFormat.dbf
+						};
+						dataFileDbf.FillModel(model);
+						return new DbfWriter(dataFileDbf);
+					}
+				case "csv":
+					{
+						var dataFileCsv = new DataFile()
+						{
+							Encoding = enc,
+							Format = DataFileFormat.csv,
+							Delimiter = ';'
+						};
+						dataFileCsv.FillModel(model);
+						return new CsvWriter(dataFileCsv);
+					}
+			}
+			return null;
+		}
+
 		#endregion
 	}
 }
