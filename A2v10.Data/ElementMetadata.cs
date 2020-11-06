@@ -21,6 +21,7 @@ namespace A2v10.Data
 		public String Items { get; set; }
 		public String MapItemType { get; set; }
 		public String MainObject { get; set; }
+		public String Token { get; set; }
 
 		public Boolean IsArrayType { get; set; }
 		public Boolean IsRowCount { get; set; }
@@ -73,6 +74,9 @@ namespace A2v10.Data
 					break;
 				case SpecType.Items:
 					Items = field.PropertyName;
+					break;
+				case SpecType.Token:
+					Token = field.PropertyName;
 					break;
 			}
 			return fm;

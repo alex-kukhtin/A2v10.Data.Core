@@ -54,7 +54,8 @@ namespace A2v10.Data
 		Filter,
 		HasRows,
 		Json,
-		Utc
+		Utc,
+		Token
 	}
 
 	public class FieldMetadata : IDataFieldMetadata

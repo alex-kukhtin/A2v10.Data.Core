@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
 
 using System;
@@ -16,6 +16,7 @@ namespace A2v10.Data.Interfaces
 		String Items { get; set; }
 		String MapItemType { get; set; }
 		String MainObject { get; set; }
+		String Token { get; set; }
 
 		IDictionary<String, IDataFieldMetadata> Fields { get; }
 		IDictionary<String, IList<String>> Cross { get; }
