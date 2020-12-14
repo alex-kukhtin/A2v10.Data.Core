@@ -13,7 +13,7 @@
 		<copyright>Copyright © 2015-2020 Alex Kukhtin.</copyright>
 		<tags>A2v10 Platform Business WebApp</tags>
 		<dependencies>
-			<group targetFramework=".NETCoreApp3.1">
+			<group targetFramework="net5.0">
 				<dependency id="A2v10.Data.Interfaces" version="10.0.7250" />
 			</group>
 		</dependencies>
