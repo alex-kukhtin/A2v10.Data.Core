@@ -248,7 +248,7 @@ namespace A2v10.Data
 			return listLoader.Result;
 		}
 
-		String ResolveSource(String source, Object prms)
+		static String ResolveSource(String source, Object prms)
 		{
 			if (source == null)
 				return null;
@@ -260,7 +260,7 @@ namespace A2v10.Data
 				if (key.Contains("??"))
 				{
 					Int32 pos = key.IndexOf("??");
-					def = key.Substring(pos + 2).Trim();
+					def = key[(pos + 2)..].Trim();
 					key = key.Substring(0, pos).Trim();
 				}
 				if (prms is ExpandoObject exp)
@@ -419,7 +419,7 @@ namespace A2v10.Data
 		}
 		#endregion
 
-		SqlParameter SetParametersFromExpandoObject(SqlCommand cmd, ExpandoObject element)
+		static SqlParameter SetParametersFromExpandoObject(SqlCommand cmd, ExpandoObject element)
 		{
 			if (element == null)
 				return null;
@@ -455,7 +455,7 @@ namespace A2v10.Data
 			return retParam;
 		}
 
-		SqlParameter SetParametersFrom<T>(SqlCommand cmd, T element)
+		static SqlParameter SetParametersFrom<T>(SqlCommand cmd, T element)
 		{
 			Type retType = typeof(T);
 			var props = retType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -490,7 +490,7 @@ namespace A2v10.Data
 			return retParam;
 		}
 
-		void SetReturnParamResult(SqlParameter retParam, Object element)
+		static void SetReturnParamResult(SqlParameter retParam, Object element)
 		{
 			if (retParam == null)
 				return;
@@ -552,7 +552,7 @@ namespace A2v10.Data
 			} while (rdr.NextResult());
 		}
 
-		SqlParameter SetParametersWithList<T>(SqlCommand cmd, Object prms, IEnumerable<T> list) where T : class
+		static SqlParameter SetParametersWithList<T>(SqlCommand cmd, Object prms, IEnumerable<T> list) where T : class
 		{
 			SqlParameter retParam = null;
 			Type listType = typeof(T);
@@ -577,7 +577,7 @@ namespace A2v10.Data
 					prm.Value = DBNull.Value;
 					continue;
 				}
-				var simpleParamName = prm.ParameterName.Substring(1); // skip @
+				var simpleParamName = prm.ParameterName[1..]; // skip @
 				if (prm.SqlDbType == SqlDbType.Structured)
 				{
 					foreach (var itm in list)

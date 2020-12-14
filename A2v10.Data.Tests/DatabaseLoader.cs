@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace A2v10.Data.Tests
 {
 	[TestClass]
+	[TestCategory("Simple Models")]
 	public class DatabaseLoader
 	{
 		private IDbContext _dbContext;

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace A2v10.Data.Tests
 {
 	[TestClass]
+	[TestCategory("Write models")]
 	public class DatabaseWriter
 	{
 		readonly IDbContext _dbContext;

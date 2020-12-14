@@ -61,7 +61,7 @@ namespace A2v10.Data
 			for (Int32 i = 0; i < cmd.Parameters.Count; i++)
 			{
 				SqlParameter prm = cmd.Parameters[i];
-				var simpleParamName = prm.ParameterName.Substring(1); /*skip @*/
+				var simpleParamName = prm.ParameterName[1..]; /*skip @*/
 				if (prm.SqlDbType == SqlDbType.Structured)
 				{
 					if (_tables.TryGetValue(prm.ParameterName, out Tuple<DataTable, String> table))

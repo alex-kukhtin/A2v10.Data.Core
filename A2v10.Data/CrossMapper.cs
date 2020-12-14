@@ -62,7 +62,7 @@ namespace A2v10.Data
 			}
 		}
 
-		List<ExpandoObject> CreateArray(Int32 cnt)
+		static List<ExpandoObject> CreateArray(Int32 cnt)
 		{
 			var l = new List<ExpandoObject>();
 			for (Int32 i = 0; i < cnt; i++)

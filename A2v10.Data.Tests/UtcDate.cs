@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace A2v10.Data.Tests
 {
 	[TestClass]
+	[TestCategory("Utc Date")]
 	public class UtcDate
 	{
 		readonly IDbContext _dbContext;

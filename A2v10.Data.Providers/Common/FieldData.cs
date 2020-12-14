@@ -18,20 +18,14 @@ namespace A2v10.Data.Providers
 		{
 			get
 			{
-				switch (FieldType)
+				return FieldType switch
 				{
-					case FieldType.Char:
-					case FieldType.Memo:
-						return StringValue;
-					case FieldType.Numeric:
-					case FieldType.Float:
-						return DecimalValue;
-					case FieldType.Boolean:
-						return BooleanValue;
-					case FieldType.Date:
-						return DateValue;
-				}
-				throw new InvalidOperationException($"Invalid FieldType: {FieldType}");
+					FieldType.Char or FieldType.Memo => StringValue,
+					FieldType.Numeric or FieldType.Float => DecimalValue,
+					FieldType.Boolean => BooleanValue,
+					FieldType.Date => DateValue,
+					_ => throw new InvalidOperationException($"Invalid FieldType: {FieldType}"),
+				};
 			}
 		}
 
@@ -39,20 +33,14 @@ namespace A2v10.Data.Providers
 		{
 			get
 			{
-				switch (FieldType)
+				return FieldType switch
 				{
-					case FieldType.Char:
-					case FieldType.Memo:
-						return String.IsNullOrEmpty(StringValue);
-					case FieldType.Numeric:
-					case FieldType.Float:
-						return DecimalValue == 0M;
-					case FieldType.Boolean:
-						return BooleanValue == false;
-					case FieldType.Date:
-						return DateValue == DateTime.MinValue;
-				}
-				return true;
+					FieldType.Char or FieldType.Memo => String.IsNullOrEmpty(StringValue),
+					FieldType.Numeric or FieldType.Float => DecimalValue == 0M,
+					FieldType.Boolean => BooleanValue == false,
+					FieldType.Date => DateValue == DateTime.MinValue,
+					_ => true,
+				};
 			}
 		}
 

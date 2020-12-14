@@ -144,7 +144,7 @@ namespace A2v10.Data.Providers
 					f.SetFieldTypeDbf(dataType);
 					break;
 				case DataFileFormat.csv:
-					f.SetFieldTypeCsv(dataType);
+					f.SetFieldTypeCsv();
 					break;
 			}
 			_fields.Add(f);

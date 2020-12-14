@@ -53,7 +53,7 @@ namespace A2v10.Data.Providers
 			}
 		}
 
-		internal void SetFieldTypeCsv(SqlDataType dataType)
+		internal void SetFieldTypeCsv()
 		{
 			Type = FieldType.Char;
 			Size = 0;

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace A2v10.Data.Tests
 {
 	[TestClass]
+	[TestCategory("Load models (sync)")]
 	public class DatabaseLoaderSync
 	{
 		readonly IDbContext _dbContext;
