@@ -442,10 +442,17 @@ namespace A2v10.Data
 
 					if (sqlParam.SqlDbType == SqlDbType.VarBinary)
 					{
-						if (!(sqlVal is Stream stream))
-							throw new IndexOutOfRangeException("Stream expected");
-						sqlParam.Value = new SqlBytes(stream);
+						if (sqlVal == null)
+							sqlParam.Value = DBNull.Value;
+						else
+						{
+							if (!(sqlVal is Stream stream))
+								throw new IndexOutOfRangeException("Stream expected");
+							sqlParam.Value = new SqlBytes(stream);
+						}
 					}
+					else if (sqlParam.SqlDbType == SqlDbType.Structured)
+						sqlParam.Value = GetTableExpandoParams(sqlVal);
 					else
 					{
 						sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType());
@@ -453,6 +460,14 @@ namespace A2v10.Data
 				}
 			}
 			return retParam;
+		}
+
+		static Object GetTableExpandoParams(Object sqlVal)
+		{
+			if (sqlVal is ExpandoObject eo)
+			{
+			}
+			return null;
 		}
 
 		static SqlParameter SetParametersFrom<T>(SqlCommand cmd, T element)
@@ -477,9 +492,14 @@ namespace A2v10.Data
 
 					if (sqlParam.SqlDbType == SqlDbType.VarBinary)
 					{
-						if (!(sqlVal is Stream stream))
-							throw new IndexOutOfRangeException("Stream expected");
-						sqlParam.Value = new SqlBytes(stream);
+						if (sqlVal == null)
+							sqlParam.Value = DBNull.Value;
+						else
+						{
+							if (!(sqlVal is Stream stream))
+								throw new IndexOutOfRangeException("Stream expected");
+							sqlParam.Value = new SqlBytes(stream);
+						}
 					}
 					else
 					{
