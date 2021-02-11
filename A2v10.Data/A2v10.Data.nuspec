@@ -10,7 +10,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A2v10 Data Layer (.NET Core)</description>
 		<releaseNotes>Current NUGET release.</releaseNotes>
-		<copyright>Copyright © 2015-2020 Alex Kukhtin.</copyright>
+		<copyright>Copyright © 2015-2021 Alex Kukhtin.</copyright>
 		<tags>A2v10 Platform Business WebApp</tags>
 		<dependencies>
 			<group targetFramework="net5.0">

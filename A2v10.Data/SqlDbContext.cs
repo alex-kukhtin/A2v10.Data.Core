@@ -635,16 +635,12 @@ namespace A2v10.Data
 
 		async Task SetTenantIdAsync(String source, SqlConnection cnn)
 		{
-			if (_tenantManager == null)
-				return;
-			await _tenantManager.SetTenantIdAsync(cnn, source);
+			await _tenantManager?.SetTenantIdAsync(cnn, source);
 		}
 
 		void SetTenantId(String source, SqlConnection cnn)
 		{
-			if (_tenantManager == null)
-				return;
-			_tenantManager.SetTenantId(cnn, source);
+			_tenantManager?.SetTenantId(cnn, source);
 		}
 	}
 }
