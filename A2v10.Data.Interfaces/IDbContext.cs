@@ -20,6 +20,7 @@ namespace A2v10.Data.Interfaces
 
 		IDataModel SaveModel(String source, String command, ExpandoObject data, Object prms = null);
 		Task<IDataModel> SaveModelAsync(String source, String command, ExpandoObject data, Object prms = null, Func<ITableDescription, ExpandoObject> onSetData = null);
+		Task<IDataModel> SaveModelBatchAsync(String source, String command, ExpandoObject data, Object prms = null, IEnumerable<BatchProcedure> batches = null);
 
 		T Load<T>(String source, String command, Object prms = null) where T : class;
 		Task<T> LoadAsync<T>(String source, String command, Object prms = null) where T : class;

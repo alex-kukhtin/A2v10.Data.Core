@@ -3,14 +3,14 @@
 	<metadata>
 		<id>A2v10.Data.Interfaces</id>
 		<title>A2v10.Data.Interfaces</title>
-		<version>10.0.7250</version>
+		<version>10.0.7251</version>
 		<authors>AlexKukhtin</authors>
 		<owners>AlexKukhtin</owners>
 		<projectUrl>https://github.com/alex-kukhtin/A2v10.Data.Core</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A2v10 Data Abstractions (.NET Core)</description>
 		<releaseNotes>Current NUGET release.</releaseNotes>
-		<copyright>Copyright © 2015-2020 Alex Kukhtin.</copyright>
+		<copyright>Copyright © 2015-2021 Alex Kukhtin.</copyright>
 		<tags>A2v10 Platform Business WebApp</tags>
 	</metadata>
 </package>

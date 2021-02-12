@@ -1,6 +1,6 @@
-﻿-- Copyright © 2008-2018 Alex Kukhtin
+﻿-- Copyright © 2008-2021 Alex Kukhtin
 
-/* 20180618-7133 */
+/* 20210212-7151 */
 
 /*
 Depends on Windows Workflow Foundation scripts.
@@ -13,11 +13,36 @@ Depends on Windows Workflow Foundation scripts.
 
 use a2v10test;
 go
+
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME=N'a2test')
 begin
-	exec sp_executesql N'create schema a2test';
+	exec sp_executesql N'create schema a2test authorization dbo';
 end
+go
+-----------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2test' and TABLE_NAME=N'Documents')
+	create table a2test.Documents
+	(
+		Id bigint not null constraint PK_Documents primary key,
+		[Name] nvarchar(255),
+		[Date] datetime,
+		[Sum] money,
+		[Memo] nvarchar(255)
+	);
+go
+-----------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2test' and TABLE_NAME=N'Rows')
+	create table a2test.[Rows]
+	(
+		Id bigint not null constraint PK_Rows primary key,
+		Document bigint not null 
+			constraint FK_Rows_Document_Documents references a2test.Documents(Id),
+		[Memo] nvarchar(255),
+		Qty float,
+		Price money,
+		[Sum] money
+	);
 go
 ------------------------------------------------
 if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'SimpleModel.Load')
@@ -237,20 +262,10 @@ if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2te
 	drop procedure a2test.[ParentKey.Metadata]
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'Document.RowsMethods.Metadata')
-	drop procedure a2test.[Document.RowsMethods.Metadata]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'Document.RowsMethods.Update')
-	drop procedure a2test.[Document.RowsMethods.Update]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'Guid.Metadata')
-	drop procedure a2test.[Guid.Metadata]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'Guid.Update')
-	drop procedure a2test.[Guid.Update]
+drop procedure if exists a2test.[Document.RowsMethods.Metadata];
+drop procedure if exists a2test.[Document.RowsMethods.Update];
+drop procedure if exists a2test.[Guid.Metadata];
+drop procedure if exists a2test.[Guid.Update];
 go
 ------------------------------------------------
 if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'NestedMain.TableType' AND ss.name = N'a2test')
@@ -1048,7 +1063,140 @@ begin
 	select [Model!TModel!Object] = null, [Date] = getdate(), [UtcDate!!Utc] = getutcdate();
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[BatchModel.Load]
+	@TenantId int = null,
+	@UserId bigint = null,
+	@Id bigint = null
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
 
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Name!!Name]=[Name], Memo,
+		[Rows!TRow!Array] = null
+	from a2test.Documents where Id=@Id;
+
+	select [!TRow!Array] = null, [Id!!Id] = Id, Memo, Qty, [!TDocument.Rows!ParentId] = Document
+	from a2test.[Rows] where Document = @Id;
+end
+go
+------------------------------------------------
+drop procedure if exists a2test.[BatchModel.Metadata];
+drop procedure if exists a2test.[BatchModel.Update];
+drop type if exists [a2test].[DocumentBatch.TableType];
+drop type if exists [a2test].[RowBatch.TableType];
+go
+------------------------------------------------
+create type [a2test].[DocumentBatch.TableType] as
+table (
+	[Id] bigint null,
+	[GUID] uniqueidentifier,
+	[Name] nvarchar(255),
+	[Date] datetime,
+	[Sum] money,
+	[Memo] nvarchar(255)
+)
+go
+------------------------------------------------
+create type [a2test].[RowBatch.TableType] as
+table (
+	[Id] bigint null,
+	[ParentGUID] uniqueidentifier,
+	[Memo] nvarchar(255),
+	Qty float,
+	Price money,
+	[Sum] money
+)
+go
+------------------------------------------------
+create or alter procedure a2test.[BatchModel.Metadata]
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+	declare @Document [a2test].[DocumentBatch.TableType];
+	declare @Rows [a2test].[RowBatch.TableType];
+
+	select [Document!Document!Metadata] = null, * from @Document;
+	select [Rows!Document.Rows!Metadata] = null, * from @Rows;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[BatchModel.Update]
+@TenantId int = null,
+@UserId bigint = null,
+@Document [a2test].[DocumentBatch.TableType] readonly,
+@Rows [RowBatch.TableType] readonly
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+	set xact_abort on;
+
+	declare @rtable table(Id bigint);
+	declare @Id bigint;
+
+	begin tran;
+	merge a2test.Documents as t
+	using @Document as s
+	on t.Id = s.Id
+	when matched then update set
+		t.[Date] = s.[Date],
+		t.[Name] = s.[Name],
+		t.[Sum] = s.[Sum],
+		t.Memo = s.Memo
+	when not matched by target then insert
+		(Id, [Date], [Name], [Sum], [Memo]) values
+		(s.Id, s.[Date], s.[Name], s.[Sum], s.[Memo])
+	output inserted.Id into @rtable(Id);
+
+	select top(1) @Id = Id from @rtable;
+
+	merge a2test.Rows as t
+	using @Rows as s
+	on t.Id = s.Id
+	when matched then update set
+		t.[Memo] = s.Memo,
+		t.Qty = s.Qty,
+		t.Price = s.Price,
+		t.[Sum] = s.[Sum]
+	when not matched by target then insert
+		(Id, Document, [Memo], Qty, Price, [Sum]) values
+		(s.Id, @Id, s.[Memo], s.Qty, s.Price, s.[Sum])
+	when not matched by source and Document = @Id then delete;
+
+	commit tran;
+
+	exec a2test.[BatchModel.Load] @TenantId, @UserId, @Id;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Batch.Proc1]
+@TenantId bigint = null,
+@UserId bigint = null,
+@Id bigint,
+@Delta float
+as
+begin
+	set nocount on;
+	set transaction isolation level read committed;
+
+	update a2test.Rows set Qty = Qty + @Delta where Id=@Id;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Batch.Throw]
+@TenantId bigint = null,
+@UserId bigint = null,
+@Id bigint
+as
+begin
+	set nocount on;
+	set transaction isolation level read committed;
+	throw 60000, N'SQL', 0;
+end
+go
 ------------------------------------------------
 exec a2test.[Workflow.Clear.All]
 go

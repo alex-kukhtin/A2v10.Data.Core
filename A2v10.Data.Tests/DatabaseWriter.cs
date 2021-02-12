@@ -27,7 +27,7 @@ namespace A2v10.Data.Tests
 		{
 			// DATA with ROOT
 			var jsonData = @"
-            {
+			{
 			    MainObject: {
 				    Id : 45,
 				    Name: 'MainObjectName',

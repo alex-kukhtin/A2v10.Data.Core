@@ -1,7 +1,7 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,6 +10,8 @@ using System.Dynamic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -417,6 +419,72 @@ namespace A2v10.Data
 			dataReader.PostProcess();
 			return dataReader.DataModel;
 		}
+
+
+		public async Task<IDataModel> SaveModelBatchAsync(String source, String command, ExpandoObject data, Object prms = null, IEnumerable<BatchProcedure> batches = null)
+		{
+			if (batches == null || !batches.Any())
+				return await SaveModelAsync(source, command, data, prms);
+
+			var dataReader = new DataModelReader(_localizer, _tokenProvider);
+			var dataWriter = new DataModelWriter();
+			var batchBuilder = new BatchCommandBuilder();
+
+			using var token = _profiler.Start(command);
+
+			var metadataCommand = command.Update2Metadata();
+			using var cnn = await GetConnectionAsync(source);
+
+			using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
+			{
+				using var rdr = await cmd.ExecuteReaderAsync();
+				do
+				{
+					dataWriter.ProcessOneMetadata(rdr);
+				}
+				while (await rdr.NextResultAsync());
+			}
+
+			// main update
+			using (var cmdUpdate = cnn.CreateCommandSP(command, CommandTimeout))
+			{
+				SqlCommandBuilder.DeriveParameters(cmdUpdate);
+				dataWriter.SetTableParameters(cmdUpdate, data, prms);
+				batchBuilder.AddMainCommand(cmdUpdate);
+			}
+
+			int index = 1;
+			foreach (var batch in batches)
+			{
+				using (var cmdBatch = cnn.CreateCommandSP(batch.Procedure, CommandTimeout))
+				{
+					SqlCommandBuilder.DeriveParameters(cmdBatch);
+					batchBuilder.AddBatchCommand(cmdBatch, batch, index++);
+				}
+			}
+
+			using (var cmd = cnn.CreateCommand())
+			{
+				cmd.CommandText = batchBuilder.CommandText;
+				cmd.CommandType = CommandType.Text;
+				if (CommandTimeout != 0)
+					cmd.CommandTimeout = CommandTimeout;
+				batchBuilder.SetAllParameters(cmd);
+				using var rdr = await cmd.ExecuteReaderAsync();
+				do
+				{
+					dataReader.ProcessOneMetadata(rdr);
+					while (await rdr.ReadAsync())
+					{
+						dataReader.ProcessOneRecord(rdr);
+					}
+				}
+				while (await rdr.NextResultAsync());
+			}
+			dataReader.PostProcess();
+			return dataReader.DataModel;
+		}
+
 		#endregion
 
 		static SqlParameter SetParametersFromExpandoObject(SqlCommand cmd, ExpandoObject element)
@@ -633,14 +701,17 @@ namespace A2v10.Data
 		}
 
 
-		async Task SetTenantIdAsync(String source, SqlConnection cnn)
+		Task SetTenantIdAsync(String source, SqlConnection cnn)
 		{
-			await _tenantManager?.SetTenantIdAsync(cnn, source);
+			if (_tenantManager != null)
+				return _tenantManager.SetTenantIdAsync(cnn, source);
+			return Task.CompletedTask;
 		}
 
 		void SetTenantId(String source, SqlConnection cnn)
 		{
-			_tenantManager?.SetTenantId(cnn, source);
+			if (_tenantManager != null)
+				_tenantManager.SetTenantId(cnn, source);
 		}
 	}
 }

@@ -6,8 +6,8 @@
     <Authors>Alex Kukthin</Authors>
     <Company>Alex KukthinAlex Kukthin</Company>
     <Product>A2v10.Data</Product>
-    <Copyright>Copyright © 2015-2020 Alex Kukhtin. All rights reserved.</Copyright>
-    <Version>10.0.7250</Version>
+    <Copyright>Copyright © 2015-2021 Alex Kukhtin. All rights reserved.</Copyright>
+    <Version>10.0.7251</Version>
   </PropertyGroup>
 
   <ItemGroup>
