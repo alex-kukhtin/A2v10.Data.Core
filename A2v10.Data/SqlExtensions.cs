@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -39,26 +39,29 @@ namespace A2v10.Data
 				case SqlDbType.Bit:
 					return typeof(Boolean);
 				case SqlDbType.Float:
+				case SqlDbType.Real:
 					return typeof(Double);
 				case SqlDbType.Money:
 				case SqlDbType.Decimal:
 					return typeof(Decimal);
-				case SqlDbType.Real:
-					return typeof(Double);
 				case SqlDbType.DateTime:
 				case SqlDbType.Date:
 				case SqlDbType.DateTime2:
+				case SqlDbType.Time:
 					return typeof(DateTime);
 				case SqlDbType.DateTimeOffset:
 					return typeof(DateTimeOffset);
 				case SqlDbType.NVarChar:
 				case SqlDbType.NText:
 				case SqlDbType.NChar:
+				case SqlDbType.VarChar:
+				case SqlDbType.Text:
+				case SqlDbType.Char:
 					return typeof(String);
 				case SqlDbType.UniqueIdentifier:
 					return typeof(Guid);
 			}
-			throw new ArgumentOutOfRangeException("SqlExtensions.SqlType.ToType");
+			throw new ArgumentOutOfRangeException($"SqlExtensions.SqlType.ToType. Unable to cast to '{sqlType}'");
 		}
 
 		public static Object ConvertTo(Object value, Type to)
