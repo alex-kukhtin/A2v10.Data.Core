@@ -48,24 +48,23 @@ namespace A2v10.Data
 		{
 			if (value == null)
 				return DBNull.Value;
-			if (value.GetType() == to)
-				return value;
-			if (value is ExpandoObject)
+			if (value is ExpandoObject eo)
 			{
-				var id = (value as ExpandoObject).GetObject("Id");
+				var id = eo.GetObject("Id");
 				if (DataHelpers.IsIdIsNull(id))
 					return DBNull.Value;
 				return Convert.ChangeType(id, to, CultureInfo.InvariantCulture);
 			}
-			if (value is String)
+			if (value is String str)
 			{
-				var str = value.ToString();
 				if (String.IsNullOrEmpty(str))
 					return DBNull.Value;
 				if (to == typeof(Guid))
-					return Guid.Parse(value.ToString());
+					return Guid.Parse(str);
 				return value;
 			}
+			if (value.GetType() == to)
+				return value;
 			return Convert.ChangeType(value, to, CultureInfo.InvariantCulture);
 		}
 

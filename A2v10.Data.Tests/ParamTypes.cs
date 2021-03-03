@@ -3,7 +3,9 @@
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
+using System.Dynamic;
 using System.Threading.Tasks;
 
 namespace A2v10.Data.Tests
@@ -137,5 +139,27 @@ namespace A2v10.Data.Tests
 
 			Assert.AreEqual(prms.Boolean, dm.Boolean);
 		}
+
+		[TestMethod]
+		public async Task NullableStringSaveModel()
+		{
+
+			var eo = new ExpandoObject();
+			var doc = new ExpandoObject();
+			doc.Set("Name", "");
+			eo.Set("Document", doc);
+
+
+			var dm = await _dbContext.SaveModelAsync(null, "a2test.[Nullable.SaveModel.Update]", eo);
+
+
+			var dt = new DataTester(dm, "Document");
+			Assert.AreEqual(true, dt.GetValue<Boolean>("NameIsNull"));
+
+
+			int z = 55;
+		}
+
 	}
+
 }
