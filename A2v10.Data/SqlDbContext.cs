@@ -456,11 +456,9 @@ namespace A2v10.Data
 			int index = 1;
 			foreach (var batch in batches)
 			{
-				using (var cmdBatch = cnn.CreateCommandSP(batch.Procedure, CommandTimeout))
-				{
-					SqlCommandBuilder.DeriveParameters(cmdBatch);
-					batchBuilder.AddBatchCommand(cmdBatch, batch, index++);
-				}
+				using var cmdBatch = cnn.CreateCommandSP(batch.Procedure, CommandTimeout);
+				SqlCommandBuilder.DeriveParameters(cmdBatch);
+				batchBuilder.AddBatchCommand(cmdBatch, batch, index++);
 			}
 
 			using (var cmd = cnn.CreateCommand())
@@ -514,9 +512,12 @@ namespace A2v10.Data
 							sqlParam.Value = DBNull.Value;
 						else
 						{
-							if (!(sqlVal is Stream stream))
-								throw new IndexOutOfRangeException("Stream expected");
-							sqlParam.Value = new SqlBytes(stream);
+							if (sqlVal is Byte[] byteArray)
+								sqlParam.Value = new SqlBytes(byteArray);
+							else if (sqlVal is Stream stream)
+								sqlParam.Value = new SqlBytes(stream);
+							else
+								throw new IndexOutOfRangeException("Stream or byte array expected");
 						}
 					}
 					else if (sqlParam.SqlDbType == SqlDbType.Structured)
@@ -534,6 +535,7 @@ namespace A2v10.Data
 		{
 			if (sqlVal is ExpandoObject eo)
 			{
+				//TOD
 			}
 			return null;
 		}
@@ -564,9 +566,12 @@ namespace A2v10.Data
 							sqlParam.Value = DBNull.Value;
 						else
 						{
-							if (!(sqlVal is Stream stream))
-								throw new IndexOutOfRangeException("Stream expected");
-							sqlParam.Value = new SqlBytes(stream);
+							if (sqlVal is Byte[] byteArray)
+								sqlParam.Value = new SqlBytes(byteArray);
+							else if (sqlVal is Stream stream)
+								sqlParam.Value = new SqlBytes(stream);
+							else 
+								throw new IndexOutOfRangeException("Stream or byte array expected");
 						}
 					}
 					else

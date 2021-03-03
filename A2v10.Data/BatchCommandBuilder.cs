@@ -17,8 +17,8 @@ namespace A2v10.Data
 	{
 		private readonly StringBuilder _sb = new StringBuilder();
 
-		private List<SqlParameter> _values = new List<SqlParameter>();
-		private HashSet<String> _globalParams = new HashSet<String>();
+		private readonly List<SqlParameter> _values = new List<SqlParameter>();
+		private readonly HashSet<String> _globalParams = new HashSet<String>();
 
 		public String CommandText => BuildText();
 
@@ -95,7 +95,7 @@ namespace A2v10.Data
 			return prms.OfType<SqlParameter>().Where(p => p.Direction == ParameterDirection.Input);
 		}
 
-		String CommandParameters(SqlCommand cmd, IEnumerable<ParameterDef> prms)
+		static String CommandParameters(SqlCommand cmd, IEnumerable<ParameterDef> prms)
 		{
 			if (cmd.Parameters == null)
 				return String.Empty;

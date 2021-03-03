@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2021 Alex Kukhtin
 
-/* 20210212-7151 */
+/* 20210212-7254 */
 
 /*
 Depends on Windows Workflow Foundation scripts.
@@ -1195,6 +1195,45 @@ begin
 	set nocount on;
 	set transaction isolation level read committed;
 	throw 60000, N'SQL', 0;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[ParamTypes.Load]
+@NVarChar nvarchar(255) = null,
+@VarChar varchar(255) = null,
+@ByteArray varbinary(max) = null,
+@Money money = null,
+@Real float = null,
+@Date date = null,
+@Time time = null,
+@DateTime datetime = null,
+@Boolean bit = null
+as
+begin
+	set nocount on;
+	select [Result!TModel!Object] = null, 
+		[NVarChar] = @NVarChar, [VarChar] = @VarChar, [Money] = @Money,
+		[Real] = @Real, [Date] = @Date, [Time] = @Time, [DateTime] = @DateTime,
+		[ByteArray] = @ByteArray, Boolean = @Boolean
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[ParamTypes.ExecLoad]
+@NVarChar nvarchar(255) = null,
+@VarChar varchar(255) = null,
+@ByteArray varbinary(max) = null,
+@Money money = null,
+@Real float = null,
+@Date date = null,
+@Time time = null,
+@DateTime datetime = null,
+@Boolean bit = null
+as
+begin
+	set nocount on;
+	select [NVarChar] = @NVarChar, [VarChar] = @VarChar, [Money] = @Money,
+		[Real] = @Real, [Date] = @Date, [Time] = @Time, [DateTime] = @DateTime,
+		[ByteArray] = @ByteArray, Boolean = @Boolean
 end
 go
 ------------------------------------------------

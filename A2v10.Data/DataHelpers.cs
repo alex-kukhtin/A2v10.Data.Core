@@ -13,108 +13,58 @@ namespace A2v10.Data
 	{
 		public static DataType TypeName2DataType(this String s)
 		{
-			switch (s)
+			return s switch
 			{
-				case "DateTime":
-					return DataType.Date;
-				case "String":
-					return DataType.String;
-				case "Int64":
-				case "Int32":
-				case "Int16":
-				case "Double":
-				case "Decimal":
-					return DataType.Number;
-				case "Boolean":
-					return DataType.Boolean;
-				case "Guid":
-					return DataType.String;
-				case "Byte":
-					return DataType.Number;
-				case "Byte[]":
-					return DataType.Blob;
-			}
-			throw new DataLoaderException($"Invalid data type {s}");
+				"DateTime" => DataType.Date,
+				"TimeSpan" => DataType.Date,
+				"String" => DataType.String,
+				"Int64" or "Int32" or "Int16" or "Double" or "Decimal" => DataType.Number,
+				"Boolean" => DataType.Boolean,
+				"Guid" => DataType.String,
+				"Byte" => DataType.Number,
+				"Byte[]" => DataType.Blob,
+				_ => throw new DataLoaderException($"Invalid data type {s}"),
+			};
 		}
 
 		public static SqlDataType SqlTypeName2SqlDataType(this String s)
 		{
-			switch (s)
+			return s switch
 			{
-				case "datetime":
-				case "datetime2":
-				case "smalldatetime":
-				case "datetimeoffset":
-					return SqlDataType.DateTime;
-				case "date":
-					return SqlDataType.Date;
-				case "time":
-					return SqlDataType.Time;
-				case "nvarchar":
-				case "varchar":
-				case "nchar":
-				case "char":
-				case "text":
-				case "ntext":
-					return SqlDataType.String;
-				case "bit":
-					return SqlDataType.Bit;
-				case "int":
-				case "smallint":
-				case "tinyint":
-					return SqlDataType.Int;
-				case "bigint":
-					return SqlDataType.Bigint;
-				case "float":
-				case "real":
-					return SqlDataType.Float;
-				case "numeric":
-					return SqlDataType.Numeric;
-				case "decimal":
-					return SqlDataType.Decimal;
-				case "money":
-				case "smallmoney":
-					return SqlDataType.Currency;
-				case "binary":
-				case "varbinary":
-				case "image":
-					return SqlDataType.Binary;
-				case "uniqueidentifier":
-					return SqlDataType.Guid;
-				default:
-					return SqlDataType.Unknown;
-			}
+				"datetime" or "datetime2" or "smalldatetime" or "datetimeoffset" => SqlDataType.DateTime,
+				"date" => SqlDataType.Date,
+				"time" => SqlDataType.Time,
+				"nvarchar" or "varchar" or "nchar" or "char" or "text" or "ntext" => SqlDataType.String,
+				"bit" => SqlDataType.Bit,
+				"int" or "smallint" or "tinyint" => SqlDataType.Int,
+				"bigint" => SqlDataType.Bigint,
+				"float" or "real" => SqlDataType.Float,
+				"numeric" => SqlDataType.Numeric,
+				"decimal" => SqlDataType.Decimal,
+				"money" or "smallmoney" => SqlDataType.Currency,
+				"binary" or "varbinary" or "image" => SqlDataType.Binary,
+				"uniqueidentifier" => SqlDataType.Guid,
+				_ => SqlDataType.Unknown,
+			};
 		}
 
 		public static FieldType TypeName2FieldType(this String s)
 		{
-			switch (s)
+			return s switch
 			{
-				case "Object":
-				case "LazyObject":
-				case "MainObject":
-					return FieldType.Object;
-				case "MapObject":
-					return FieldType.MapObject;
-				case "Array":
-				case "LazyArray":
-					return FieldType.Array;
-				case "Map":
-					return FieldType.Map;
-				case "Tree":
-					return FieldType.Tree;
-				case "Items": // for tree element
-					return FieldType.Array;
-				case "Group":
-					return FieldType.Group;
-				case "CrossArray":
-					return FieldType.CrossArray;
-				case "CrossObject":
-					return FieldType.CrossObject;
-				case "Json":
-					return FieldType.Json;
-			}
-			return FieldType.Scalar;
+				"Object" or "LazyObject" or "MainObject" => FieldType.Object,
+				"MapObject" => FieldType.MapObject,
+				"Array" or "LazyArray" => FieldType.Array,
+				"Map" => FieldType.Map,
+				"Tree" => FieldType.Tree,
+				// for tree element
+				"Items" => FieldType.Array,
+				"Group" => FieldType.Group,
+				"CrossArray" => FieldType.CrossArray,
+				"CrossObject" => FieldType.CrossObject,
+				"Json" => FieldType.Json,
+				_ => FieldType.Scalar,
+			};
 		}
 
 		public static SpecType TypeName2SpecType(this String s)

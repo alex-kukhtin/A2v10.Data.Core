@@ -13,7 +13,6 @@ namespace A2v10.Data
 {
 	public static class SqlExtensions
 	{
-		[SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
 		public static SqlCommand CreateCommandSP(this SqlConnection cnn, String command, Int32 commandTimeout)
 		{
 			var cmd = cnn.CreateCommand();
@@ -26,56 +25,39 @@ namespace A2v10.Data
 
 		public static Type ToType(this SqlDbType sqlType)
 		{
-			switch (sqlType)
+			return sqlType switch
 			{
-				case SqlDbType.BigInt:
-					return typeof(Int64);
-				case SqlDbType.Int:
-					return typeof(Int32);
-				case SqlDbType.SmallInt:
-					return typeof(Int16);
-				case SqlDbType.TinyInt:
-					return typeof(Byte);
-				case SqlDbType.Bit:
-					return typeof(Boolean);
-				case SqlDbType.Float:
-				case SqlDbType.Real:
-					return typeof(Double);
-				case SqlDbType.Money:
-				case SqlDbType.Decimal:
-					return typeof(Decimal);
-				case SqlDbType.DateTime:
-				case SqlDbType.Date:
-				case SqlDbType.DateTime2:
-				case SqlDbType.Time:
-					return typeof(DateTime);
-				case SqlDbType.DateTimeOffset:
-					return typeof(DateTimeOffset);
-				case SqlDbType.NVarChar:
-				case SqlDbType.NText:
-				case SqlDbType.NChar:
-				case SqlDbType.VarChar:
-				case SqlDbType.Text:
-				case SqlDbType.Char:
-					return typeof(String);
-				case SqlDbType.UniqueIdentifier:
-					return typeof(Guid);
-			}
-			throw new ArgumentOutOfRangeException($"SqlExtensions.SqlType.ToType. Unable to cast to '{sqlType}'");
+				SqlDbType.BigInt   => typeof(Int64),
+				SqlDbType.Int      => typeof(Int32),
+				SqlDbType.SmallInt => typeof(Int16),
+				SqlDbType.TinyInt  => typeof(Byte),
+				SqlDbType.Bit      => typeof(Boolean),
+				SqlDbType.Float or SqlDbType.Real    => typeof(Double),
+				SqlDbType.Money or SqlDbType.Decimal => typeof(Decimal),
+				SqlDbType.DateTime or SqlDbType.Date or SqlDbType.DateTime2 => typeof(DateTime),
+				SqlDbType.DateTimeOffset => typeof(DateTimeOffset),
+				SqlDbType.Time => typeof(TimeSpan),
+				SqlDbType.NVarChar or SqlDbType.NText or SqlDbType.NChar or SqlDbType.VarChar or SqlDbType.Text or SqlDbType.Char => typeof(String),
+				SqlDbType.VarBinary => typeof(Byte[]),
+				SqlDbType.UniqueIdentifier => typeof(Guid),
+				_ => throw new ArgumentOutOfRangeException($"SqlExtensions.SqlType.ToType. Unable to cast to '{sqlType}'"),
+			};
 		}
 
 		public static Object ConvertTo(Object value, Type to)
 		{
 			if (value == null)
 				return DBNull.Value;
-			else if (value is ExpandoObject)
+			if (value.GetType() == to)
+				return value;
+			if (value is ExpandoObject)
 			{
 				var id = (value as ExpandoObject).GetObject("Id");
 				if (DataHelpers.IsIdIsNull(id))
 					return DBNull.Value;
 				return Convert.ChangeType(id, to, CultureInfo.InvariantCulture);
 			}
-			else if (value is String)
+			if (value is String)
 			{
 				var str = value.ToString();
 				if (String.IsNullOrEmpty(str))
@@ -84,10 +66,7 @@ namespace A2v10.Data
 					return Guid.Parse(value.ToString());
 				return value;
 			}
-			else
-			{
-				return Convert.ChangeType(value, to, CultureInfo.InvariantCulture);
-			}
+			return Convert.ChangeType(value, to, CultureInfo.InvariantCulture);
 		}
 
 		public static Object Value2SqlValue(Object value)
@@ -117,11 +96,11 @@ namespace A2v10.Data
 			Int32 dotPos = prm.TypeName.IndexOf('.');
 			if (dotPos != -1)
 			{
-				prm.TypeName = prm.TypeName.Substring(dotPos + 1);
+				prm.TypeName = prm.TypeName[(dotPos + 1)..];
 
 				dotPos = prm.TypeName.IndexOf('.');
 				// wrap TypeName into []
-				var newName = $"[{prm.TypeName.Substring(0, dotPos)}].[{prm.TypeName.Substring(dotPos + 1)}]";
+				var newName = $"[{prm.TypeName.Substring(0, dotPos)}].[{prm.TypeName[(dotPos + 1)..]}]";
 				prm.TypeName = newName;
 			}
 		}
