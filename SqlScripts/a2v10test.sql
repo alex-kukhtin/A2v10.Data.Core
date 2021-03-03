@@ -266,6 +266,8 @@ drop procedure if exists a2test.[Document.RowsMethods.Metadata];
 drop procedure if exists a2test.[Document.RowsMethods.Update];
 drop procedure if exists a2test.[Guid.Metadata];
 drop procedure if exists a2test.[Guid.Update];
+drop procedure if exists a2test.[Nullable.SaveModel.Metadata];
+drop procedure if exists a2test.[Nullable.SaveModel.Update];
 go
 ------------------------------------------------
 if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'NestedMain.TableType' AND ss.name = N'a2test')
@@ -1236,6 +1238,29 @@ begin
 		[ByteArray] = @ByteArray, Boolean = @Boolean
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[Nullable.SaveModel.Metadata]
+as
+begin
+	set nocount on;
+	declare @Document [a2test].[Document.TableType];
+	select [Document!Document!Metadata] = null, * from @Document;
+end
+go
+------------------------------------------------
+create procedure a2test.[Nullable.SaveModel.Update]
+	@TenantId int = null,
+	@UserId bigint = null,
+	@Document [a2test].[Document.TableType] readonly
+as
+begin
+	set nocount on;
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Name!!Name] = [Name],
+	NameIsNull = cast(case when [Name] is null then 1 else 0 end as bit)
+	from @Document;
+end
+go
+
 ------------------------------------------------
 exec a2test.[Workflow.Clear.All]
 go
