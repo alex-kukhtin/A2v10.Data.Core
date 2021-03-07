@@ -1,14 +1,17 @@
-﻿// Copyright © 2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2020-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers
 {
 	internal class FlatTable : ITableDescription
 	{
+		public IFormatProvider FormatProvider { get; set; }
+
 		private readonly List<Object> _list;
 
 		public FlatTable()

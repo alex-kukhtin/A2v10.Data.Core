@@ -1,13 +1,15 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
+
+using Newtonsoft.Json;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -130,9 +132,10 @@ namespace A2v10.Data
 						var dbVal = SqlExtensions.ConvertTo(rowVal, col.DataType);
 						dbVal = CheckId(col.ColumnName, dbVal, col.DataType);
 						row[col.ColumnName] = dbVal;
+						break;
 					}
 				}
-				else if (dataD.TryGetValue(col.ColumnName, out rowVal))
+				if (dataD.TryGetValue(col.ColumnName, out rowVal))
 				{
 					var dbVal = SqlExtensions.ConvertTo(rowVal, col.DataType);
 					dbVal = CheckId(col.ColumnName, dbVal, col.DataType);

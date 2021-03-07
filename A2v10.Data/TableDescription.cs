@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2017 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using System;
@@ -11,6 +11,8 @@ namespace A2v10.Data
 {
 	internal class TableDescription : ITableDescription
 	{
+
+		public IFormatProvider FormatProvider { get; set; }
 
 		private readonly DataTable _table;
 		private readonly List<Object> _list;
@@ -45,7 +47,8 @@ namespace A2v10.Data
 				return null;
 			if (type == value.GetType())
 				return value;
-			return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+			var fp = FormatProvider ?? CultureInfo.InvariantCulture;
+			return Convert.ChangeType(value, type, fp);
 		}
 
 		public ExpandoObject ToObject()
