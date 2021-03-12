@@ -211,5 +211,36 @@ namespace A2v10.Data.Tests
 			subrows.AreArrayValueEqual(1, 0, "ParentRN"); // 1-based
 			subrows.AreArrayValueEqual(1, 1, "ParentRN");
 		}
+
+		[TestMethod]
+		public async Task WriteModelFallback()
+		{
+			// DATA with ROOT
+			var jsonData = @"
+			{
+				Document: {
+					Id : 150,
+					Rows: [
+						{ Id: 10, Code: 'C10', Nested: {Key: 3, Value: 'Value3'}},
+						{ Id: 20, Code: 'C20', Nested: {Key: 5, Value: 'Value5'}}
+					]
+				}
+			}
+			";
+			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Fallback.Update]", dataToSave);
+			var dt = new DataTester(dm, "Document");
+			dt.AreValueEqual(150L, "Id");
+			var rows = new DataTester(dm, "Document.Rows");
+			rows.IsArray(2);
+
+			var nv0 = new DataTester(dm, "Document.Rows[0].Nested");
+			nv0.AreValueEqual(3, "Key");
+			nv0.AreValueEqual("Value3", "Value");
+
+			var nv1 = new DataTester(dm, "Document.Rows[1].Nested");
+			nv1.AreValueEqual(5, "Key");
+			nv1.AreValueEqual("Value5", "Value");
+		}
 	}
 }

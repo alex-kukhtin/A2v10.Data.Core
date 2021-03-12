@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2021 Alex Kukhtin
 
-/* 20210212-7254 */
+/* 20210312-7258 */
 
 /*
 Depends on Windows Workflow Foundation scripts.
@@ -268,6 +268,8 @@ drop procedure if exists a2test.[Guid.Metadata];
 drop procedure if exists a2test.[Guid.Update];
 drop procedure if exists a2test.[Nullable.SaveModel.Metadata];
 drop procedure if exists a2test.[Nullable.SaveModel.Update];
+drop procedure if exists a2test.[Fallback.Metadata];
+drop procedure if exists a2test.[Fallback.Update];
 go
 ------------------------------------------------
 if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'NestedMain.TableType' AND ss.name = N'a2test')
@@ -336,7 +338,9 @@ go
 create type [a2test].[Row.TableType] as
 table (
 	[Id] bigint null,
-	[RowNumber] int null
+	[RowNumber] int null,
+	[Nested.Key] int null,
+	[Nested.Value] nvarchar(255) null
 )
 go
 ------------------------------------------------
@@ -1155,7 +1159,7 @@ begin
 
 	select top(1) @Id = Id from @rtable;
 
-	merge a2test.Rows as t
+	merge a2test.[Rows] as t
 	using @Rows as s
 	on t.Id = s.Id
 	when matched then update set
@@ -1258,6 +1262,44 @@ begin
 	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Name!!Name] = [Name],
 	NameIsNull = cast(case when [Name] is null then 1 else 0 end as bit)
 	from @Document;
+end
+go
+------------------------------------------------
+create procedure a2test.[Fallback.Metadata]
+as
+begin
+	set nocount on;
+	declare @Document [a2test].[Document.TableType];
+	declare @Rows [a2test].[Row.TableType];
+
+	select [Document!Document!Metadata]=null, * from @Document;
+	select [Rows!Document.Rows!Metadata]=null, * from @Rows;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Fallback.Update]
+@Document [a2test].[Document.TableType] readonly,
+@Rows [a2test].[Row.TableType] readonly
+as
+begin
+	set nocount on;
+	declare @Id bigint = null;
+
+	/*
+	declare @xml nvarchar(max);
+	set @xml = (select * from @Rows for xml auto);
+	throw 60000, @xml, 0;
+	*/
+
+	select @Id = Id from @Document;
+
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Rows!TRow!Array] = null
+		from @Document;
+
+	select [!TRow!Array] = null, [!TDocument.Rows!ParentId]=@Id, 
+		[Id!!Id] = Id, [Nested.Key!TNested!] = [Nested.Key], [Nested.Value!TNested!] = [Nested.Value]
+	from @Rows
+	order by Id;
 end
 go
 

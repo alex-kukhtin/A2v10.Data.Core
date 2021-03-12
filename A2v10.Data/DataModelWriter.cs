@@ -132,7 +132,7 @@ namespace A2v10.Data
 						var dbVal = SqlExtensions.ConvertTo(rowVal, col.DataType);
 						dbVal = CheckId(col.ColumnName, dbVal, col.DataType);
 						row[col.ColumnName] = dbVal;
-						break;
+						continue;
 					}
 				}
 				if (dataD.TryGetValue(col.ColumnName, out rowVal))
