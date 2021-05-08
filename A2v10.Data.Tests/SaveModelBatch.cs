@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
@@ -19,7 +19,7 @@ namespace A2v10.Data.Tests
 	{
 		readonly IDbContext _dbContext;
 
-		const String jsonData = 
+		const String jsonData =
 @"{
 	Document: {
 		Id : 45,
@@ -48,21 +48,23 @@ namespace A2v10.Data.Tests
 		public async Task BatchModel()
 		{
 			// DATA with ROOT
-			IDataModel dm = null;
+			IDataModel dm;
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData, new ExpandoObjectConverter());
 
-			var batches = new List<BatchProcedure>();
-			batches.Add(new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+			var batches = new List<BatchProcedure>
+			{
+				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
 			{
 				{"Id", 55 },
 				{ "Delta", 5.0}
-			}));
+			}),
 
-			batches.Add(new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
 			{
 				{"Id", 66 },
 				{"Delta", 12.0}
-			}));
+			})
+			};
 
 			var prms = new ExpandoObject()
 			{
@@ -116,17 +118,18 @@ namespace A2v10.Data.Tests
 			rowT0.AreValueEqual(5.0, "Qty");
 
 
-			var batches = new List<BatchProcedure>();
-			batches.Add(new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+			var batches = new List<BatchProcedure>
 			{
-				{"Id", 55 },
-				{ "Delta", 5.0}
-			}));
-
-			batches.Add(new BatchProcedure("a2test.[Batch.Throw]", new ExpandoObject()
-			{
-				{"Id", 5511223 }
-			}));
+				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+				{
+					{"Id", 55 },
+					{ "Delta", 5.0}
+				}),
+				new BatchProcedure("a2test.[Batch.Throw]", new ExpandoObject()
+				{
+					{"Id", 5511223 }
+				})
+			};
 
 			await TestExtensions.ThrowsAsync<SqlException>(async () =>
 			{

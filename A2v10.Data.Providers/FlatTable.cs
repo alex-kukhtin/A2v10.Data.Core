@@ -1,10 +1,9 @@
 ﻿// Copyright © 2020-2021 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers
 {

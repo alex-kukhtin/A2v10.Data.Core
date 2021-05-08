@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace A2v10.Data.DynamicExpression
 
 		public static Object MemberOperation(Object source, String prop)
 		{
-			if (!(source is IDictionary<String, Object> src))
+			if (source is not IDictionary<String, Object> src)
 				return null;
 			if (src.TryGetValue(prop, out Object result))
 				return result;
@@ -65,12 +65,10 @@ namespace A2v10.Data.DynamicExpression
 				var d2 = Object2Number(elem2);
 				return d1 * d2;
 			}
-#pragma warning disable CA1031 // Do not catch general exception types
 			catch (InvalidCastException /*ex*/)
 			{
 				return NaN.Value;
 			}
-#pragma warning restore CA1031 // Do not catch general exception types
 		}
 
 		public static Object DivideOperation(Object elem1, Object elem2)

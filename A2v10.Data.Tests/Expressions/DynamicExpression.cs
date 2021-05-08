@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.DynamicExpression;
 using A2v10.Data.Interfaces;
@@ -27,14 +27,14 @@ namespace A2v10.Data.Tests.Expressions
 			_dbContext = Starter.Create();
 		}
 
-		Object CalcSimpleExpression(String expression)
+		static Object CalcSimpleExpression(String expression)
 		{
 			var lexpr = DynamicParser.ParseLambda(null, expression);
 			var lambda = lexpr.Compile();
 			return lambda.DynamicInvoke();
 		}
 
-		Object CalcExpression(String expression, String prm, Object value)
+		static Object CalcExpression(String expression, String prm, Object value)
 		{
 			var prms = new ParameterExpression[] {
 				Expression.Parameter(typeof(Object), prm)

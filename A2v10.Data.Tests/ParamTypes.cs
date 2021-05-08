@@ -1,9 +1,8 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using System;
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -52,7 +51,7 @@ namespace A2v10.Data.Tests
 			var now = DateTime.Now;
 			var bytes = new Byte[23];
 			for (var i = 0; i < bytes.Length; i++)
-				bytes[i] = (Byte) i;
+				bytes[i] = (Byte)i;
 
 			var prms = new TestParams()
 			{
@@ -77,8 +76,8 @@ namespace A2v10.Data.Tests
 			Assert.AreEqual(787.2345D, dat.GetValue<Double>("Real"));
 
 			var date = dat.GetValue<DateTime>("Date");
-			Assert.IsTrue(date.Year == now.Year && date.Month == now.Month && date.Day == now.Day && 
-				date.Hour ==  0  && date.Minute == 0 && date.Second == 0);
+			Assert.IsTrue(date.Year == now.Year && date.Month == now.Month && date.Day == now.Day &&
+				date.Hour == 0 && date.Minute == 0 && date.Second == 0);
 			date = dat.GetValue<DateTime>("DateTime");
 			Assert.IsTrue(date.Year == now.Year && date.Month == now.Month && date.Day == now.Day &&
 				date.Hour == now.Hour && date.Minute == now.Minute && Math.Abs(date.Second - now.Second) < 2);
@@ -156,8 +155,6 @@ namespace A2v10.Data.Tests
 			var dt = new DataTester(dm, "Document");
 			Assert.AreEqual(true, dt.GetValue<Boolean>("NameIsNull"));
 
-
-			int z = 55;
 		}
 
 	}

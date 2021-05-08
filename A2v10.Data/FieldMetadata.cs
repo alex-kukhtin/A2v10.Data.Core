@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2019 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using System;
@@ -120,58 +120,38 @@ namespace A2v10.Data
 			RefObject = type;
 		}
 
-		public String TypeForValidate
-		{
-			get
+		public String TypeForValidate =>
+			ItemType switch
 			{
-				switch (ItemType)
-				{
-					case FieldType.Array:
-					case FieldType.Tree:
-					case FieldType.Map:
-					case FieldType.MapObject:
-						return RefObject + "[]";
-					case FieldType.Object:
-					case FieldType.Group:
-						return RefObject;
-					default:
-						return DataType.ToString();
-				}
-			}
-		}
+				FieldType.Array or
+				FieldType.Tree or
+				FieldType.Map or
+				FieldType.MapObject => RefObject + "[]",
+				FieldType.Object or
+				FieldType.Group => RefObject,
+				_ => DataType.ToString(),
+			};
 
 
-		public String TypeScriptName
-		{
-			get
+		public String TypeScriptName =>
+			ItemType switch
 			{
-				switch (ItemType)
+				FieldType.Scalar => DataType switch
 				{
-					case FieldType.Scalar:
-						switch (DataType)
-						{
-							case DataType.Number:
-							case DataType.String:
-							case DataType.Boolean:
-								return DataType.ToString().ToLowerInvariant();
-							case DataType.Date:
-								return "Date";
-						}
-						return DataType.ToString();
-					case FieldType.Array:
-					case FieldType.Tree:
-						return $"IElementArray<{RefObject}>";
-					case FieldType.Map:
-					case FieldType.MapObject:
-						return RefObject + "[]";
-					case FieldType.Object:
-					case FieldType.Group:
-						return RefObject;
-					default:
-						return DataType.ToString();
-				}
-			}
-		}
+					DataType.Number or 
+					DataType.String or 
+					DataType.Boolean => DataType.ToString().ToLowerInvariant(),
+					DataType.Date => "Date",
+					_ => DataType.ToString(),
+				},
+				FieldType.Array or 
+				FieldType.Tree => $"IElementArray<{RefObject}>",
+				FieldType.Map or 
+				FieldType.MapObject => RefObject + "[]",
+				FieldType.Object or 
+				FieldType.Group => RefObject,
+				_ => DataType.ToString(),
+			};
 
 	}
 }

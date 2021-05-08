@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2017 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2021 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -66,8 +66,8 @@ namespace A2v10.Data
 
 		public Tuple<String, String> GetKeys(IList<Boolean> groupKeys, ExpandoObject currentRecord)
 		{
-			StringBuilder sbKey = new StringBuilder(RootKey);
-			StringBuilder sbParent = new StringBuilder(RootKey);
+			StringBuilder sbKey = new(RootKey);
+			StringBuilder sbParent = new(RootKey);
 			String value = null;
 			// the groupKeys array is already sorted (SQL)
 			for (Int32 i = 0; i < groupKeys.Count; i++)

@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2021 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -65,7 +65,7 @@ namespace A2v10.Data
 			IsComplexField = false;
 		}
 
-		static readonly HashSet<String> _reservedWords = new HashSet<String>()
+		static readonly HashSet<String> _reservedWords = new()
 			{
 				"Parent",
 				"Root",
@@ -85,7 +85,7 @@ namespace A2v10.Data
 			}
 		}
 
-		static readonly Regex _ider = new Regex(@"^[a-z_\$][a-z0-9_\$]*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		static readonly Regex _ider = new(@"^[a-z_\$][a-z0-9_\$]*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
 		public void CheckTypeName()
 		{

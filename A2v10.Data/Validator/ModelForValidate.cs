@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using Newtonsoft.Json;
@@ -18,12 +18,13 @@ namespace A2v10.Data.Validator
 		public String Name { get; private set; }
 
 		[JsonIgnore]
-		private static readonly HashSet<String> _specialPropNames = new HashSet<String> {
+		private static readonly HashSet<String> _specialPropNames = new()
+		{
 			"_id", "_name"
 		};
 
 		[JsonIgnore]
-		private readonly Dictionary<String, String> _specialFieldNames = new Dictionary<String, String>();
+		private readonly Dictionary<String, String> _specialFieldNames = new();
 
 		[JsonIgnore]
 		private Boolean _parsed;
@@ -33,7 +34,7 @@ namespace A2v10.Data.Validator
 			if (_parsed)
 				return;
 			Name = name;
-			List<String> toRemoveFields = new List<String>();
+			List<String> toRemoveFields = new();
 			TType extends = null;
 
 			foreach (var m in this)

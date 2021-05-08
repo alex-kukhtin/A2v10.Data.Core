@@ -1,13 +1,12 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-
-using A2v10.Data.Interfaces;
+using System.Linq;
+using System.Text;
 
 namespace A2v10.Data
 {
@@ -15,10 +14,10 @@ namespace A2v10.Data
 
 	internal class BatchCommandBuilder
 	{
-		private readonly StringBuilder _sb = new StringBuilder();
+		private readonly StringBuilder _sb = new();
 
-		private readonly List<SqlParameter> _values = new List<SqlParameter>();
-		private readonly HashSet<String> _globalParams = new HashSet<String>();
+		private readonly List<SqlParameter> _values = new();
+		private readonly HashSet<String> _globalParams = new();
 
 		public String CommandText => BuildText();
 
@@ -85,7 +84,7 @@ namespace A2v10.Data
 
 		public static IEnumerable<SqlParameter> InputAndOutputParameters(SqlParameterCollection prms)
 		{
-			return prms.OfType<SqlParameter>().Where(p => 
+			return prms.OfType<SqlParameter>().Where(p =>
 				p.Value != null && (p.Direction == ParameterDirection.Input || p.Direction == ParameterDirection.Output)
 			);
 		}

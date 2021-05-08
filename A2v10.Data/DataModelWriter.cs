@@ -1,15 +1,13 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
-
-using Newtonsoft.Json;
-
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -164,7 +162,7 @@ namespace A2v10.Data
 			if (String.IsNullOrEmpty(path))
 				yield return data;
 			var x = path.Split('.');
-			if (!(data is IDictionary<String, Object> currentData))
+			if (data is not IDictionary<String, Object> currentData)
 				throw new DataWriterException("There is no current data");
 			var currentId = data.Get<Object>("Id");
 			Guid? currentGuid = null;

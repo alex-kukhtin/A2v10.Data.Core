@@ -7,9 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A2v10.Data", "A2v10.Data\A2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A2v10.Data.Interfaces", "A2v10.Data.Interfaces\A2v10.Data.Interfaces.csproj", "{17B29B7F-3A41-411F-81E7-626472A8F4B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A2v10.Data.Tests", "A2v10.Data.Tests\A2v10.Data.Tests.csproj", "{467CD381-E556-43A2-85CE-E0BE642B6B9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A2v10.Data.Tests", "A2v10.Data.Tests\A2v10.Data.Tests.csproj", "{467CD381-E556-43A2-85CE-E0BE642B6B9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A2v10.Data.Providers", "A2v10.Data.Providers\A2v10.Data.Providers.csproj", "{24CEE000-88B2-4D61-A30B-F8FA19D4859B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A2v10.Data.Providers", "A2v10.Data.Providers\A2v10.Data.Providers.csproj", "{24CEE000-88B2-4D61-A30B-F8FA19D4859B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11D40AC2-D497-4DAE-A230-446A116179EA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

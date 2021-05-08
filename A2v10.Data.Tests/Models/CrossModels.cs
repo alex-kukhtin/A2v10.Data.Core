@@ -1,12 +1,10 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
-using System.Threading.Tasks;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests;
 using A2v10.Data.Tests.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Models
 {

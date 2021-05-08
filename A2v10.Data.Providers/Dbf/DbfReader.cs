@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using System;
@@ -107,7 +107,7 @@ namespace A2v10.Data.Providers.Dbf
 		void ReadHeader(BinaryReader rdr)
 		{
 			Byte[] name = rdr.ReadBytes(11); // max length
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 			for (Int32 i = 0; i < 11; i++)
 			{
 				if (name[i] == 0)
@@ -165,7 +165,7 @@ namespace A2v10.Data.Providers.Dbf
 							Decoder dec = _file.FindDecoding(xb).GetDecoder();
 							Char[] chs = new Char[xb.Length];
 							dec.GetChars(xb, 0, xb.Length, chs, 0);
-							StringBuilder sb = new StringBuilder();
+							StringBuilder sb = new();
 							sb.Append(chs);
 							String str = sb.ToString().Trim();
 							fd.StringValue = str;
@@ -173,7 +173,7 @@ namespace A2v10.Data.Providers.Dbf
 						break;
 					case FieldType.Numeric:
 						{
-							StringBuilder sb = new StringBuilder();
+							StringBuilder sb = new();
 							for (Int32 j = 0; j < f.Size; j++)
 								sb.Append((Char)dat[iIndex + j]);
 							String x = sb.ToString().Trim();
@@ -196,7 +196,7 @@ namespace A2v10.Data.Providers.Dbf
 						Int32 day = (dat[iIndex + 6] - '0') * 10 + (dat[iIndex + 7] - '0');
 						try
 						{
-							DateTime dt = new DateTime(year, month, day);
+							DateTime dt = new(year, month, day);
 							fd.DateValue = dt;
 						}
 #pragma warning disable CA1031 // Do not catch general exception types

@@ -1,15 +1,14 @@
 ﻿// Copyright © 2020 Alex Kukhtin. All rights reserved.
 
-using Microsoft.Extensions.DependencyInjection;
-
-using A2v10.Data.Interfaces;
 using A2v10.Data.Config;
+using A2v10.Data.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace A2v10.Data.Extensions
 {
 	public static class Services
 	{
-		public static void UseSimpleDbContext(this IServiceCollection services) 
+		public static void UseSimpleDbContext(this IServiceCollection services)
 		{
 			services.AddSingleton<IDataConfiguration, DataConfiguration>();
 			services.AddSingleton<IDataProfiler, NullDataProfiler>();

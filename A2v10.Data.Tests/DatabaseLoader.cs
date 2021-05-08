@@ -1,11 +1,13 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using A2v10.Data.Tests.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Dynamic;
 using System.Threading.Tasks;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using A2v10.Data.Interfaces;
+using A2v10.Data.Tests.Configuration;
 
 namespace A2v10.Data.Tests
 {
@@ -237,7 +239,7 @@ namespace A2v10.Data.Tests
 		public async Task LoadDocument()
 		{
 			Int64 docId = 10;
-			ExpandoObject prms = new ExpandoObject
+			ExpandoObject prms = new()
 			{
 				{ "UserId", 100 },
 				{ "Id", docId }
@@ -309,7 +311,7 @@ namespace A2v10.Data.Tests
 		[TestMethod]
 		public async Task LoadDocument2()
 		{
-			ExpandoObject prms = new ExpandoObject
+			var prms = new ExpandoObject
 			{
 				{ "UserId", 100 }
 			};

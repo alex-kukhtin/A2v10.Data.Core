@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ namespace A2v10.Data
 
 		public DynamicProperty[] Properties => _properties;
 
-		List<DynamicProperty> GetProperties(Object obj)
+		static List<DynamicProperty> GetProperties(Object obj)
 		{
 			var props = new List<DynamicProperty>();
 			var d = obj as IDictionary<String, Object>;
@@ -110,7 +110,7 @@ namespace A2v10.Data
 	}
 	public class ClassFactory
 	{
-		public static readonly ClassFactory Instance = new ClassFactory();
+		public static readonly ClassFactory Instance = new();
 
 		private readonly ReaderWriterLock _rwLock;
 		private readonly Dictionary<Signature, Type> _classes;
@@ -121,7 +121,7 @@ namespace A2v10.Data
 
 		private ClassFactory()
 		{
-			AssemblyName name = new AssemblyName("DynamicClasses");
+			AssemblyName name = new("DynamicClasses");
 			AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 			_module = assembly.DefineDynamicModule("Module");
 			_classes = new Dictionary<Signature, Type>();
@@ -133,7 +133,7 @@ namespace A2v10.Data
 			_rwLock.AcquireReaderLock(Timeout.Infinite);
 			try
 			{
-				Signature signature = new Signature(properties);
+				Signature signature = new(properties);
 				if (!_classes.TryGetValue(signature, out Type type))
 				{
 					type = CreateDynamicClass(signature.Properties);

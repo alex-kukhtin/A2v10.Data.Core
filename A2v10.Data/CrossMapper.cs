@@ -1,4 +1,4 @@
-﻿// Copyright © 2019-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2019-2021 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -8,8 +8,8 @@ namespace A2v10.Data
 {
 	internal class CrossItem
 	{
-		readonly Dictionary<Object, ExpandoObject> _items = new Dictionary<Object, ExpandoObject>();
-		readonly Dictionary<String, Int32> _keys = new Dictionary<String, Int32>();
+		readonly Dictionary<Object, ExpandoObject> _items = new();
+		readonly Dictionary<String, Int32> _keys = new();
 		public String TargetProp { get; }
 		public Boolean IsArray { get; }
 		public String CrossType { get; }

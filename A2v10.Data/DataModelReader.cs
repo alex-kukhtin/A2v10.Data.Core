@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2019 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using Newtonsoft.Json;
@@ -27,10 +27,10 @@ namespace A2v10.Data
 
 		private IDataModel _dataModel;
 
-		private readonly IdMapper _idMap = new IdMapper();
-		private readonly RefMapper _refMap = new RefMapper();
-		private readonly CrossMapper _crossMap = new CrossMapper();
-		private readonly ExpandoObject _root = new ExpandoObject();
+		private readonly IdMapper _idMap = new();
+		private readonly RefMapper _refMap = new();
+		private readonly CrossMapper _crossMap = new();
+		private readonly ExpandoObject _root = new();
 		private readonly IDictionary<String, Object> _sys = new ExpandoObject() as IDictionary<String, Object>;
 		FieldInfo? mainElement;
 
@@ -101,7 +101,7 @@ namespace A2v10.Data
 
 		DataElementInfo GetMainElement()
 		{
-			DataElementInfo dei = new DataElementInfo();
+			DataElementInfo dei = new();
 			if (mainElement == null)
 				return dei;
 			if (!_metadata.TryGetValue(mainElement.Value.TypeName, out IDataMetadata meta))
@@ -288,7 +288,7 @@ namespace A2v10.Data
 				if (dataVal == DBNull.Value)
 					dataVal = null;
 				var fn = GetAlias(rdr.GetName(i));
-				FieldInfo fi = new FieldInfo(fn);
+				var fi = new FieldInfo(fn);
 				if (fi.IsGroupMarker)
 				{
 					if (groupKeys == null)

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -27,12 +26,12 @@ namespace A2v10.Data
 		{
 			return sqlType switch
 			{
-				SqlDbType.BigInt   => typeof(Int64),
-				SqlDbType.Int      => typeof(Int32),
+				SqlDbType.BigInt => typeof(Int64),
+				SqlDbType.Int => typeof(Int32),
 				SqlDbType.SmallInt => typeof(Int16),
-				SqlDbType.TinyInt  => typeof(Byte),
-				SqlDbType.Bit      => typeof(Boolean),
-				SqlDbType.Float or SqlDbType.Real    => typeof(Double),
+				SqlDbType.TinyInt => typeof(Byte),
+				SqlDbType.Bit => typeof(Boolean),
+				SqlDbType.Float or SqlDbType.Real => typeof(Double),
 				SqlDbType.Money or SqlDbType.Decimal => typeof(Decimal),
 				SqlDbType.DateTime or SqlDbType.Date or SqlDbType.DateTime2 => typeof(DateTime),
 				SqlDbType.DateTimeOffset => typeof(DateTimeOffset),

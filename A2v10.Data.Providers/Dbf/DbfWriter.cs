@@ -1,10 +1,10 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Providers.Dbf
 {
@@ -137,7 +137,7 @@ namespace A2v10.Data.Providers.Dbf
 						sVal = xd.DecimalValue.ToString(CultureInfo.InvariantCulture);
 						if (sVal.Length < fd.Size)
 						{
-							String x = new String(' ', fd.Size - sVal.Length);
+							String x = new(' ', fd.Size - sVal.Length);
 							sVal = x + sVal;
 						}
 						if (sVal.Length != fd.Size)
@@ -156,7 +156,7 @@ namespace A2v10.Data.Providers.Dbf
 						sVal = xd.StringValue ?? String.Empty;
 						if (sVal.Length < fd.Size)
 						{
-							String x = new String(' ', fd.Size - sVal.Length);
+							var x = new String(' ', fd.Size - sVal.Length);
 							sVal += x;
 						}
 						if (sVal.Length != fd.Size)

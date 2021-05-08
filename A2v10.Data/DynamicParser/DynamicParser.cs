@@ -1,6 +1,6 @@
 ﻿
 // Copyright © Microsoft Corporation.  All rights reserved.
-// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -13,13 +13,13 @@ namespace A2v10.Data.DynamicExpression
 	{
 		public static Expression Parse(String expression)
 		{
-			ExpressionParser parser = new ExpressionParser(null, expression);
+			ExpressionParser parser = new(null, expression);
 			return parser.Parse();
 		}
 
 		public static LambdaExpression ParseLambda(ParameterExpression[] parameters, String expression)
 		{
-			ExpressionParser parser = new ExpressionParser(parameters, expression);
+			ExpressionParser parser = new(parameters, expression);
 			return Expression.Lambda(parser.Parse(), parameters);
 		}
 	}
@@ -375,7 +375,7 @@ namespace A2v10.Data.DynamicExpression
 			}
 			if (symbols.TryGetValue(token.text, out value))
 			{
-				if (!(value is Expression expr))
+				if (value is not Expression expr)
 				{
 					expr = Expression.Constant(value);
 				}
@@ -417,7 +417,7 @@ namespace A2v10.Data.DynamicExpression
 
 		Expression[] ParseArguments()
 		{
-			List<Expression> argList = new List<Expression>();
+			List<Expression> argList = new();
 			while (true)
 			{
 				argList.Add(ParseExpression());
@@ -653,7 +653,7 @@ namespace A2v10.Data.DynamicExpression
 		{
 			ValidateToken(TokenId.Identifier, Res.IdentifierExpected);
 			String id = token.text;
-			if (id.Length > 1 && id[0] == '@') id = id.Substring(1);
+			if (id.Length > 1 && id[0] == '@') id = id[1..];
 			return id;
 		}
 

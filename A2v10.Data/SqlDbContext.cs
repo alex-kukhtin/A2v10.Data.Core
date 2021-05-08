@@ -1,17 +1,16 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
+using A2v10.Data.Interfaces;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Dynamic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-
-using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -533,10 +532,12 @@ namespace A2v10.Data
 
 		static Object GetTableExpandoParams(Object sqlVal)
 		{
+			/*
 			if (sqlVal is ExpandoObject eo)
 			{
 				//TOD
 			}
+			*/
 			return null;
 		}
 
@@ -570,7 +571,7 @@ namespace A2v10.Data
 								sqlParam.Value = new SqlBytes(byteArray);
 							else if (sqlVal is Stream stream)
 								sqlParam.Value = new SqlBytes(stream);
-							else 
+							else
 								throw new IndexOutOfRangeException("Stream or byte array expected");
 						}
 					}
@@ -652,7 +653,7 @@ namespace A2v10.Data
 			Type prmsType = prms?.GetType();
 			var props = listType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 			var propsD = new Dictionary<String, PropertyInfo>();
-			DataTable dt = new DataTable();
+			DataTable dt = new();
 			foreach (var p in props)
 			{
 				var column = new DataColumn(p.Name, p.PropertyType);

@@ -1,8 +1,8 @@
 ﻿// Copyright © 2020 Alex Kukhtin. All rights reserved.
 
-using System;
-using Microsoft.Extensions.Configuration;
 using A2v10.Data.Interfaces;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace A2v10.Data.Config
 {

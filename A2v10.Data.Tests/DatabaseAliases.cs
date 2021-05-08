@@ -1,13 +1,11 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
-
-using System;
-using System.Dynamic;
-using System.Threading.Tasks;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Tests
 {
@@ -26,7 +24,7 @@ namespace A2v10.Data.Tests
 		public async Task Aliases()
 		{
 			Int64 docId = 10;
-			ExpandoObject prms = new ExpandoObject
+			ExpandoObject prms = new()
 			{
 				{ "UserId", 100 },
 				{ "Id", docId }
