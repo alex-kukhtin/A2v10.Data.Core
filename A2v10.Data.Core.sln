@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A2v10.Data", "A2v10.Data\A2v10.Data.csproj", "{E2D3643C-E10C-459B-86E3-CD27003BDC21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A2v10.Data.Core", "A2v10.Data\A2v10.Data.Core.csproj", "{E2D3643C-E10C-459B-86E3-CD27003BDC21}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A2v10.Data.Interfaces", "A2v10.Data.Interfaces\A2v10.Data.Interfaces.csproj", "{17B29B7F-3A41-411F-81E7-626472A8F4B7}"
 EndProject

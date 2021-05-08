@@ -33,7 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\A2v10.Data.Interfaces\A2v10.Data.Interfaces.csproj" />
     <ProjectReference Include="..\A2v10.Data.Providers\A2v10.Data.Providers.csproj" />
-    <ProjectReference Include="..\A2v10.Data\A2v10.Data.csproj" />
+    <ProjectReference Include="..\A2v10.Data\A2v10.Data.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
