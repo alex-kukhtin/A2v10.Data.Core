@@ -343,7 +343,7 @@ namespace A2v10.Data
 			SetReturnParamResult(retParam, prms);
 		}
 
-		public IDataModel SaveModel(String source, String command, ExpandoObject data, Object prms = null)
+		public IDataModel SaveModel(String source, String command, ExpandoObject data, Object prms = null, Int32 commandTimeout = 0)
 		{
 			var dataReader = new DataModelReader(_localizer, _tokenProvider);
 			var dataWriter = new DataModelWriter();
@@ -353,6 +353,8 @@ namespace A2v10.Data
 			using var cnn = GetConnection(source);
 			using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
 			{
+				if (commandTimeout != 0)
+					cmd.CommandTimeout = commandTimeout;
 				using var rdr = cmd.ExecuteReader();
 				do
 				{
@@ -362,6 +364,8 @@ namespace A2v10.Data
 			}
 			using (var cmd = cnn.CreateCommandSP(command, CommandTimeout))
 			{
+				if (commandTimeout != 0)
+					cmd.CommandTimeout = commandTimeout;
 				SqlCommandBuilder.DeriveParameters(cmd);
 				dataWriter.SetTableParameters(cmd, data, prms);
 				using var rdr = cmd.ExecuteReader();
@@ -379,7 +383,7 @@ namespace A2v10.Data
 			return dataReader.DataModel;
 		}
 
-		public async Task<IDataModel> SaveModelAsync(String source, String command, ExpandoObject data, Object prms = null, Func<ITableDescription, ExpandoObject> onSetData = null)
+		public async Task<IDataModel> SaveModelAsync(String source, String command, ExpandoObject data, Object prms = null, Func<ITableDescription, ExpandoObject> onSetData = null, Int32 commandTimeout = 0)
 		{
 			var dataReader = new DataModelReader(_localizer, _tokenProvider);
 			var dataWriter = new DataModelWriter();
@@ -390,6 +394,8 @@ namespace A2v10.Data
 
 			using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
 			{
+				if (commandTimeout != 0)
+					cmd.CommandTimeout = commandTimeout;
 				using var rdr = await cmd.ExecuteReaderAsync();
 				do
 				{
@@ -402,6 +408,8 @@ namespace A2v10.Data
 
 			using (var cmd = cnn.CreateCommandSP(command, CommandTimeout))
 			{
+				if (commandTimeout != 0)
+					cmd.CommandTimeout = commandTimeout;
 				SqlCommandBuilder.DeriveParameters(cmd);
 				dataWriter.SetTableParameters(cmd, data, prms);
 				using var rdr = await cmd.ExecuteReaderAsync();
