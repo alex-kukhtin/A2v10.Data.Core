@@ -114,9 +114,9 @@ namespace A2v10.Data
 			using (var rdr = cmd.ExecuteReader())
 			{
 				var helper = new LoadHelper<TOut>();
-				helper.ProcessRecord(rdr);
+				helper.ProcessMetadata(rdr);
 				if (rdr.Read())
-					outValue = helper.ProcessFields(rdr);
+					outValue = helper.ProcessData(rdr);
 			}
 			SetReturnParamResult(retParam, element);
 			return outValue;
@@ -134,12 +134,9 @@ namespace A2v10.Data
 			using (var rdr = await cmd.ExecuteReaderAsync())
 			{
 				var helper = new LoadHelper<TOut>();
-				helper.ProcessRecord(rdr);
+				helper.ProcessMetadata(rdr);
 				if (await rdr.ReadAsync())
-				{
-					outValue = helper.ProcessFields(rdr);
-
-				}
+					outValue = helper.ProcessData(rdr);
 			}
 			SetReturnParamResult(retParam, element);
 			return outValue;
@@ -184,12 +181,9 @@ namespace A2v10.Data
 			SqlExtensions.SetFromDynamic(cmd.Parameters, prms);
 
 			using var rdr = cmd.ExecuteReader();
-			helper.ProcessRecord(rdr);
+			helper.ProcessMetadata(rdr);
 			if (rdr.Read())
-			{
-				T result = helper.ProcessFields(rdr);
-				return result;
-			}
+				return helper.ProcessData(rdr);
 			return null;
 		}
 
@@ -203,12 +197,9 @@ namespace A2v10.Data
 			SqlExtensions.SetFromDynamic(cmd.Parameters, prms);
 
 			using var rdr = await cmd.ExecuteReaderAsync();
-			helper.ProcessRecord(rdr);
+			helper.ProcessMetadata(rdr);
 			if (await rdr.ReadAsync())
-			{
-				T result = helper.ProcessFields(rdr);
-				return result;
-			}
+				return helper.ProcessData(rdr);
 			return null;
 		}
 
@@ -222,11 +213,9 @@ namespace A2v10.Data
 			SqlExtensions.SetFromDynamic(cmd.Parameters, prms);
 			using (var rdr = cmd.ExecuteReader())
 			{
-				listLoader.ProcessFields(rdr);
+				listLoader.ProcessMetadata(rdr);
 				while (rdr.Read())
-				{
-					listLoader.ProcessRecord(rdr);
-				}
+					listLoader.ProcessData(rdr);
 			}
 			return listLoader.Result;
 		}
@@ -238,12 +227,13 @@ namespace A2v10.Data
 			using var cnn = await GetConnectionAsync(source);
 			using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
 			SqlExtensions.SetFromDynamic(cmd.Parameters, prms);
+
 			using (var rdr = await cmd.ExecuteReaderAsync())
 			{
-				listLoader.ProcessFields(rdr);
+				listLoader.ProcessMetadata(rdr);
 				while (await rdr.ReadAsync())
 				{
-					listLoader.ProcessRecord(rdr);
+					listLoader.ProcessData(rdr);
 				}
 			}
 			return listLoader.Result;

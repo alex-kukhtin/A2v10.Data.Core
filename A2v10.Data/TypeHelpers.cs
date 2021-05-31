@@ -2,7 +2,7 @@
 
 using System;
 
-namespace A2v10.Data.DynamicExpression
+namespace A2v10.Data
 {
 	public static class TypeHelpers
 	{

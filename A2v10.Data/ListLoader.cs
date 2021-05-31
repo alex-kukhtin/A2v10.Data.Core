@@ -1,47 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+
+
 using System.Data;
-using System.Reflection;
+using System.Collections.Generic;
 
 namespace A2v10.Data
 {
-	public class ListLoader<T> where T : class
+	public class ListLoader<T> : LoadHelperBase<T> where T : class
 	{
-		private readonly Type _retType;
-		private readonly PropertyInfo[] _props;
-		Dictionary<String, Int32> _keyMap;
-
 		public List<T> Result;
 
 		public ListLoader()
+			:base()
 		{
-			_retType = typeof(T);
-			_props = _retType.GetProperties();
 			Result = new List<T>();
 		}
 
-		public void ProcessFields(IDataReader rdr)
+		public void ProcessData(IDataReader rdr)
 		{
-			_keyMap = new Dictionary<String, Int32>();
-			for (Int32 c = 0; c < rdr.FieldCount; c++)
-			{
-				_keyMap.Add(rdr.GetName(c), c);
-			}
-		}
-
-		public void ProcessRecord(IDataReader rdr)
-		{
-			T item = System.Activator.CreateInstance(_retType) as T;
-			foreach (var p in _props)
-			{
-				if (_keyMap.TryGetValue(p.Name, out Int32 fieldIndex))
-				{
-					var dbVal = rdr.GetValue(fieldIndex);
-					if (dbVal == DBNull.Value)
-						dbVal = null;
-					p.SetValue(item, dbVal);
-				}
-			}
+			T item = CreateInstance(rdr);
 			Result.Add(item);
 		}
 	}

@@ -1304,5 +1304,40 @@ end
 go
 
 ------------------------------------------------
+create or alter procedure a2test.[ClrTypes.LoadListItemList]
+as
+begin
+	set nocount on;
+
+	select StringValue = N'String 1', Int32Value = 22, Int32ValueNull = 22, Severity = N'Warning', SeverityNull = N'Info'
+	union all
+	select StringValue = N'String 2', Int32Value = 33, Int32ValueNull = 33, Severity = N'Error', SeverityNull = null
+	union all
+	select StringValue = null, Int32Value = null, Int32ValueNull = null, Severity = null, SeverityNull = null
+end
+go
+
+------------------------------------------------
+create or alter procedure a2test.[ClrTypes.LoadListItem]
+as
+begin
+	set nocount on;
+	select StringValue = N'String 1', Int32Value = 22, Int32ValueNull = null, Severity = N'Warning', SeverityNull = null;
+end
+go
+
+------------------------------------------------
+create or alter procedure a2test.[ClrTypes.LoadBinary]
+as
+begin
+	set nocount on;
+
+	declare @vb varbinary(max);
+	set @vb = convert(varbinary(max), N'0x255044462D312E370D0A25E2E3CFD30D0A312030206F626A0D0A3C3C0D0A2F54797065202F436174616C6F670D');
+	select [Name] = N'VarBinary', Stream = @vb, ByteArray = @vb, StreamNull = null, ByteArrayNull = null, [Length]=datalength(@vb);
+end
+go
+
+------------------------------------------------
 exec a2test.[Workflow.Clear.All]
 go
