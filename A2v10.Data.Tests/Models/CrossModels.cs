@@ -10,10 +10,10 @@ namespace A2v10.Data.Models
 {
 	[TestClass]
 	[TestCategory("Cross Models")]
-	public class CrossModels
+	public class TestDataConfiguration
 	{
 		readonly IDbContext _dbContext;
-		public CrossModels()
+		public TestDataConfiguration()
 		{
 			_dbContext = Starter.Create();
 		}

@@ -199,12 +199,10 @@ namespace A2v10.Data.Providers.Dbf
 							DateTime dt = new(year, month, day);
 							fd.DateValue = dt;
 						}
-#pragma warning disable CA1031 // Do not catch general exception types
 						catch (ArgumentException)
 						{
 							fd.DateValue = DateTime.MinValue;
 						}
-#pragma warning restore CA1031 // Do not catch general exception types
 						break;
 				}
 				iIndex += f.Size;
