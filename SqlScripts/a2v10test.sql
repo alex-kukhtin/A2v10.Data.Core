@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2021 Alex Kukhtin
 
-/* 20210312-7258 */
+/* 20210623-7263 */
 
 /*
 Depends on Windows Workflow Foundation scripts.
@@ -17,7 +17,7 @@ go
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME=N'a2test')
 begin
-	exec sp_executesql N'create schema a2test authorization dbo';
+	exec sp_executesql N'create schema a2test';
 end
 go
 -----------------------------------------------
@@ -127,19 +127,19 @@ begin
 	set nocount on;
 
 	select [Menu!TMenu!Tree]=null, [!!Id] = 10, [!TMenu.Menu!ParentId]=null, [Name!!Name]=N'Item 1',
-		[Menu!TMenu!Array] = null
+		[Menu!TMenu!Items] = null
 	union all
 	select [Menu!TMenu!Tree]=null, [!!Id] = 20, [!TMenu.Menu!ParentId]=null, [Name!!Name]=N'Item 2',
-		[Menu!TMenu!Array] = null
+		[Menu!TMenu!Items] = null
 	union all
 	select [Menu!TMenu!Tree]=null, [!!Id] = 110, [!TMenu.Menu!ParentId]=10, [Name!!Name]=N'Item 1.1',
-		[Menu!TMenu!Array] = null
+		[Menu!TMenu!Items] = null
 	union all
 	select [Menu!TMenu!Tree]=null, [!!Id] = 120, [!TMenu.Menu!ParentId]=10, [Name!!Name]=N'Item 1.2',
-		[Menu!TMenu!Array] = null
+		[Menu!TMenu!Items] = null
 	union all
 	select [Menu!TMenu!Tree]=null, [!!Id] = 1100, [!TMenu.Menu!ParentId]=110, [Name!!Name]=N'Item 1.1.1',
-		[Menu!TMenu!Array] = null
+		[Menu!TMenu!Items] = null
 end
 go
 
@@ -1337,7 +1337,60 @@ begin
 	select [Name] = N'VarBinary', Stream = @vb, ByteArray = @vb, StreamNull = null, ByteArrayNull = null, [Length]=datalength(@vb);
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[MultiplyTrees.Load]
+	@TenantId int = null,
+	@UserId bigint = null,
+	@Id bigint = null
+as
+begin
+	set nocount on;
+	select [Model!TModel!Array] = null, [Id!!Id] = 5, [Name]=N'Tree 5', [Elements!TElem!Array] = null
+	union all
+	select [Model!TModel!Array] = null, [Id!!Id] = 7, [Name]=N'Tree 7', [Elements!TElem!Array] = null;
 
+	declare @tx table([Order] int, [Root] int, Id int, Parent int, [Name] nvarchar(255));
+	insert into @tx([Order], [Root], Id, Parent, [Name]) values
+		(0, 5,   50, null, N'5-50'),
+		(0, 5,   51, null, N'5-51'),
+		(10, 7,   70, null, N'7-70'),
+		(20, null, 500, 50,  N'5-50-500'),
+		(30, null, 510, 50,  N'5-50-510'),
+		(40, null, 700, 70,  N'7-70-700'),
+		(50, null, 710, 700,  N'7-70-700-710');
+
+	select [!TElem!Tree] = null, [Id!!Id] = Id, [Name], [!TElem.TreeItems!ParentId] = Parent,
+		[!TModel.Elements!ParentId] = [Root],
+		[TreeItems!TElem!Items] = null
+	from @tx
+	order by [Order]
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[ChildrenTree.Load]
+	@TenantId int = null,
+	@UserId bigint = null,
+	@Id bigint = null
+as
+begin
+	set nocount on;
+	select [Model!TModel!Object] = null, [Id!!Id] = 5, [Name]=N'Tree 5', [Elements!TElem!Array] = null
+
+	declare @tx table([Order] int, [Root] int, Id int, Parent int, [Name] nvarchar(255));
+	insert into @tx([Order], [Root], Id, Parent, [Name]) values
+		(0, 5,   50, null, N'5-50'),
+		(0, 5,   51, null, N'5-51'),
+		(20, null, 500, 50,  N'5-50-500'),
+		(30, null, 510, 50,  N'5-50-510'),
+		(50, null, 5100, 510,  N'5-50-510-5100');
+
+	select [!TElem!Tree] = null, [Id!!Id] = Id, [Name], [!TElem.TreeItems!ParentId] = Parent,
+		[!TModel.Elements!ParentId] = [Root],
+		[TreeItems!TElem!Items] = null
+	from @tx
+	order by [Order]
+end
+go
 ------------------------------------------------
 exec a2test.[Workflow.Clear.All]
 go

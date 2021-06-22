@@ -352,12 +352,25 @@ namespace A2v10.Data
 					}
 					else if (rootFI.IsTree)
 					{
-						if (dataVal == null)
-							_root.AddToArray(rootFI.PropertyName, currentRecord);
+						if (fi.IsParentIdSelf(rootFI))
+						{
+							if (dataVal == null)
+							{
+								if (!String.IsNullOrEmpty(rootFI.PropertyName))
+									_root.AddToArray(rootFI.PropertyName, currentRecord);
+							}
+							else
+								AddRecordToArray(fi.TypeName, dataVal, currentRecord);
+							bAdded = true;
+						}
 						else
-							AddRecordToArray(fi.TypeName, dataVal, currentRecord);
-						bAdded = true;
-
+						{
+							// Add Record to parent
+							if (dataVal != null)
+							{
+								AddRecordToArray(fi.TypeName, dataVal, currentRecord);
+							}
+						}
 					}
 					else if (rootFI.IsObject)
 					{

@@ -134,7 +134,7 @@ namespace A2v10.Data
 		public Boolean IsCross => IsCrossArray || IsCrossObject;
 
 		public Boolean IsObjectLike => IsArray || IsObject || IsTree || IsGroup || IsMap || IsMapObject || IsCrossArray || IsCrossObject;
-		public Boolean IsNestedType => IsRefId || IsArray || IsCrossArray || IsCrossObject;
+		public Boolean IsNestedType => IsRefId || IsArray || IsCrossArray || IsCrossObject || IsTree;
 		public Boolean IsRefId => SpecType == SpecType.RefId;
 		public Boolean IsParentId => SpecType == SpecType.ParentId;
 		public Boolean IsId => SpecType == SpecType.Id;
@@ -146,6 +146,11 @@ namespace A2v10.Data
 		public Boolean IsJson => SpecType == SpecType.Json;
 		public Boolean IsPermissions => SpecType == SpecType.Permissions;
 		public Boolean IsUtc => SpecType == SpecType.Utc;
+
+		public Boolean IsParentIdSelf(FieldInfo root)
+		{
+			return IsParentId && TypeName.StartsWith(root.TypeName);
+		}
 
 		private static void CheckField(String[] parts)
 		{

@@ -60,6 +60,12 @@ namespace A2v10.Data.Tests
 			Assert.AreEqual(fp.DataType, dt);
 		}
 
+		public void IsItems(String key, String prop)
+		{
+			var data = _meta[key] as ElementMetadata;
+			Assert.AreEqual(data.Items, prop);
+		}
+
 		public void IsItemType(String key, String propName, FieldType ft)
 		{
 			var data = _meta[key] as ElementMetadata;
