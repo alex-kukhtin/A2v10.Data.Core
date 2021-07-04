@@ -1,6 +1,5 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -707,15 +708,26 @@ namespace A2v10.Data
 
 		Task SetTenantIdAsync(String source, SqlConnection cnn)
 		{
-			if (_tenantManager != null)
-				return _tenantManager.SetTenantIdAsync(cnn, source);
-			return Task.CompletedTask;
+			if (_tenantManager == null)
+				return Task.CompletedTask;
+			var ti = _tenantManager.GetTenantInfo(source);
+			if (ti == null)
+				return Task.CompletedTask;
+			using var cmd = cnn.CreateCommandSP(ti.Procedure, CommandTimeout);
+			cmd.Parameters.AddWithValue(ti.ParamName, ti.TenantId);
+			return cmd.ExecuteNonQueryAsync();
 		}
 
 		void SetTenantId(String source, SqlConnection cnn)
 		{
-			if (_tenantManager != null)
-				_tenantManager.SetTenantId(cnn, source);
+			if (_tenantManager == null)
+				return;
+			var ti = _tenantManager.GetTenantInfo(source);
+			if (ti == null)
+				return;
+			using var cmd = cnn.CreateCommandSP(ti.Procedure, CommandTimeout);
+			cmd.Parameters.AddWithValue(ti.ParamName, ti.TenantId);
+			cmd.ExecuteNonQuery();
 		}
 	}
 }

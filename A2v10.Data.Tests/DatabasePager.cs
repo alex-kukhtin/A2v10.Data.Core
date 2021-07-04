@@ -1,17 +1,20 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 
 namespace A2v10.Data.Tests
 {
 	[TestClass]
-	public class DatabasePager
+	[TestCategory("Database Pager")]
+	public class TestDatabasePager
 	{
 		readonly IDbContext _dbContext;
-		public DatabasePager()
+
+		public TestDatabasePager()
 		{
 			_dbContext = Starter.Create();
 		}

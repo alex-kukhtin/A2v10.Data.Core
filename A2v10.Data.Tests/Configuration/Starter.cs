@@ -29,5 +29,20 @@ namespace A2v10.Data.Tests.Configuration
 			IDataLocalizer localizer = new TestLocalizer();
 			return new SqlDbContext(profiler, config, localizer);
 		}
+
+		public static IDbContext CreateWithTenants()
+		{
+			var configuration = new ConfigurationBuilder()
+				.AddJsonFile("appsettings.json")
+				.AddUserSecrets<TestConfig>()
+				.Build();
+
+			Init();
+			IDataProfiler profiler = new TestProfiler();
+			IDataConfiguration config = new TestConfig(configuration);
+			IDataLocalizer localizer = new TestLocalizer();
+			ITenantManager tenantManager = new TestTenantManager();
+			return new SqlDbContext(profiler, config, localizer, tenantManager);
+		}
 	}
 }

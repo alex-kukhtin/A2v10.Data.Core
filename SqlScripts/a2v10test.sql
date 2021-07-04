@@ -1392,5 +1392,22 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2test.SetTenantId
+@TenantId int 
+as
+begin
+	set nocount on;
+	exec sp_set_session_context @key=N'TenantId', @value=@TenantId, @read_only=0;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[TestTenant.Load]
+as
+begin
+	set nocount on;
+	select [Elem!TElem!Object] = null, TenantId = cast(session_context(N'TenantId') as int)
+end
+go
+------------------------------------------------
 exec a2test.[Workflow.Clear.All]
 go

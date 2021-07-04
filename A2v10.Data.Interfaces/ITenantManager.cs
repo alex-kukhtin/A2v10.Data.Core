@@ -1,14 +1,18 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using System;
-using System.Data;
-using System.Threading.Tasks;
 
 namespace A2v10.Data.Interfaces
 {
+	public interface ITenantInfo
+	{
+		String Procedure { get; }
+		String ParamName { get; }
+		Int32 TenantId { get; }
+	}
+
 	public interface ITenantManager
 	{
-		Task SetTenantIdAsync(IDbConnection cnn, String source);
-		void SetTenantId(IDbConnection cnn, String source);
+		ITenantInfo GetTenantInfo(String source);
 	}
 }
