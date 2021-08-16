@@ -1,14 +1,14 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
-using System.IO;
+
 
 namespace A2v10.Data.Tests
 {
@@ -25,7 +25,7 @@ namespace A2v10.Data.Tests
 		public String StringValue { get; set; }
 		public Int32 Int32Value { get; set; }
 		public Int32? Int32ValueNull { get; set; }
-		public Severity Severity {get; set;}
+		public Severity Severity { get; set; }
 		public Severity? SeverityNull { get; set; }
 	}
 
@@ -97,8 +97,8 @@ namespace A2v10.Data.Tests
 			CheckList(list);
 		}
 
-		private static void CheckList(IList<ListItem> list) 
-		{			
+		private static void CheckList(IList<ListItem> list)
+		{
 			Assert.AreEqual(3, list.Count);
 
 			Assert.AreEqual("String 1", list[0].StringValue);

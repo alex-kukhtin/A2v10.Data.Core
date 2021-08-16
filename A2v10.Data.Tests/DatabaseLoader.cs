@@ -5,7 +5,6 @@ using System.Dynamic;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 

@@ -1,8 +1,8 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 
-using System.Data;
 using System.Collections.Generic;
+using System.Data;
 
 namespace A2v10.Data
 {
@@ -11,7 +11,7 @@ namespace A2v10.Data
 		public List<T> Result;
 
 		public ListLoader()
-			:base()
+			: base()
 		{
 			Result = new List<T>();
 		}

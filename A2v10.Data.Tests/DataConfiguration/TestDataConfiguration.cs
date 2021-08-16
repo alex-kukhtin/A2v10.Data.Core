@@ -1,12 +1,11 @@
 ﻿// Copyright © 2021 Alex Kukhtin. All rights reserved.
 
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using A2v10.Data.Config;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace A2v10.Data.Tests
 {

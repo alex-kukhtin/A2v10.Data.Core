@@ -1,13 +1,10 @@
 ﻿
-using System.Threading.Tasks;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Newtonsoft.Json;
-
 using A2v10.Data.Interfaces;
-using A2v10.Data.Tests.Configuration;
 using A2v10.Data.Tests;
+using A2v10.Data.Tests.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Models
 {
@@ -15,7 +12,7 @@ namespace A2v10.Data.Models
 	[TestCategory("Sub Tree")]
 	public class MultiplyTrees
 	{
-		IDbContext _dbContext;
+		private readonly IDbContext _dbContext;
 		public MultiplyTrees()
 		{
 			_dbContext = Starter.Create();

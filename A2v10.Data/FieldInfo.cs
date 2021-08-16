@@ -66,16 +66,16 @@ namespace A2v10.Data
 		}
 
 		static readonly HashSet<String> _reservedWords = new()
-			{
-				"Parent",
-				"Root",
-				"Context",
-				"ParentId",
-				"CurrentyKey",
-				"ParentRowNumber",
-				"ParentKey",
-				"ParentGUID"
-			};
+		{
+			"Parent",
+			"Root",
+			"Context",
+			"ParentId",
+			"CurrentyKey",
+			"ParentRowNumber",
+			"ParentKey",
+			"ParentGUID"
+		};
 
 		void CheckReservedWords()
 		{

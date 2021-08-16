@@ -1,7 +1,8 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;

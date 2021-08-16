@@ -10,6 +10,7 @@ namespace A2v10.Data
 	{
 		readonly Dictionary<Object, ExpandoObject> _items = new();
 		readonly Dictionary<String, Int32> _keys = new();
+
 		public String TargetProp { get; }
 		public Boolean IsArray { get; }
 		public String CrossType { get; }

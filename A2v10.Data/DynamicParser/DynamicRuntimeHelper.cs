@@ -79,12 +79,10 @@ namespace A2v10.Data.DynamicExpression
 					return Infinity.Value;
 				return d1 / d2;
 			}
-#pragma warning disable CA1031 // Do not catch general exception types
 			catch (InvalidCastException /*ex*/)
 			{
 				return NaN.Value;
 			}
-#pragma warning restore CA1031 // Do not catch general exception types
 		}
 
 		public static Boolean EqualOperation(Object elem1, Object elem2)

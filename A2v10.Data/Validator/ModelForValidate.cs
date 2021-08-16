@@ -20,7 +20,8 @@ namespace A2v10.Data.Validator
 		[JsonIgnore]
 		private static readonly HashSet<String> _specialPropNames = new()
 		{
-			"_id", "_name"
+			"_id",
+			"_name"
 		};
 
 		[JsonIgnore]

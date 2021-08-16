@@ -138,17 +138,17 @@ namespace A2v10.Data
 			{
 				FieldType.Scalar => DataType switch
 				{
-					DataType.Number or 
-					DataType.String or 
+					DataType.Number or
+					DataType.String or
 					DataType.Boolean => DataType.ToString().ToLowerInvariant(),
 					DataType.Date => "Date",
 					_ => DataType.ToString(),
 				},
-				FieldType.Array or 
+				FieldType.Array or
 				FieldType.Tree => $"IElementArray<{RefObject}>",
-				FieldType.Map or 
+				FieldType.Map or
 				FieldType.MapObject => RefObject + "[]",
-				FieldType.Object or 
+				FieldType.Object or
 				FieldType.Group => RefObject,
 				_ => DataType.ToString(),
 			};

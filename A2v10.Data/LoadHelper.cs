@@ -4,7 +4,7 @@ using System.Data;
 
 namespace A2v10.Data
 {
-	public class LoadHelper<T>: LoadHelperBase<T> where T : class
+	public class LoadHelper<T> : LoadHelperBase<T> where T : class
 	{
 		public T ProcessData(IDataReader rdr)
 		{

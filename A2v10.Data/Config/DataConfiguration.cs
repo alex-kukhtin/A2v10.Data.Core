@@ -1,8 +1,10 @@
 ﻿// Copyright © 2020-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using Microsoft.Extensions.Configuration;
 using System;
+
+using Microsoft.Extensions.Configuration;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Config
 {
@@ -14,7 +16,7 @@ namespace A2v10.Data.Config
 	public class DataConfiguration : IDataConfiguration
 	{
 		private readonly IConfiguration _config;
-		
+
 		private readonly String _connectionStringName;
 
 		const String DefaultConnectionStringName = "DefaultConnection";
