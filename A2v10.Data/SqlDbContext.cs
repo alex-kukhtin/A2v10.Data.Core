@@ -487,7 +487,6 @@ namespace A2v10.Data
 		{
 			if (element == null)
 				return null;
-			var elem = element as IDictionary<String, Object>;
 			SqlCommandBuilder.DeriveParameters(cmd);
 			var sqlParams = cmd.Parameters;
 			SqlParameter retParam = null;
@@ -496,7 +495,7 @@ namespace A2v10.Data
 				retParam = cmd.Parameters[RET_PARAM_NAME];
 				retParam.Value = DBNull.Value;
 			}
-			foreach (var (k, v) in elem)
+			foreach (var (k, v) in element)
 			{
 				var paramName = "@" + k;
 				if (sqlParams.Contains(paramName))
@@ -519,7 +518,10 @@ namespace A2v10.Data
 						}
 					}
 					else if (sqlParam.SqlDbType == SqlDbType.Structured)
+					{
 						sqlParam.Value = GetTableExpandoParams(sqlVal);
+						sqlParam.RemoveDbName();
+					}
 					else
 					{
 						sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType());
@@ -531,13 +533,29 @@ namespace A2v10.Data
 
 		static Object GetTableExpandoParams(Object sqlVal)
 		{
-			/*
-			if (sqlVal is ExpandoObject eo)
+			if (sqlVal is not List<Object> list)
+				return null;
+			if (list == null || list.Count == 0)
+				return null;
+			var firstElem = list[0] as ExpandoObject;
+
+			var table = new DataTable();
+			foreach (var (k, v) in firstElem)
 			{
-				//TOD
+				var dc = new DataColumn(k, v.GetType());
+				table.Columns.Add(dc);
 			}
-			*/
-			return null;
+			foreach (var e in list)
+			{
+				var eo = e as ExpandoObject;
+				var row = table.NewRow();
+				foreach (var c in table.Columns) {
+					var col = c as DataColumn;
+					row[col.ColumnName] = eo.Get<Object>(col.ColumnName);
+				}
+				table.Rows.Add(row);
+			}
+			return table;
 		}
 
 		static SqlParameter SetParametersFrom<T>(SqlCommand cmd, T element)

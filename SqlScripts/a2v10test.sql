@@ -1409,5 +1409,36 @@ begin
 end
 go
 ------------------------------------------------
+drop procedure if exists a2test.[Expando.Tables];
+drop type if exists [a2test].[Expando.TableType];
+go
+------------------------------------------------
+create type [a2test].[Expando.TableType] as
+table (
+	[Id] bigint null,
+	[Name] nvarchar(255),
+	Bool bit
+)
+go
+------------------------------------------------
+create or alter procedure a2test.[Expando.Tables]
+@Id bigint,
+@Name nvarchar(255),
+@Elements [a2test].[Expando.TableType] readonly
+as
+begin
+	set nocount on;
+
+	/*
+	declare @xml nvarchar(max);
+	set @xml = (select * from @Elements for xml auto);
+	throw 60000, @xml, 0;
+	*/
+
+	select Id=@Id, [Name]=@Name, [Count] = count(*), [Sum] = sum(Id), [Text]=STRING_AGG([Name], N',')
+	from @Elements;
+end
+go
+------------------------------------------------
 exec a2test.[Workflow.Clear.All]
 go

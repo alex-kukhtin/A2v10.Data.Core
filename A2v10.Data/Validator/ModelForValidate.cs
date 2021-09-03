@@ -70,7 +70,6 @@ namespace A2v10.Data.Validator
 			}
 			foreach (var f in baseType)
 			{
-				// todo: exception if exists
 				if (this.ContainsKey(f.Key))
 					throw new DataValidationException($"Load. Field '{f.Key}' already exists in '{Name}' type");
 				this.Add(f.Key, f.Value);

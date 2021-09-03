@@ -1,13 +1,15 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
 using System.Reflection;
+
+using Newtonsoft.Json;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data
 {
@@ -78,9 +80,7 @@ namespace A2v10.Data
 			_aliases = new Dictionary<String, String>();
 			// 1-based
 			for (Int32 i = 1; i < rdr.FieldCount; i++)
-			{
 				_aliases.Add(rdr.GetName(i), null);
-			}
 		}
 
 		public IDataModel DataModel
