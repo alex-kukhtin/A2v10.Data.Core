@@ -8,5 +8,6 @@ namespace A2v10.Data.Interfaces
 	{
 		Int64? UserId { get; }
 		Int32? TenantId { get; }
+		String Segment { get; }
 	}
 }
