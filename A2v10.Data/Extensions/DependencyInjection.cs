@@ -1,7 +1,6 @@
 ﻿// Copyright © 2020-2021 Alex Kukhtin. All rights reserved.
 
 using A2v10.Data;
-using A2v10.Data.Config;
 using A2v10.Data.Interfaces;
 
 namespace Microsoft.Extensions.DependencyInjection

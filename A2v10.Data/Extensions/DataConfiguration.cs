@@ -4,13 +4,12 @@ using System;
 
 using Microsoft.Extensions.Configuration;
 
-using A2v10.Data.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace A2v10.Data.Config
-{
-	//_config.GetValue<TimeSpan>("A2v10:Data:CommandTimeout");
+using A2v10.Data.Interfaces;
 
+namespace Microsoft.Extensions.DependencyInjection
+{
 	public class DataConfigurationOptions
 	{
 		public String ConnectionStringName { get; set; } = "DefaultConnection";

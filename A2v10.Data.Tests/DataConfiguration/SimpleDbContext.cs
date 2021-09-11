@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using A2v10.Data.Config;
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 
