@@ -3,15 +3,15 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<LangVersion>9.0</LangVersion>
-		<Version>10.0.7267</Version>
+		<Version>10.0.7268</Version>
 		<Product>A2v10</Product>
 		<Authors>Alex Kukthin</Authors>
 		<Copyright>Copyright © 2015-2021 Oleksandr Kukhtin. All rights reserved.</Copyright>
 		<Description>A2v10 Platform Data Layer</Description>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<RepositoryUrl>https://github.com/alex-kukhtin/A2v10.WorkflowEngine</RepositoryUrl>
+		<RepositoryUrl>https://github.com/alex-kukhtin/A2v10.Data.Core</RepositoryUrl>
 		<RepositoryType>github</RepositoryType>
-		<PackageTags>A2v10 Workflow</PackageTags>
+		<PackageTags>A2v10</PackageTags>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -23,10 +23,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="A2v10.Data.nuspec" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Include="..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
 
@@ -34,6 +30,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
 	</ItemGroup>

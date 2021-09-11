@@ -5,47 +5,40 @@ using System;
 using Microsoft.Extensions.Configuration;
 
 using A2v10.Data.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace A2v10.Data.Config
 {
+	//_config.GetValue<TimeSpan>("A2v10:Data:CommandTimeout");
+
 	public class DataConfigurationOptions
 	{
-		public String ConnectionStringName { get; set; }
+		public String ConnectionStringName { get; set; } = "DefaultConnection";
+		public TimeSpan DefaultCommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
 	}
 
 	public class DataConfiguration : IDataConfiguration
 	{
 		private readonly IConfiguration _config;
+		private readonly DataConfigurationOptions _options;
 
-		private readonly String _connectionStringName;
 
-		const String DefaultConnectionStringName = "DefaultConnection";
-
-		public DataConfiguration(IConfiguration config, Action<DataConfigurationOptions> options = null)
+		public DataConfiguration(IConfiguration config, IOptions<DataConfigurationOptions> options)
 		{
-			_config = config ?? throw new ArgumentNullException(nameof(config));
-			_connectionStringName = DefaultConnectionStringName;
-			if (options != null)
-			{
-				var configOptions = new DataConfigurationOptions()
-				{
-					ConnectionStringName = DefaultConnectionStringName
-				};
-				options(configOptions);
-				_connectionStringName = configOptions.ConnectionStringName;
-			}
+			_config = config;
+			_options = options.Value;
 		}
 
-		public String ConnectionStringName => _connectionStringName;
+		public String ConnectionStringName => _options.ConnectionStringName;
 
 		#region IDataConfiguration
 
-		public TimeSpan CommandTimeout => _config.GetValue<TimeSpan>("A2v10:Data:CommandTimeout");
+		public TimeSpan CommandTimeout => _options.DefaultCommandTimeout;
 
 		public String ConnectionString(String source)
 		{
 			if (String.IsNullOrEmpty(source))
-				source = _connectionStringName;
+				source = _options.ConnectionStringName;
 			return _config.GetConnectionString(source);
 		}
 		#endregion

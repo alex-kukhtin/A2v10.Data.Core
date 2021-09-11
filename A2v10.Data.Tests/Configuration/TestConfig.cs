@@ -1,8 +1,9 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.Extensions.Configuration;
+
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Tests.Configuration
 {

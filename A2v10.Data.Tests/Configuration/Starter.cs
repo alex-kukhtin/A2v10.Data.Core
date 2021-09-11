@@ -1,9 +1,13 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
-
-using A2v10.Data.Interfaces;
-using Microsoft.Extensions.Configuration;
+using System;
 using System.Text;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+using A2v10.Data.Config;
+using A2v10.Data.Interfaces;
 
 namespace A2v10.Data.Tests.Configuration
 {
@@ -15,19 +19,36 @@ namespace A2v10.Data.Tests.Configuration
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 		}
 
-		public static IDbContext Create()
+		public static IServiceProvider BuildServices()
 		{
+			Init();
 			var configuration = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")
 				.AddUserSecrets<TestConfig>()
 				.Build();
 
+			var sc = new ServiceCollection();
 
-			Init();
-			IDataProfiler profiler = new TestProfiler();
-			IDataConfiguration config = new TestConfig(configuration);
-			IDataLocalizer localizer = new TestLocalizer();
-			return new SqlDbContext(profiler, config, localizer);
+			sc.AddOptions<DataConfigurationOptions>();
+
+			sc.AddSingleton<IConfiguration>(configuration)
+			.AddSingleton<IDataProfiler, TestProfiler>()
+			.AddSingleton<IDataConfiguration, DataConfiguration>()
+			.AddSingleton<IDataLocalizer, TestLocalizer>()
+			.AddSingleton<IDbContext, SqlDbContext>();
+
+			sc.Configure<DataConfigurationOptions>(opts =>
+			{
+				opts.ConnectionStringName = "Default";
+			});
+
+			return sc.BuildServiceProvider();
+		}
+
+		public static IDbContext Create()
+		{
+			var svc = BuildServices();
+			return svc.GetService<IDbContext>();
 		}
 
 		public static IDbContext CreateWithTenants()
