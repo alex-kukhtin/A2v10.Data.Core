@@ -2,14 +2,6 @@
 
 /* 20211001-7269 */
 
-/*
-Depends on Windows Workflow Foundation scripts.
-
-	SqlWorkflowInstanceStoreSchema.sql
-	SqlWorkflowInstanceStoreLogic.sql
-
-	in %WinDir%\Microsoft.NET\Framework64\v4.0.30319\SQL\en
-*/
 
 use a2v10test;
 go
@@ -1450,7 +1442,4 @@ begin
 
 	select Id=@Id, [Name]=@Name, [Number] = @Number;
 end
-go
-------------------------------------------------
-exec a2test.[Workflow.Clear.All]
 go
