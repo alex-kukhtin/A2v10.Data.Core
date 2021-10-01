@@ -34,7 +34,10 @@ namespace A2v10.Data.Interfaces
 		void Execute<T>(String source, String command, T element) where T : class;
 		Task ExecuteAsync<T>(String source, String command, T element) where T : class;
 
+		void ExecuteExpando(String source, String command, ExpandoObject element);
 		Task ExecuteExpandoAsync(String source, String command, ExpandoObject element);
+
+		ExpandoObject ReadExpando(String source, String command, ExpandoObject prms);
 		Task<ExpandoObject> ReadExpandoAsync(String source, String command, ExpandoObject prms);
 
 		TOut ExecuteAndLoad<TIn, TOut>(String source, String command, TIn element) where TIn : class where TOut : class;

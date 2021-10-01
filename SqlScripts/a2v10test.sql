@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2021 Alex Kukhtin
 
-/* 20210623-7263 */
+/* 20211001-7269 */
 
 /*
 Depends on Windows Workflow Foundation scripts.
@@ -1437,6 +1437,18 @@ begin
 
 	select Id=@Id, [Name]=@Name, [Count] = count(*), [Sum] = sum(Id), [Text]=STRING_AGG([Name], N',')
 	from @Elements;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Expando.Simple]
+@Id bigint,
+@Name nvarchar(255),
+@Number float
+as
+begin
+	set nocount on;
+
+	select Id=@Id, [Name]=@Name, [Number] = @Number;
 end
 go
 ------------------------------------------------

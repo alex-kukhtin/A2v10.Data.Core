@@ -63,5 +63,36 @@ namespace A2v10.Data.Tests
 			Assert.AreEqual(55 + 56 + 57, eo.Get<Int64>("Sum"));
 			Assert.AreEqual("Elem 55,Elem 56,Elem 57", eo.Get<String>("Text"));
 		}
+
+
+		[TestMethod]
+		public void ReadExpando()
+		{
+			var prms = new ExpandoObject()
+			{
+				{"Id", 55 },
+				{"Name", "Name" },
+				{"Number", 22.5 }
+			};
+			var eo = _dbContext.ReadExpando(null, "a2test.[Expando.Simple]", prms);
+			Assert.AreEqual(55, eo.Get<Int64>("Id"));
+			Assert.AreEqual("Name", eo.Get<String>("Name"));
+			Assert.AreEqual(22.5, eo.Get<Double>("Number"));
+		}
+
+		[TestMethod]
+		public async Task ReadExpandoAsync()
+		{
+			var prms = new ExpandoObject()
+			{
+				{"Id", 55 },
+				{"Name", "Name" },
+				{"Number", 22.5 }
+			};
+			var eo = await _dbContext.ReadExpandoAsync(null, "a2test.[Expando.Simple]", prms);
+			Assert.AreEqual(55, eo.Get<Int64>("Id"));
+			Assert.AreEqual("Name", eo.Get<String>("Name"));
+			Assert.AreEqual(22.5, eo.Get<Double>("Number"));
+		}
 	}
 }

@@ -70,6 +70,17 @@ namespace A2v10.Data
 			SetReturnParamResult(retParam, element);
 		}
 
+		public void ExecuteExpando(String source, String command, ExpandoObject element)
+		{
+			using var token = _profiler.Start(command);
+			using var cnn = GetConnection(source);
+			using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
+
+			var retParam = SetParametersFromExpandoObject(cmd, element);
+			cmd.ExecuteNonQuery();
+			SetReturnParamResult(retParam, element);
+		}
+
 		public async Task ExecuteExpandoAsync(String source, String command, ExpandoObject element)
 		{
 			using var token = _profiler.Start(command);
@@ -79,6 +90,28 @@ namespace A2v10.Data
 			var retParam = SetParametersFromExpandoObject(cmd, element);
 			await cmd.ExecuteNonQueryAsync();
 			SetReturnParamResult(retParam, element);
+		}
+
+		public ExpandoObject ReadExpando(String source, String command, ExpandoObject prms)
+		{
+			using var p = _profiler.Start(command);
+			using var cnn = GetConnection(source);
+			using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
+
+			var retParam = SetParametersFromExpandoObject(cmd, prms);
+			using (var rdr = cmd.ExecuteReader())
+			{
+				if (rdr.Read())
+				{
+					var eo = new ExpandoObject();
+					for (Int32 i = 0; i < rdr.FieldCount; i++)
+					{
+						eo.Set(rdr.GetName(i), rdr.IsDBNull(i) ? null : rdr.GetValue(i));
+					}
+					return eo;
+				}
+			}
+			return null;
 		}
 
 		public async Task<ExpandoObject> ReadExpandoAsync(String source, String command, ExpandoObject prms)
