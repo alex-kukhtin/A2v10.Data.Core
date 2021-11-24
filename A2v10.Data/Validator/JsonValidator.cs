@@ -24,7 +24,7 @@ namespace A2v10.Data.Validator
 
 		private JsonValidator(String json)
 		{
-			_models = JsonConvert.DeserializeObject<AllModels>(json);
+			_models = JsonConvert.DeserializeObject<AllModels>(json)!;
 			_models.Parse();
 		}
 

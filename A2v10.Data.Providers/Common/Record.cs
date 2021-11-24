@@ -1,121 +1,117 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using System;
-using System.Collections.Generic;
+namespace A2v10.Data.Providers;
 
-namespace A2v10.Data.Providers
+public class Record : IExternalDataRecord
 {
-	public class Record : IExternalDataRecord
+	public List<FieldData> DataFields;
+	private readonly IDictionary<String, Int32> _fieldMap;
+
+	public Record(IDictionary<String, Int32> fields)
 	{
-		public List<FieldData> DataFields;
-		private readonly IDictionary<String, Int32> _fieldMap;
+		DataFields = new List<FieldData>();
+		_fieldMap = fields ?? throw new ArgumentNullException(nameof(fields));
+	}
 
-		public Record(IDictionary<String, Int32> fields)
-		{
-			DataFields = new List<FieldData>();
-			_fieldMap = fields ?? throw new ArgumentNullException(nameof(fields));
-		}
+	public Record(List<FieldData> dat, IDictionary<String, Int32> fields)
+	{
+		DataFields = dat;
+		_fieldMap = fields ?? throw new ArgumentNullException(nameof(fields));
+	}
 
-		public Record(List<FieldData> dat, IDictionary<String, Int32> fields)
-		{
-			DataFields = dat;
-			_fieldMap = fields ?? throw new ArgumentNullException(nameof(fields));
-		}
-
-		public Object FieldValue(String name)
-		{
-			name = FindFieldName(name);
-			if (name == null)
-				return null;
-			if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
-			{
-				if (fieldNo >= 0 && fieldNo < DataFields.Count)
-					return DataFields[fieldNo].Value;
-			}
-			throw new ExternalDataException($"Invalid field name: '{name}'");
-		}
-
-		public Object FieldValue(Int32 index)
-		{
-			if (index >= 0 && index < DataFields.Count)
-				return DataFields[index].Value;
-			throw new ExternalDataException($"Invalid field index: {index}");
-		}
-
-		public String StringFieldValueByIndex(Int32 index)
-		{
-			if (index < DataFields.Count)
-				return DataFields[index].StringValue;
+	public Object FieldValue(String name)
+	{
+		name = FindFieldName(name);
+		if (name == null)
 			return null;
-		}
-
-		public void SetFieldValueString(Int32 index, String name, String value)
+		if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
 		{
-			while (DataFields.Count <= index)
-				DataFields.Add(new FieldData());
-			if (!_fieldMap.ContainsKey(name))
-				_fieldMap.Add(name, index);
-			DataFields[index].StringValue = value;
+			if (fieldNo >= 0 && fieldNo < DataFields.Count)
+				return DataFields[fieldNo].Value;
 		}
+		throw new ExternalDataException($"Invalid field name: '{name}'");
+	}
 
-		public Boolean FieldExists(String name)
-		{
-			return _fieldMap.ContainsKey(name);
-		}
+	public Object FieldValue(Int32 index)
+	{
+		if (index >= 0 && index < DataFields.Count)
+			return DataFields[index].Value;
+		throw new ExternalDataException($"Invalid field index: {index}");
+	}
 
-		public String FindFieldName(String name)
+	public String StringFieldValueByIndex(Int32 index)
+	{
+		if (index < DataFields.Count)
+			return DataFields[index].StringValue;
+		return null;
+	}
+
+	public void SetFieldValueString(Int32 index, String name, String value)
+	{
+		while (DataFields.Count <= index)
+			DataFields.Add(new FieldData());
+		if (!_fieldMap.ContainsKey(name))
+			_fieldMap.Add(name, index);
+		DataFields[index].StringValue = value;
+	}
+
+	public Boolean FieldExists(String name)
+	{
+		return _fieldMap.ContainsKey(name);
+	}
+
+	public String FindFieldName(String name)
+	{
+		if (!name.Contains('|'))
+			return name;
+		String retName = name;
+		foreach (var f in name.Split('|'))
 		{
-			if (!name.Contains("|"))
-				return name;
-			String retName = name;
-			foreach (var f in name.Split('|'))
+			if (String.IsNullOrWhiteSpace(f))
+				return null;
+			if (_fieldMap.ContainsKey(f))
 			{
-				if (String.IsNullOrWhiteSpace(f))
-					return null;
-				if (_fieldMap.ContainsKey(f))
-				{
-					retName = f;
-					// try to get all variants
-					if (!IsFieldEmptyInternal(f))
-						return f;
-				}
+				retName = f;
+				// try to get all variants
+				if (!IsFieldEmptyInternal(f))
+					return f;
 			}
-			return retName;
 		}
+		return retName;
+	}
 
-		public Boolean IsFieldEmptyInternal(String name)
+	public Boolean IsFieldEmptyInternal(String name)
+	{
+		if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
 		{
-			if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
-			{
-				if (fieldNo >= 0 && fieldNo < DataFields.Count)
-					return DataFields[fieldNo].IsEmpty;
-			}
+			if (fieldNo >= 0 && fieldNo < DataFields.Count)
+				return DataFields[fieldNo].IsEmpty;
+		}
+		return true;
+	}
+
+	public Boolean IsFieldEmpty(String name)
+	{
+		name = FindFieldName(name);
+		if (name == null)
 			return true;
-		}
-
-		public Boolean IsFieldEmpty(String name)
+		if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
 		{
-			name = FindFieldName(name);
-			if (name == null)
-				return true;
-			if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
-			{
-				if (fieldNo >= 0 && fieldNo < DataFields.Count)
-					return DataFields[fieldNo].IsEmpty;
-			}
-			throw new ExternalDataException($"Invalid field name: {name}");
+			if (fieldNo >= 0 && fieldNo < DataFields.Count)
+				return DataFields[fieldNo].IsEmpty;
 		}
+		throw new ExternalDataException($"Invalid field name: {name}");
+	}
 
-		public Boolean IsEmpty
+	public Boolean IsEmpty
+	{
+		get
 		{
-			get
-			{
-				foreach (var d in DataFields)
-					if (!d.IsEmpty)
-						return false;
-				return true;
-			}
+			foreach (var d in DataFields)
+				if (!d.IsEmpty)
+					return false;
+			return true;
 		}
 	}
 }
+

@@ -77,8 +77,9 @@ namespace A2v10.Data
 			Length = length;
 			IsLazy = fi.IsLazy;
 			ItemType = FieldType.Scalar;
-			RefObject = null;
-			if (fi.IsObjectLike)
+            RefObject = String.Empty;
+
+            if (fi.IsObjectLike)
 			{
 				ItemType = fi.FieldType;
 				RefObject = fi.TypeName;

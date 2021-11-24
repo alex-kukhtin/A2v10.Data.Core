@@ -1,12 +1,10 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
-using System;
+namespace A2v10.Data.Interfaces;
 
-namespace A2v10.Data.Interfaces
+public interface IDataConfiguration
 {
-	public interface IDataConfiguration
-	{
-		String ConnectionString(String source);
-		TimeSpan CommandTimeout { get; }
-	}
+	String? ConnectionString(String? source);
+	TimeSpan CommandTimeout { get; }
 }
+

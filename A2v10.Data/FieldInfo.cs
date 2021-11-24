@@ -16,12 +16,12 @@ namespace A2v10.Data
 		public Boolean IsComplexField { get; }
 		public Boolean IsLazy { get; }
 		public Boolean IsMain { get; set; }
-		public List<String> MapFields { get; }
+		public List<String>? MapFields { get; }
 
 		public FieldInfo(String name)
 		{
-			PropertyName = null;
-			TypeName = null;
+			PropertyName = String.Empty;
+			TypeName = String.Empty;
 			FieldType = FieldType.Scalar;
 			SpecType = SpecType.Unknown;
 			IsLazy = false;
@@ -111,7 +111,7 @@ namespace A2v10.Data
 		{
 			// for complex fields only
 			PropertyName = name;
-			TypeName = null;
+			TypeName = String.Empty;
 			FieldType = FieldType.Scalar;
 			SpecType = source.SpecType;
 			IsComplexField = false;
@@ -171,7 +171,7 @@ namespace A2v10.Data
 				PropertyName = "__permissions";
 		}
 
-		public override Boolean Equals(Object obj)
+		public override Boolean Equals(Object? obj)
 		{
 			throw new NotImplementedException();
 		}

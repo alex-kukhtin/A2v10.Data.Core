@@ -1,16 +1,13 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using System;
-
-namespace A2v10.Data
+namespace A2v10.Data;
+public static class PathHelpers
 {
-	public static class PathHelpers
+	public static String AppendDot(this String This, String append)
 	{
-		public static String AppendDot(this String This, String append)
-		{
-			if (String.IsNullOrEmpty(This))
-				return append;
-			return This + '.' + append;
-		}
+		if (String.IsNullOrEmpty(This))
+			return append;
+		return This + '.' + append;
 	}
 }
+

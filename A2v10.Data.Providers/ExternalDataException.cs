@@ -1,27 +1,15 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
-using System;
 
-namespace A2v10.Data.Providers
+namespace A2v10.Data.Providers;
+
+public sealed class ExternalDataException : Exception
 {
-	public class ExternalDataException : Exception
+	public ExternalDataException(String message)
+		: base(message)
 	{
-		public ExternalDataException()
-			: base()
-		{
-
-		}
-
-		public ExternalDataException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
-
-		public ExternalDataException(String message)
-			: base(message)
-		{
-
-		}
 
 	}
+
 }
+

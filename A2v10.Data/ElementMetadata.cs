@@ -1,8 +1,5 @@
-﻿// Copyright © 2012-2019 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using System;
-using System.Collections.Generic;
 
 namespace A2v10.Data
 {
@@ -10,30 +7,30 @@ namespace A2v10.Data
 	{
 		private readonly IDictionary<String, IDataFieldMetadata> _fields = new Dictionary<String, IDataFieldMetadata>();
 
-		public IDictionary<String, IList<String>> _cross = null;
+		public IDictionary<String, IList<String?>?>? _cross = null;
 
-		public String Id { get; private set; }
-		public String Key { get; private set; }
-		public String Name { get; private set; }
-		public String RowNumber { get; private set; }
-		public String HasChildren { get; private set; }
-		public String Permissions { get; set; }
-		public String Items { get; set; }
-		public String MapItemType { get; set; }
-		public String MainObject { get; set; }
-		public String Token { get; set; }
+		public String? Id { get; private set; }
+		public String? Key { get; private set; }
+		public String? Name { get; private set; }
+		public String? RowNumber { get; private set; }
+		public String? HasChildren { get; private set; }
+		public String? Permissions { get; set; }
+		public String? Items { get; set; }
+		public String? MapItemType { get; set; }
+		public String? MainObject { get; set; }
+		public String? Token { get; set; }
 
 		public Boolean IsArrayType { get; set; }
 		public Boolean IsRowCount { get; set; }
 		public Boolean IsGroup { get; set; }
 		public Boolean HasCross => _cross != null;
 
-		public SortedList<String, Tuple<Int32, String>> Groups { get; private set; }
+		public SortedList<String, Tuple<Int32, String>>? Groups { get; private set; }
 
 		public IDictionary<String, IDataFieldMetadata> Fields => _fields;
-		public IDictionary<String, IList<String>> Cross => _cross;
+		public IDictionary<String, IList<String?>?>? Cross => _cross;
 
-		public String FindPropertyByType(String typeName)
+		public String? FindPropertyByType(String typeName)
 		{
 			foreach (var f in Fields)
 				if (f.Value.RefObject == typeName)
@@ -41,11 +38,11 @@ namespace A2v10.Data
 			return null;
 		}
 
-		public FieldMetadata AddField(FieldInfo field, DataType type, SqlDataType sqlType, Int32 fieldLen = 0)
+		public FieldMetadata? AddField(FieldInfo field, DataType type, SqlDataType sqlType, Int32 fieldLen = 0)
 		{
 			if (!field.IsVisible)
 				return null;
-			if (IsFieldExists(field.PropertyName, type, out FieldMetadata fm))
+			if (IsFieldExists(field.PropertyName, type, out FieldMetadata? fm))
 				return fm;
 			fm = new FieldMetadata(field, type, sqlType, fieldLen);
 			_fields.Add(field.PropertyName, fm);
@@ -84,17 +81,17 @@ namespace A2v10.Data
 
 		public void SetCrossObject(String key, String typeName)
 		{
-			if (_fields.TryGetValue(key, out IDataFieldMetadata iFM))
+			if (_fields.TryGetValue(key, out IDataFieldMetadata? iFM))
 			{
-				var fm = iFM as FieldMetadata;
-				fm.SetType(typeName);
+				if (iFM is FieldMetadata fm)
+					fm.SetType(typeName);
 			}
 		}
 
-		public void AddCross(String key, IList<String> cross)
+		public void AddCross(String key, IList<String?>? cross)
 		{
 			if (_cross == null)
-				_cross = new Dictionary<String, IList<String>>();
+				_cross = new Dictionary<String, IList<String?>?>();
 			if (_cross.ContainsKey(key))
 				_cross[key] = cross;
 			else
@@ -108,24 +105,31 @@ namespace A2v10.Data
 			return _fields.ContainsKey(field);
 		}
 
-		Boolean IsFieldExists(String name, DataType dataType, out FieldMetadata fm)
+		Boolean IsFieldExists(String name, DataType dataType, out FieldMetadata? fm)
 		{
 			fm = null;
-			if (_fields.TryGetValue(name, out IDataFieldMetadata ifm))
+			if (_fields.TryGetValue(name, out IDataFieldMetadata? ifm))
 			{
-				fm = ifm as FieldMetadata;
-				if (fm.DataType != dataType)
-					throw new DataLoaderException($"Invalid property '{name}'. Type mismatch. ({fm.DataType} <> {dataType})");
-				return true;
+				if (ifm is FieldMetadata fm2)
+				{
+					fm = fm2;
+					if (fm2.DataType != dataType)
+						throw new DataLoaderException($"Invalid property '{name}'. Type mismatch. ({fm2.DataType} <> {dataType})");
+					return true;
+				}
+				else
+                {
+					throw new InvalidProgramException("Invalid metadata. variable is not FieldMetadata");
+                }
 			}
 			return false;
 		}
 
 		public FieldMetadata GetField(String name)
 		{
-			if (_fields.TryGetValue(name, out IDataFieldMetadata fm))
+			if (_fields.TryGetValue(name, out IDataFieldMetadata? fm))
 			{
-				return fm as FieldMetadata;
+				return (fm as FieldMetadata)!;
 			}
 			throw new DataLoaderException($"Field '{name}' not found.");
 		}

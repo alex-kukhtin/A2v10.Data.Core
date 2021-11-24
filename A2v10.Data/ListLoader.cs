@@ -4,22 +4,20 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace A2v10.Data
+namespace A2v10.Data;
+public class ListLoader<T> : LoadHelperBase<T> where T : class
 {
-	public class ListLoader<T> : LoadHelperBase<T> where T : class
+	public List<T> Result;
+
+	public ListLoader()
+		: base()
 	{
-		public List<T> Result;
+		Result = new List<T>();
+	}
 
-		public ListLoader()
-			: base()
-		{
-			Result = new List<T>();
-		}
-
-		public void ProcessData(IDataReader rdr)
-		{
-			T item = CreateInstance(rdr);
-			Result.Add(item);
-		}
+	public void ProcessData(IDataReader rdr)
+	{
+		T item = CreateInstance(rdr);
+		Result.Add(item);
 	}
 }

@@ -15,7 +15,7 @@ namespace A2v10.Data.Tests
 			}
 			catch (Exception ex)
 			{
-				if (allowDerivedTypes && !(ex is TException))
+				if (allowDerivedTypes && ex is not TException)
 					Assert.Fail("Delegate threw exception of type " + ex.GetType().Name + ", but " + typeof(TException).Name + " or a derived type was expected.");
 				if (!allowDerivedTypes && ex.GetType() != typeof(TException))
 					Assert.Fail("Delegate threw exception of type " + ex.GetType().Name + ", but " + typeof(TException).Name + " was expected.");

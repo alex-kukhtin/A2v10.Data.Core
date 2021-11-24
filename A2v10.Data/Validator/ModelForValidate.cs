@@ -15,7 +15,7 @@ namespace A2v10.Data.Validator
 		// _id, name: fieldName
 
 		[JsonIgnore]
-		public String Name { get; private set; }
+		public String? Name { get; private set; }
 
 		[JsonIgnore]
 		private static readonly HashSet<String> _specialPropNames = new()
@@ -36,7 +36,7 @@ namespace A2v10.Data.Validator
 				return;
 			Name = name;
 			List<String> toRemoveFields = new();
-			TType extends = null;
+			TType? extends = null;
 
 			foreach (var m in this)
 			{
@@ -119,7 +119,7 @@ namespace A2v10.Data.Validator
 	public class TypeDictionary : Dictionary<String, TType>, IDataModelValidator
 	{
 		[JsonIgnore]
-		public String Name { get; private set; }
+		public String? Name { get; private set; }
 
 		public void Parse(String name, TypeDictionary sharedTypes)
 		{
@@ -154,7 +154,7 @@ namespace A2v10.Data.Validator
 	[JsonDictionary]
 	public class AllModels : Dictionary<String, TypeDictionary>
 	{
-		TypeDictionary _shared;
+		TypeDictionary? _shared;
 
 		public void Parse()
 		{
@@ -167,9 +167,12 @@ namespace A2v10.Data.Validator
 					bShared = true;
 				}
 			}
-			foreach (var m in this)
+			if (_shared != null)
 			{
-				m.Value.Parse(m.Key, _shared);
+				foreach (var m in this)
+				{
+					m.Value.Parse(m.Key, _shared);
+				}
 			}
 			if (bShared)
 				this.Remove("_shared");
