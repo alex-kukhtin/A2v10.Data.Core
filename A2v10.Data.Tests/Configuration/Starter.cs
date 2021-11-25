@@ -47,7 +47,7 @@ namespace A2v10.Data.Tests.Configuration
 		public static IDbContext Create()
 		{
 			var svc = BuildServices();
-			return svc.GetService<IDbContext>();
+			return svc.GetService<IDbContext>() ?? throw new InvalidProgramException("IDbContext not found");
 		}
 
 		public static IDbContext CreateWithTenants()

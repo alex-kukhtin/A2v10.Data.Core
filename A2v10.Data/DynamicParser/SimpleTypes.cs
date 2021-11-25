@@ -44,7 +44,7 @@ public struct Undefined
 public struct Infinity
 {
 	public static Infinity Value => new();
-	public static Boolean IsInfinity(Object test)
+	public static Boolean IsInfinity(Object? test)
 	{
 		return test is Infinity;
 	}

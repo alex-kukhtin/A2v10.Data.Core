@@ -9,12 +9,12 @@ namespace A2v10.Data.Providers
 	{
 		public DateTime DateValue { get; set; }
 		public Decimal DecimalValue { get; set; }
-		public String StringValue { get; set; }
+		public String? StringValue { get; set; }
 		public Boolean BooleanValue { get; set; }
 
 		public FieldType FieldType { get; set; }
 
-		public Object Value
+		public Object? Value
 		{
 			get
 			{
@@ -102,7 +102,7 @@ namespace A2v10.Data.Providers
 			}
 		}
 
-		private void SetValueCsv(Object value)
+		private void SetValueCsv(Object? value)
 		{
 			if (value == null)
 				return;

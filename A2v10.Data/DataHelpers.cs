@@ -1,5 +1,4 @@
-﻿// Copyright © 2012-2020 Alex Kukhtin. All rights reserved.
-
+﻿// Copyright © 2012-2021 Alex Kukhtin. All rights reserved.
 
 using Newtonsoft.Json;
 
@@ -111,7 +110,9 @@ public static class DataHelpers
 		}
 		else
 		{
-			arr = objArr as List<ExpandoObject>;
+			if (objArr is not List<ExpandoObject> eobjArr)
+				throw new InvalidProgramException("AddToArray. Invalid element type");
+			arr = eobjArr;
 		}
 		if (value != null)
 			arr?.Add(value);
@@ -179,13 +180,13 @@ public static class DataHelpers
 		};
 	}
 
+	private static readonly JsonSerializerSettings JsonIsoDateSettings =
+		new() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateTimeZoneHandling = DateTimeZoneHandling.Utc };
 	public static Object DateTime2StringWrap(Object val)
 	{
 		if (val is not DateTime)
 			return val;
-		return "\"\\/" +
-			JsonConvert.SerializeObject(val, new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateTimeZoneHandling = DateTimeZoneHandling.Utc }) +
-			"\\/\"";
+		return $"\"\\/{ JsonConvert.SerializeObject(val, JsonIsoDateSettings)}\\/\"";
 	}
 }
 

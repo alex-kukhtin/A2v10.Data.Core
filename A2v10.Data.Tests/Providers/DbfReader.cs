@@ -46,10 +46,7 @@ namespace A2v10.Data.Providers
 		[TestMethod]
 		public void DbfReadAutoEncoding()
 		{
-			var f = new DataFile()
-			{
-				Encoding = null // AUTO
-			};
+			var f = new DataFile();
 
 			var rdr = new DbfReader(f);
 

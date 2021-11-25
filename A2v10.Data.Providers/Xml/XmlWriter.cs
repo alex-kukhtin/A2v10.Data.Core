@@ -9,12 +9,14 @@ public class XmlWriter
 {
 	private readonly DataFile _file;
 
-	public String RootElement { get; set; }
-	public String RowElement { get; set; }
+	public String RootElement { get; }
+	public String RowElement { get; }
 
-	public XmlWriter(DataFile file)
+	public XmlWriter(DataFile file, String root, String row)
 	{
 		_file = file;
+		RootElement = root;
+		RowElement = row;
 	}
 
 	public void Write(Stream stream)
@@ -42,7 +44,7 @@ public class XmlWriter
 		foreach (var f in _file.Fields)
 		{
 			Int32 ix = _file.GetOrCreateField(f.Name);
-			String val = record.StringFieldValueByIndex(ix);
+			String? val = record.StringFieldValueByIndex(ix);
 			if (val != null)
 				wr.WriteAttributeString(f.Name, val);
 		}

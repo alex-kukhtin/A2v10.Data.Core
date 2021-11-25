@@ -1,13 +1,12 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using A2v10.Data.Tests.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
 using System.Dynamic;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+using A2v10.Data.Tests.Configuration;
 
 namespace A2v10.Data.Tests
 {
@@ -44,8 +43,9 @@ namespace A2v10.Data.Tests
 			    }
             }
 			";
-			IDataModel dm = null;
+			IDataModel? dm = null;
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+			Assert.IsNotNull(dataToSave);
 			try
 			{
 				dm = await _dbContext.SaveModelAsync(null, "a2test.[NestedObject.Update]", dataToSave);
@@ -90,6 +90,7 @@ namespace A2v10.Data.Tests
             }
 			";
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+			Assert.IsNotNull(dataToSave);
 			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[NewObject.Update]", dataToSave);
 
 			var dt = new DataTester(dm, "MainObject");
@@ -117,6 +118,7 @@ namespace A2v10.Data.Tests
 			}
 			";
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+			Assert.IsNotNull(dataToSave);
 			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
 
 			var dt = new DataTester(dm, "MainObject");
@@ -147,6 +149,7 @@ namespace A2v10.Data.Tests
 			}
 			";
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+			Assert.IsNotNull(dataToSave);
 			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Json.Update]", dataToSave);
 
 			var dt = new DataTester(dm, "MainObject");
@@ -186,6 +189,7 @@ namespace A2v10.Data.Tests
 			}
 			";
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+			Assert.IsNotNull(dataToSave);
 			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Guid.Update]", dataToSave);
 
 			var dt = new DataTester(dm, "Document");
@@ -228,6 +232,7 @@ namespace A2v10.Data.Tests
 			}
 			";
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+			Assert.IsNotNull(dataToSave);
 			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Fallback.Update]", dataToSave);
 			var dt = new DataTester(dm, "Document");
 			dt.AreValueEqual(150L, "Id");

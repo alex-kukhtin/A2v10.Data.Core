@@ -57,6 +57,7 @@ namespace A2v10.Data.Tests
 
 			var eo = await _dbContext.ReadExpandoAsync(null, "a2test.[Expando.Tables]", dataToSave);
 
+			Assert.IsNotNull(eo);
 			Assert.AreEqual(45, eo.Get<Int64>("Id"));
 			Assert.AreEqual("RootName", eo.Get<String>("Name"));
 			Assert.AreEqual(3, eo.Get<Int32>("Count"));
@@ -75,6 +76,7 @@ namespace A2v10.Data.Tests
 				{"Number", 22.5 }
 			};
 			var eo = _dbContext.ReadExpando(null, "a2test.[Expando.Simple]", prms);
+			Assert.IsNotNull(eo);
 			Assert.AreEqual(55, eo.Get<Int64>("Id"));
 			Assert.AreEqual("Name", eo.Get<String>("Name"));
 			Assert.AreEqual(22.5, eo.Get<Double>("Number"));
@@ -90,6 +92,7 @@ namespace A2v10.Data.Tests
 				{"Number", 22.5 }
 			};
 			var eo = await _dbContext.ReadExpandoAsync(null, "a2test.[Expando.Simple]", prms);
+			Assert.IsNotNull(eo);
 			Assert.AreEqual(55, eo.Get<Int64>("Id"));
 			Assert.AreEqual("Name", eo.Get<String>("Name"));
 			Assert.AreEqual(22.5, eo.Get<Double>("Number"));

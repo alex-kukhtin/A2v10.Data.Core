@@ -25,7 +25,7 @@ internal class TableDescription : ITableDescription
 		return eo;
 	}
 
-	public void SetValue(ExpandoObject obj, String propName, Object value)
+	public void SetValue(ExpandoObject obj, String propName, Object? value)
 	{
 		var col = _table.Columns[propName];
 		if (col == null)
@@ -36,7 +36,7 @@ internal class TableDescription : ITableDescription
 		obj.Set(propName, val);
 	}
 
-	Object? ConvertTo(Type type, Object value)
+	Object? ConvertTo(Type type, Object? value)
 	{
 		if (value == null)
 			return null;

@@ -17,8 +17,7 @@ namespace A2v10.Data.Tests
 	[TestCategory("Data SimpleDbContext")]
 	public class TestSimpleDbContext
 	{
-
-		static IServiceProvider GetServiceProvider(Action<IServiceCollection> action = null)
+		static IServiceProvider GetServiceProvider(Action<IServiceCollection>? action = null)
 		{
 			var configuration = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")
@@ -36,7 +35,7 @@ namespace A2v10.Data.Tests
 		{
 			var sp = GetServiceProvider();
 			var dbc = sp.GetService<IDbContext>();
-
+			Assert.IsNotNull(dbc);
 			var ex = await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => {
 				return dbc.LoadModelAsync(null, "a2test.[SimpleModel.Load]");
 			});
@@ -63,6 +62,7 @@ namespace A2v10.Data.Tests
 			});
 
 			var dbc = sp.GetService<IDbContext>();
+			Assert.IsNotNull(dbc);
 			var dm = await dbc.LoadModelAsync(null, "a2test.[SimpleModel.Load]");
 			var md = new MetadataTester(dm);
 			md.IsAllKeys("TRoot,TModel");

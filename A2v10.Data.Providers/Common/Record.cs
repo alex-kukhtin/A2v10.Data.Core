@@ -19,27 +19,27 @@ public class Record : IExternalDataRecord
 		_fieldMap = fields ?? throw new ArgumentNullException(nameof(fields));
 	}
 
-	public Object FieldValue(String name)
+	public Object? FieldValue(String name)
 	{
-		name = FindFieldName(name);
-		if (name == null)
+		var xname = FindFieldName(name);
+		if (xname == null)
 			return null;
-		if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
+		if (_fieldMap.TryGetValue(xname, out Int32 fieldNo))
 		{
 			if (fieldNo >= 0 && fieldNo < DataFields.Count)
 				return DataFields[fieldNo].Value;
 		}
-		throw new ExternalDataException($"Invalid field name: '{name}'");
+		throw new ExternalDataException($"Invalid field name: '{xname}'");
 	}
 
-	public Object FieldValue(Int32 index)
+	public Object? FieldValue(Int32 index)
 	{
 		if (index >= 0 && index < DataFields.Count)
 			return DataFields[index].Value;
 		throw new ExternalDataException($"Invalid field index: {index}");
 	}
 
-	public String StringFieldValueByIndex(Int32 index)
+	public String? StringFieldValueByIndex(Int32 index)
 	{
 		if (index < DataFields.Count)
 			return DataFields[index].StringValue;
@@ -60,7 +60,7 @@ public class Record : IExternalDataRecord
 		return _fieldMap.ContainsKey(name);
 	}
 
-	public String FindFieldName(String name)
+	public String? FindFieldName(String name)
 	{
 		if (!name.Contains('|'))
 			return name;
@@ -92,15 +92,15 @@ public class Record : IExternalDataRecord
 
 	public Boolean IsFieldEmpty(String name)
 	{
-		name = FindFieldName(name);
-		if (name == null)
+		var xname = FindFieldName(name);
+		if (xname == null)
 			return true;
-		if (_fieldMap.TryGetValue(name, out Int32 fieldNo))
+		if (_fieldMap.TryGetValue(xname, out Int32 fieldNo))
 		{
 			if (fieldNo >= 0 && fieldNo < DataFields.Count)
 				return DataFields[fieldNo].IsEmpty;
 		}
-		throw new ExternalDataException($"Invalid field name: {name}");
+		throw new ExternalDataException($"Invalid field name: {xname}");
 	}
 
 	public Boolean IsEmpty

@@ -17,7 +17,7 @@ public class XmlReader : IExternalDataReader
 	public IExternalDataFile Read(Stream stream)
 	{
 		Int32 level = 0;
-		Record currentRow = null;
+		Record? currentRow = null;
 		using (var rdr = System.Xml.XmlReader.Create(stream))
 		{
 			while (rdr.Read())

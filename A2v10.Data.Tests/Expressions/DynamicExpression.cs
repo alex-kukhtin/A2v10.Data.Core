@@ -27,14 +27,14 @@ namespace A2v10.Data.Tests.Expressions
 			_dbContext = Starter.Create();
 		}
 
-		static Object CalcSimpleExpression(String expression)
+		static Object? CalcSimpleExpression(String expression)
 		{
 			var lexpr = DynamicParser.ParseLambda(null, expression);
 			var lambda = lexpr.Compile();
 			return lambda.DynamicInvoke();
 		}
 
-		static Object CalcExpression(String expression, String prm, Object value)
+		static Object? CalcExpression(String expression, String prm, Object value)
 		{
 			var prms = new ParameterExpression[] {
 				Expression.Parameter(typeof(Object), prm)

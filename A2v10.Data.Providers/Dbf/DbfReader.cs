@@ -111,8 +111,7 @@ public class DbfReader : IExternalDataReader
 				break;
 			sb.Append((Char)name[i]);
 		}
-		Field f = _file.CreateField();
-		f.Name = sb.ToString();
+		Field f = _file.CreateField(sb.ToString());
 		Char ft = (Char)rdr.ReadByte();
 		f.Type = Char2FieldType(ft);
 		rdr.ReadInt32(); // address

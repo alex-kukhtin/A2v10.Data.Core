@@ -1,9 +1,5 @@
 ﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 
 namespace A2v10.Data.Tests
 {
@@ -28,6 +24,7 @@ namespace A2v10.Data.Tests
 		public void HasAllProperties(String key, String props)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			var propArray = props.Split(',');
 			foreach (var prop in propArray)
 				Assert.IsTrue(data.ContainsField(prop), $"'{prop}' not found");
@@ -37,24 +34,28 @@ namespace A2v10.Data.Tests
 		public void IsId(String key, String prop)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.AreEqual(data.Id, prop);
 		}
 
 		public void IsKey(String key, String prop)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.AreEqual(data.Key, prop);
 		}
 
-		public void IsName(String key, String prop)
+		public void IsName(String key, String? prop)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.AreEqual(data.Name, prop);
 		}
 
 		public void IsType(String key, String propName, DataType dt)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.IsTrue(data.ContainsField(propName));
 			var fp = data.GetField(propName);
 			Assert.AreEqual(fp.DataType, dt);
@@ -63,12 +64,14 @@ namespace A2v10.Data.Tests
 		public void IsItems(String key, String prop)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.AreEqual(data.Items, prop);
 		}
 
 		public void IsItemType(String key, String propName, FieldType ft)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.IsTrue(data.ContainsField(propName), $"Invalid item type for {key}.{propName}");
 			var fp = data.GetField(propName);
 			Assert.AreEqual(fp.ItemType, ft);
@@ -77,6 +80,7 @@ namespace A2v10.Data.Tests
 		public void IsItemRefObject(String key, String propName, String refObject, FieldType ft)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.IsTrue(data.ContainsField(propName));
 			var fp = data.GetField(propName);
 			Assert.AreEqual(fp.RefObject, refObject);
@@ -86,6 +90,7 @@ namespace A2v10.Data.Tests
 		public void IsItemIsArrayLike(String key, String propName)
 		{
 			var data = _meta[key] as ElementMetadata;
+			Assert.IsNotNull(data);
 			Assert.IsTrue(data.ContainsField(propName));
 			var fp = data.GetField(propName);
 			Assert.IsTrue(fp.IsArrayLike);

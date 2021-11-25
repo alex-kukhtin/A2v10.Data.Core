@@ -11,9 +11,9 @@ namespace A2v10.Data.Tests
 {
 	public class TestParams
 	{
-		public String NVarChar { get; set; }
-		public String VarChar { get; set; }
-		public Byte[] ByteArray { get; set; }
+		public String? NVarChar { get; set; }
+		public String? VarChar { get; set; }
+		public Byte[]? ByteArray { get; set; }
 		public Decimal Money { get; set; }
 		public Double Real { get; set; }
 		public DateTime Date { get; set; }
@@ -24,9 +24,9 @@ namespace A2v10.Data.Tests
 
 	public class TestParams2
 	{
-		public String NVarChar { get; set; }
-		public String VarChar { get; set; }
-		public Byte[] ByteArray { get; set; }
+		public String? NVarChar { get; set; }
+		public String? VarChar { get; set; }
+		public Byte[]? ByteArray { get; set; }
 		public Decimal Money { get; set; }
 		public Double Real { get; set; }
 		public DateTime Date { get; set; }
@@ -86,6 +86,7 @@ namespace A2v10.Data.Tests
 			Assert.IsTrue(ts.Hours == now.Hour && ts.Minutes == now.Minute && ts.Seconds == now.Second);
 
 			var ba = dat.GetValue<Byte[]>("ByteArray");
+			Assert.IsNotNull(ba);
 			Assert.AreEqual(ba.Length, bytes.Length);
 			for (int i = 0; i < ba.Length; i++)
 				Assert.AreEqual(ba[i], bytes[i]);
@@ -116,7 +117,7 @@ namespace A2v10.Data.Tests
 
 			var dm = await _dbContext.ExecuteAndLoadAsync<TestParams2, TestParams2>(null, "a2test.[ParamTypes.ExecLoad]", prms);
 
-
+			Assert.IsNotNull(dm);	
 			Assert.AreEqual(prms.NVarChar, dm.NVarChar);
 			Assert.AreEqual(prms.VarChar, dm.VarChar);
 			Assert.AreEqual(prms.Money, dm.Money);
@@ -132,6 +133,7 @@ namespace A2v10.Data.Tests
 
 
 			var ba = dm.ByteArray;
+			Assert.IsNotNull(ba);
 			Assert.AreEqual(ba.Length, bytes.Length);
 			for (int i = 0; i < ba.Length; i++)
 				Assert.AreEqual(ba[i], bytes[i]);

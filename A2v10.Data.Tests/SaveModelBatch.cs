@@ -71,6 +71,7 @@ namespace A2v10.Data.Tests
 				{"UserId", 100 }
 			};
 
+			Assert.IsNotNull(dataToSave);
 			dm = await _dbContext.SaveModelBatchAsync(null, "a2test.[BatchModel.Update]", dataToSave, prms, batches);
 
 			var docT = new DataTester(dm, "Document");
@@ -108,11 +109,10 @@ namespace A2v10.Data.Tests
 		public async Task BatchModelRollback()
 		{
 			// DATA with ROOT
-			IDataModel dm = null;
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData, new ExpandoObjectConverter());
-
+			Assert.IsNotNull(dataToSave);
 			// initial value
-			dm = await _dbContext.SaveModelAsync(null, "a2test.[BatchModel.Update]", dataToSave);
+			var dm = await _dbContext.SaveModelAsync(null, "a2test.[BatchModel.Update]", dataToSave);
 			var rowT0 = new DataTester(dm, "Document.Rows[0]");
 			rowT0.AreValueEqual(55L, "Id");
 			rowT0.AreValueEqual(5.0, "Qty");

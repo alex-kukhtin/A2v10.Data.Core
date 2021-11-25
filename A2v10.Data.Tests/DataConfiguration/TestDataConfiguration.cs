@@ -15,7 +15,7 @@ namespace A2v10.Data.Tests
 	[TestCategory("Data Configuration")]
 	public class TestDataConfiguration
 	{
-		static IServiceProvider GetServiceProvider(IConfiguration configuration, Action<IServiceCollection> action = null)
+		static IServiceProvider GetServiceProvider(IConfiguration configuration, Action<IServiceCollection>? action = null)
 		{
 			var sc = new ServiceCollection();
 			sc.AddSingleton<IConfiguration>(configuration);
@@ -37,7 +37,7 @@ namespace A2v10.Data.Tests
 			var sp = GetServiceProvider(configuration);
 
 			var dc = sp.GetService<IDataConfiguration>();
-
+			Assert.IsNotNull(dc);
 			Assert.AreEqual("DefaultConnectionStringValue", dc.ConnectionString(null));
 			Assert.AreEqual(30, dc.CommandTimeout.TotalSeconds);
 		}
@@ -63,7 +63,7 @@ namespace A2v10.Data.Tests
 			});
 
 			var dc = sp.GetService<IDataConfiguration>();
-
+			Assert.IsNotNull(dc);
 			Assert.AreEqual("MyConnectionStringValue", dc.ConnectionString(null));
 			Assert.AreEqual(60 + 20, dc.CommandTimeout.TotalSeconds);
 		}

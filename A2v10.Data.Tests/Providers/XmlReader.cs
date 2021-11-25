@@ -24,7 +24,7 @@ namespace A2v10.Data.Providers
 		[TestMethod]
 		public void XmlReadSimpleFile()
 		{
-			var f = new DataFile();
+			var f = new DataFile(Encoding.GetEncoding(1251));
 			var rdr = new XmlReader(f);
 
 			using (var file = File.Open("testfiles/simple.xml", FileMode.Open))
@@ -32,10 +32,7 @@ namespace A2v10.Data.Providers
 				rdr.Read(file);
 			}
 
-			var wrt = new XmlWriter(f);
-			f.Encoding = Encoding.GetEncoding(1251);
-			wrt.RootElement = "ROWDATA";
-			wrt.RowElement = "ROW";
+			var wrt = new XmlWriter(f, "ROWDATA", "ROW");
 
 			using (var file = File.Create("testfiles/output.xml"))
 			{

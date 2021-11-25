@@ -30,22 +30,17 @@ public class ExternalDataContext : IExternalDataProvider
 		switch (format)
 		{
 			case "dbf":
-				var dataFileDbf = new DataFile()
-				{
-					Encoding = enc
-				};
+				var dataFileDbf = new DataFile(enc);
 				return new DbfReader(dataFileDbf);
 			case "csv":
-				var dataFileCsv = new DataFile()
-				{
-					Encoding = enc
-				};
+				var dataFileCsv = new DataFile(enc);
 				return new CsvReader(dataFileCsv);
 			case "xml":
 				var dataFileXml = new DataFile();
 				return new XmlReader(dataFileXml);
+			default:
+				throw new ExternalDataException($"Format '{format}'. Reader not found.");
 		}
-		return null;
 	}
 
 	public IExternalDataWriter GetWriter(IDataModel model, String format, Encoding enc)
@@ -54,9 +49,8 @@ public class ExternalDataContext : IExternalDataProvider
 		{
 			case "dbf":
 				{
-					var dataFileDbf = new DataFile()
+					var dataFileDbf = new DataFile(enc)
 					{
-						Encoding = enc,
 						Format = DataFileFormat.dbf
 					};
 					dataFileDbf.FillModel(model);
@@ -64,19 +58,18 @@ public class ExternalDataContext : IExternalDataProvider
 				}
 			case "csv":
 				{
-					var dataFileCsv = new DataFile()
+					var dataFileCsv = new DataFile(enc)
 					{
-						Encoding = enc,
 						Format = DataFileFormat.csv,
 						Delimiter = ';'
 					};
 					dataFileCsv.FillModel(model);
 					return new CsvWriter(dataFileCsv);
 				}
+			default:
+				throw new ExternalDataException($"Format '{format}'. Writer not found.");
 		}
-		return null;
 	}
-
 	#endregion
 }
 

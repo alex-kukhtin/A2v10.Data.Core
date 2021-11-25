@@ -18,7 +18,7 @@ namespace A2v10.Data.Tests.Configuration
 		}
 
 		#region IDataConfiguration
-		public String ConnectionString(String source)
+		public String ConnectionString(String? source)
 		{
 			if (String.IsNullOrEmpty(source))
 				source = "Default";

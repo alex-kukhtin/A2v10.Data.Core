@@ -5,7 +5,7 @@ using System.Dynamic;
 namespace A2v10.Data.Providers;
 internal class FlatTable : ITableDescription
 {
-	public IFormatProvider FormatProvider { get; set; }
+	public IFormatProvider? FormatProvider { get; set; }
 
 	private readonly List<Object> _list;
 
@@ -21,9 +21,9 @@ internal class FlatTable : ITableDescription
 		return nr;
 	}
 
-	public void SetValue(ExpandoObject obj, String propName, Object value)
+	public void SetValue(ExpandoObject obj, String propName, Object? value)
 	{
-		var d = obj as IDictionary<String, Object>;
+		var d = obj as IDictionary<String, Object?>;
 		if (d.ContainsKey(propName))
 			d[propName] = value;
 		else
@@ -33,7 +33,7 @@ internal class FlatTable : ITableDescription
 	public ExpandoObject ToObject()
 	{
 		var eo = new ExpandoObject();
-		var d = eo as IDictionary<String, Object>;
+		var d = eo as IDictionary<String, Object?>;
 		d.Add("Rows", _list);
 		return eo;
 	}

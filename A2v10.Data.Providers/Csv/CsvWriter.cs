@@ -50,13 +50,15 @@ public class CsvWriter : IExternalDataWriter
 		{
 			if (sb.Length > 0)
 				sb.Append(_file.Delimiter);
-			sb.Append(EscapeString(df.StringValue));
+			sb.Append(EscapeString(df?.StringValue));
 		}
 		return sb.ToString();
 	}
 
-	String EscapeString(String str)
+	String? EscapeString(String? str)
 	{
+		if (str == null)
+			return null;
 		if (str.IndexOfAny(new Char[] { _file.Delimiter, '"', '\n', '\r' }) != -1)
 		{
 			return $"\"{str.Replace("\"", "\"\"")}\"";

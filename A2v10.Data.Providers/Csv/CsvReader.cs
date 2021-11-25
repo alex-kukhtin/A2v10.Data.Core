@@ -155,8 +155,7 @@ public class CsvReader : IExternalDataReader
 		var fields = ParseLine(header);
 		for (var i = 0; i < fields.Count; i++)
 		{
-			var f = _file.CreateField();
-			f.Name = fields[i];
+			var f = _file.CreateField(fields[i]);
 		}
 		_file.MapFields();
 	}

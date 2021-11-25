@@ -14,7 +14,7 @@ public static class DynamicParser
 		return parser.Parse();
 	}
 
-	public static LambdaExpression ParseLambda(ParameterExpression[] parameters, String expression)
+	public static LambdaExpression ParseLambda(ParameterExpression[]? parameters, String expression)
 	{
 		ExpressionParser parser = new(parameters, expression);
 		return Expression.Lambda(parser.Parse(), parameters);

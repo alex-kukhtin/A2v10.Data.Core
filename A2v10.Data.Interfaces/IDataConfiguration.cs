@@ -4,7 +4,7 @@ namespace A2v10.Data.Interfaces;
 
 public interface IDataConfiguration
 {
-	String? ConnectionString(String? source);
+	String ConnectionString(String? source);
 	TimeSpan CommandTimeout { get; }
 }
 

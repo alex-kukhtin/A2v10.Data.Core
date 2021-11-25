@@ -1,12 +1,11 @@
-﻿using System;
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-namespace A2v10.Data.Interfaces
+namespace A2v10.Data.Interfaces;
+public class NullDataProfiler : IDataProfiler
 {
-	public class NullDataProfiler : IDataProfiler
+	public IDisposable? Start(String command)
 	{
-		public IDisposable Start(String command)
-		{
-			return null;
-		}
+		return null;
 	}
 }
+

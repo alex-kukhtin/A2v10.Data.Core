@@ -94,7 +94,8 @@ namespace A2v10.Data.Tests
 	}]
 }}";
 			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-			IDataModel dm = null;
+			Assert.IsNotNull(dataToSave);
+			IDataModel? dm = null;
 			try
 			{
 				dm = await _dbContext.SaveModelAsync(null, "a2test.[Document.RowsMethods.Update]", dataToSave);

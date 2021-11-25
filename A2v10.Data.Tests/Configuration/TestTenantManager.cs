@@ -14,7 +14,7 @@ namespace A2v10.Data.Tests.Configuration
 
 	public class TestTenantManager : ITenantManager
 	{
-		public ITenantInfo GetTenantInfo(String source)
+		public ITenantInfo? GetTenantInfo(String? source)
 		{
 			return new TenantInfo();
 		}

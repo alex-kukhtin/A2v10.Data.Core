@@ -3,7 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>10.0</LangVersion>
-		<Version>10.0.7269</Version>
+		<Nullable>enable</Nullable>
+		<Version>10.0.7300</Version>
 		<Product>A2v10</Product>
 		<Authors>Alex Kukthin</Authors>
 		<Copyright>Copyright © 2015-2021 Oleksandr Kukhtin. All rights reserved.</Copyright>

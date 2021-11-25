@@ -9,50 +9,20 @@ public sealed class DataLoaderException : Exception
 		: base(message)
 	{
 	}
-
-	public DataLoaderException()
-	{
-	}
-
-	public DataLoaderException(String message, Exception innerException) : base(message, innerException)
-	{
-	}
 }
 
-public class DataWriterException : Exception
+public sealed class DataWriterException : Exception
 {
 	public DataWriterException(String message)
 		: base(message)
 	{
 	}
-
-	public DataWriterException()
-	{
-	}
-
-	public DataWriterException(String message, Exception innerException)
-		: base(message, innerException)
-	{
-	}
-
-	protected DataWriterException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
-	{
-		throw new NotImplementedException();
-	}
 }
 
-public class DataDynamicException : Exception
+public sealed class DataDynamicException : Exception
 {
 	public DataDynamicException(String message)
 		: base(message)
-	{
-	}
-
-	public DataDynamicException()
-	{
-	}
-
-	public DataDynamicException(String message, Exception innerException) : base(message, innerException)
 	{
 	}
 }

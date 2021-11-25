@@ -4,6 +4,6 @@ namespace A2v10.Data.Interfaces;
 
 public interface IDataProfiler
 {
-	IDisposable Start(String command);
+	IDisposable? Start(String command);
 }
 

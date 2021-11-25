@@ -3,20 +3,18 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>10.0</LangVersion>
-		<Version>10.0.7268</Version>
+		<Nullable>enable</Nullable>
+		<Version>10.0.7300</Version>
 
 		<IsPackable>false</IsPackable>
 
 		<UserSecretsId>ae859289-41f3-465c-9d47-8a42f7ef06fb</UserSecretsId>
 
-		<AssemblyVersion>10.0.7265.0</AssemblyVersion>
-		<Version>10.0.7265</Version>
-
-		<Authors>Alex Kukthin</Authors>
+		<Authors>Oleksandr Kukthin</Authors>
 
 		<Product>A2v10.Data</Product>
 
-		<Copyright>Copyright © 2015-2021 Alex Kukhtin. All rights reserved.</Copyright>
+		<Copyright>Copyright © 2015-2021 Oleksandr Kukhtin. All rights reserved.</Copyright>
 	</PropertyGroup>
 
 	<ItemGroup>
