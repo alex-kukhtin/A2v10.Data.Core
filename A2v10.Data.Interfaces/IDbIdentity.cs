@@ -5,6 +5,6 @@ public interface IDbIdentity
 {
 	Int64? UserId { get; }
 	Int32? TenantId { get; }
-	String Segment { get; }
+	String? Segment { get; }
 }
 
