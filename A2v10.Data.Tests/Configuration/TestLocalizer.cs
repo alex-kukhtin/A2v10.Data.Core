@@ -21,8 +21,10 @@ namespace A2v10.Data.Tests.Configuration
 		}
 
 		#region IDataLocalizer
-		public String Localize(String content)
+		public String? Localize(String? content)
 		{
+			if (content == null)
+				return null;
 			if (_dict.TryGetValue(content, out String? outValue))
 				return outValue;
 			return content;

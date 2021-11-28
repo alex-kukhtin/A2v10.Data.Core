@@ -123,7 +123,8 @@ public class DataModelReader
 	{
 		var val = rdr.GetString(0);
 		val = _localizer.Localize(val);
-		_root.Add(fi.PropertyName, JsonConvert.DeserializeObject<ExpandoObject>(val));
+		if (val != null)
+			_root.Add(fi.PropertyName, JsonConvert.DeserializeObject<ExpandoObject>(val));
 
 	}
 
@@ -208,7 +209,7 @@ public class DataModelReader
 				case SpecType.Filter:
 					if (String.IsNullOrEmpty(fi.TypeName))
 						throw new DataLoaderException("For the Filter modifier, the field name must be specified");
-					Object filter = dataVal;
+					Object? filter = dataVal;
 					var xs = fi.TypeName.Split('.');
 					if (xs.Length < 2)
 						throw new DataLoaderException("For the Filter modifier, the field name must be as ItemProperty.FilterProperty");
@@ -295,7 +296,11 @@ public class DataModelReader
 			else if (fi.IsJson)
 			{
 				if (dataVal != null)
-					AddValueToRecord(currentRecord, fi, JsonConvert.DeserializeObject<ExpandoObject>(_localizer.Localize(dataVal.ToString()!)));
+				{
+					var strloc = _localizer.Localize(dataVal.ToString());
+					if (strloc != null)
+						AddValueToRecord(currentRecord, fi, JsonConvert.DeserializeObject<ExpandoObject>(strloc));
+				}
 				continue;
 			}
 			else if (fi.IsPermissions)
