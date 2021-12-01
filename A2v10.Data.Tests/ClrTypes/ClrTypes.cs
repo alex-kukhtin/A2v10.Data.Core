@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
-
+using System.Dynamic;
 
 namespace A2v10.Data.Tests
 {
@@ -27,6 +27,7 @@ namespace A2v10.Data.Tests
 		public Int32? Int32ValueNull { get; set; }
 		public Severity Severity { get; set; }
 		public Severity? SeverityNull { get; set; }
+		public ExpandoObject? Json { get; set; }
 	}
 
 	public record BinaryItem
@@ -67,6 +68,25 @@ namespace A2v10.Data.Tests
 			Assert.AreEqual(Severity.Warning, item?.Severity);
 			Assert.IsNull(item?.SeverityNull);
 		}
+
+		[TestMethod]
+		public async Task LoadJsonAsync()
+		{
+			var item = await _dbContext.LoadAsync<ListItem>(null, "a2test.[ClrTypes.LoadJson]", null);
+
+			Assert.IsNotNull(item);
+			Assert.AreEqual("String 1", item?.StringValue);
+			Assert.AreEqual(22, item?.Int32Value);
+			Assert.IsNull(item?.Int32ValueNull);
+			Assert.AreEqual(Severity.Warning, item?.Severity);
+			Assert.IsNull(item?.SeverityNull);
+			Assert.IsNotNull(item?.Json);
+            Assert.AreEqual("string", item.Json.Get<String>("strval"));
+			Assert.AreEqual(22, item.Json.Get<Int64>("numval"));
+			Assert.AreEqual(7.5, item.Json.Get<Double>("dblval"));
+			Assert.AreEqual(true, item.Json.Get<Boolean>("boolval"));
+		}
+
 
 		[TestMethod]
 		public async Task LoadListAsync()

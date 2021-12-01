@@ -1,7 +1,6 @@
 ﻿-- Copyright © 2008-2021 Alex Kukhtin
 
-/* 20211001-7269 */
-
+/* 20211201-7303 */
 
 use a2v10test;
 go
@@ -1317,7 +1316,15 @@ begin
 	select StringValue = N'String 1', Int32Value = 22, Int32ValueNull = null, Severity = N'Warning', SeverityNull = null;
 end
 go
-
+------------------------------------------------
+create or alter procedure a2test.[ClrTypes.LoadJson]
+as
+begin
+	set nocount on;
+	select StringValue = N'String 1', Int32Value = 22, Int32ValueNull = null, Severity = N'Warning', 
+		SeverityNull = null, [Json]= N'{"strval":"string", "numval": 22, "dblval": 7.5, "boolval": true}';
+end
+go
 ------------------------------------------------
 create or alter procedure a2test.[ClrTypes.LoadBinary]
 as

@@ -40,6 +40,8 @@ public abstract class LoadHelperBase<T> where T : class
 				var pt = p.PropertyType.GetNonNullableType();
 				if (pt.IsEnum)
 					p.SetValue(result, Enum.Parse(pt, dbVal.ToString()!));
+				else if (pt == typeof(ExpandoObject))
+					p.SetValue(result, DataHelpers.DeserializeJson(dbVal.ToString()));
 				else if (pt.IsAssignableFrom(typeof(MemoryStream)))
 				{
 					if (dbVal is Byte[] dbByteArray)

@@ -188,6 +188,13 @@ public static class DataHelpers
 			return val;
 		return $"\"\\/{ JsonConvert.SerializeObject(val, JsonIsoDateSettings)}\\/\"";
 	}
+
+	public static ExpandoObject? DeserializeJson(String? data)
+	{
+		if (data == null)
+			return null;
+		return JsonConvert.DeserializeObject<ExpandoObject>(data);
+	}
 }
 
 public class DataHelper : IDataHelper
