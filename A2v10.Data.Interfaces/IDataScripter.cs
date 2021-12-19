@@ -1,26 +1,23 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
 using System.Threading.Tasks;
 
 namespace A2v10.Data.Interfaces;
 
-public class ScriptInfo
-{
-	public String? Script;
-	public String? DataScript;
-}
+public record ScriptInfo(String? Script, String? DataScript);
 
-public class ModelScriptInfo
+public record ModelScriptInfo
 {
-	public Boolean Admin;
-	public String? Template;
-	public String? Path;
-	public String? BaseUrl;
-	public IDataModel? DataModel;
+	public Boolean Admin { get; init; }
+	public String? Template { get; init; }
+	public String? Path { get; init; }
+	public String? BaseUrl { get; init; }
+	public IDataModel? DataModel { get; init; }
 
-	public String? RootId;
-	public Boolean IsDialog;
-	public String? RawData;
+	public String? RootId { get; init; }
+	public Boolean IsDialog { get; init; }
+	public Boolean IsIndex { get; init; }
+	public String? RawData { get; init; }
 }
 
 public interface IDataScripter
