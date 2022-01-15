@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ public interface IDbContext
 
 	IDataModel SaveModel(String? source, String command, ExpandoObject data, Object? prms = null, Int32 commandTimeout = 0);
 	Task<IDataModel> SaveModelAsync(String? source, String command, ExpandoObject data, Object? prms = null, Func<ITableDescription, ExpandoObject>? onSetData = null, Int32 commandTimeout = 0);
-	Task<IDataModel> SaveModelBatchAsync(String? source, String command, ExpandoObject data, Object? prms = null, IEnumerable<BatchProcedure>? batches = null);
+	Task<IDataModel> SaveModelBatchAsync(String? source, String command, ExpandoObject data, Object? prms = null, IEnumerable<BatchProcedure>? batches = null, Int32 commandTimeout = 0);
 
 	T? Load<T>(String? source, String command, Object? prms = null) where T : class;
 	Task<T?> LoadAsync<T>(String? source, String command, Object? prms = null) where T : class;

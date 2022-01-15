@@ -26,6 +26,8 @@ namespace A2v10.Data.Tests.Configuration
 		}
 
 		public TimeSpan CommandTimeout => _config.GetValue<TimeSpan>("A2v10:Data:CommandTimeout");
+
+		public Boolean IsWriteMetadataCacheEnabled => true;
 		#endregion;
 	}
 }

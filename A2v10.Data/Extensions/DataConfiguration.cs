@@ -1,4 +1,4 @@
-﻿// Copyright © 2020-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2020-2022 Alex Kukhtin. All rights reserved.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -8,6 +8,7 @@ public class DataConfigurationOptions
 {
 	public String ConnectionStringName { get; set; } = "DefaultConnection";
 	public TimeSpan DefaultCommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
+	public Boolean DisableWriteMetadataCaching { get; set; } = false;
 }
 
 public class DataConfiguration : IDataConfiguration
@@ -34,6 +35,8 @@ public class DataConfiguration : IDataConfiguration
 			source = _options.ConnectionStringName;
 		return _config.GetConnectionString(source);
 	}
+
+	public Boolean IsWriteMetadataCacheEnabled => !_options.DisableWriteMetadataCaching;
 	#endregion
 }
 

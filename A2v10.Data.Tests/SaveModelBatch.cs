@@ -87,6 +87,8 @@ namespace A2v10.Data.Tests
 			rowT1.AreValueEqual(66L, "Id");
 			rowT1.AreValueEqual(12.0, "Qty");
 
+			Assert.IsNotNull(dataToSave);
+			dm = await _dbContext.SaveModelBatchAsync(null, "a2test.[BatchModel.Update]", dataToSave, prms, batches);
 
 			dm = await _dbContext.LoadModelAsync(null, "a2test.[BatchModel.Load]", new { Id = 45 });
 

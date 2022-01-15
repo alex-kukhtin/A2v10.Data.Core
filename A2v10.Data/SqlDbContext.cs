@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Data.SqlClient;
@@ -19,6 +19,7 @@ public class SqlDbContext : IDbContext
 	private readonly IDataLocalizer _localizer;
 	private readonly ITenantManager? _tenantManager;
 	private readonly ITokenProvider? _tokenProvider;
+	private readonly MetadataCache _metadataCache;
 
 	public SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDataLocalizer localizer, ITenantManager? tenantManager = null, ITokenProvider? tokenProvider = null)
 	{
@@ -27,6 +28,8 @@ public class SqlDbContext : IDbContext
 		_localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 		_tenantManager = tenantManager;
 		_tokenProvider = tokenProvider;
+		_metadataCache = new(_config.IsWriteMetadataCacheEnabled);
+
 	}
 
 	Int32 CommandTimeout => (Int32)_config.CommandTimeout.TotalSeconds;
@@ -338,7 +341,7 @@ public class SqlDbContext : IDbContext
 		using var token = _profiler.Start(command);
 		using var cnn = GetConnection(source);
 		using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
-		SqlCommandBuilder.DeriveParameters(cmd);
+		_metadataCache.DeriveParameters(cmd);
 		var retParam = SetParametersWithList<T>(cmd, prms, list);
 		cmd.ExecuteNonQuery();
 		SetReturnParamResult(retParam, prms);
@@ -350,20 +353,46 @@ public class SqlDbContext : IDbContext
 		using var cnn = await GetConnectionAsync(source);
 		using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
 
-		SqlCommandBuilder.DeriveParameters(cmd);
+		_metadataCache.DeriveParameters(cmd);
 		var retParam = SetParametersWithList<T>(cmd, prms, list);
 		await cmd.ExecuteNonQueryAsync();
 		SetReturnParamResult(retParam, prms);
 	}
 
+	internal WriterMetadata GetWriterMetadata(String command, SqlConnection connection, Int32 commandTimeout = 0)
+    {
+		var metadataCommand = command.Update2Metadata();
+		if (_config.IsWriteMetadataCacheEnabled)
+		{
+			var wm = _metadataCache.GetWriterMetadata(metadataCommand);
+			if (wm != null)
+				return wm;
+		}
+		var writerMetadata = new WriterMetadata();
+		using (var cmd = connection.CreateCommandSP(metadataCommand, CommandTimeout))
+		{
+			if (commandTimeout != 0)
+				cmd.CommandTimeout = commandTimeout;
+			using var rdr = cmd.ExecuteReader();
+			do
+			{
+				writerMetadata.ProcessOneMetadata(rdr);
+			}
+			while (rdr.NextResult());
+		}
+		_metadataCache.AddWriterMetadata(metadataCommand, writerMetadata);
+		return writerMetadata;
+	}
+
 	public IDataModel SaveModel(String? source, String command, ExpandoObject data, Object? prms = null, Int32 commandTimeout = 0)
 	{
 		var dataReader = new DataModelReader(_localizer, _tokenProvider);
-		var dataWriter = new DataModelWriter();
 
 		using var token = _profiler.Start(command);
-		var metadataCommand = command.Update2Metadata();
+		//var metadataCommand = command.Update2Metadata();
 		using var cnn = GetConnection(source);
+		using var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
+		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
 		{
 			if (commandTimeout != 0)
@@ -375,11 +404,12 @@ public class SqlDbContext : IDbContext
 			}
 			while (rdr.NextResult());
 		}
+		*/
 		using (var cmd = cnn.CreateCommandSP(command, CommandTimeout))
 		{
 			if (commandTimeout != 0)
 				cmd.CommandTimeout = commandTimeout;
-			SqlCommandBuilder.DeriveParameters(cmd);
+			_metadataCache.DeriveParameters(cmd);
 			dataWriter.SetTableParameters(cmd, data, prms);
 			using var rdr = cmd.ExecuteReader();
 			do
@@ -399,12 +429,13 @@ public class SqlDbContext : IDbContext
 	public async Task<IDataModel> SaveModelAsync(String? source, String command, ExpandoObject data, Object? prms = null, Func<ITableDescription, ExpandoObject>? onSetData = null, Int32 commandTimeout = 0)
 	{
 		var dataReader = new DataModelReader(_localizer, _tokenProvider);
-		var dataWriter = new DataModelWriter();
 		using var token = _profiler.Start(command);
 
-		var metadataCommand = command.Update2Metadata();
+		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
+		using var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
 
+		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
 		{
 			if (commandTimeout != 0)
@@ -416,6 +447,7 @@ public class SqlDbContext : IDbContext
 			}
 			while (await rdr.NextResultAsync());
 		}
+		*/
 		if (onSetData != null)
 			data = onSetData(dataWriter.GetTableDescription());
 
@@ -423,7 +455,7 @@ public class SqlDbContext : IDbContext
 		{
 			if (commandTimeout != 0)
 				cmd.CommandTimeout = commandTimeout;
-			SqlCommandBuilder.DeriveParameters(cmd);
+			_metadataCache.DeriveParameters(cmd);
 			dataWriter.SetTableParameters(cmd, data, prms);
 			using var rdr = await cmd.ExecuteReaderAsync();
 			do
@@ -441,20 +473,21 @@ public class SqlDbContext : IDbContext
 	}
 
 
-	public async Task<IDataModel> SaveModelBatchAsync(String? source, String command, ExpandoObject data, Object? prms = null, IEnumerable<BatchProcedure>? batches = null)
+	public async Task<IDataModel> SaveModelBatchAsync(String? source, String command, ExpandoObject data, Object? prms = null, IEnumerable<BatchProcedure>? batches = null, Int32 commandTimeout = 0)
 	{
 		if (batches == null || !batches.Any())
 			return await SaveModelAsync(source, command, data, prms);
 
 		var dataReader = new DataModelReader(_localizer, _tokenProvider);
-		var dataWriter = new DataModelWriter();
 		var batchBuilder = new BatchCommandBuilder();
 
 		using var token = _profiler.Start(command);
 
-		var metadataCommand = command.Update2Metadata();
+		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
+		using var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
 
+		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
 		{
 			using var rdr = await cmd.ExecuteReaderAsync();
@@ -464,11 +497,12 @@ public class SqlDbContext : IDbContext
 			}
 			while (await rdr.NextResultAsync());
 		}
+		*/
 
 		// main update
 		using (var cmdUpdate = cnn.CreateCommandSP(command, CommandTimeout))
 		{
-			SqlCommandBuilder.DeriveParameters(cmdUpdate);
+			_metadataCache.DeriveParameters(cmdUpdate);
 			dataWriter.SetTableParameters(cmdUpdate, data, prms);
 			batchBuilder.AddMainCommand(cmdUpdate);
 		}
@@ -477,7 +511,7 @@ public class SqlDbContext : IDbContext
 		foreach (var batch in batches)
 		{
 			using var cmdBatch = cnn.CreateCommandSP(batch.Procedure, CommandTimeout);
-			SqlCommandBuilder.DeriveParameters(cmdBatch);
+			_metadataCache.DeriveParameters(cmdBatch);
 			batchBuilder.AddBatchCommand(cmdBatch, batch, index++);
 		}
 
@@ -505,11 +539,11 @@ public class SqlDbContext : IDbContext
 
 	#endregion
 
-	static SqlParameter? SetParametersFromExpandoObject(SqlCommand cmd, ExpandoObject? element)
+	SqlParameter? SetParametersFromExpandoObject(SqlCommand cmd, ExpandoObject? element)
 	{
 		if (element == null)
 			return null;
-		SqlCommandBuilder.DeriveParameters(cmd);
+		_metadataCache.DeriveParameters(cmd);
 		var sqlParams = cmd.Parameters;
 		SqlParameter? retParam = null;
 		if (cmd.Parameters.Contains(RET_PARAM_NAME))
@@ -584,11 +618,11 @@ public class SqlDbContext : IDbContext
 		return table;
 	}
 
-	static SqlParameter? SetParametersFrom<T>(SqlCommand cmd, T element)
+	SqlParameter? SetParametersFrom<T>(SqlCommand cmd, T element)
 	{
 		Type retType = typeof(T);
 		var props = retType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-		SqlCommandBuilder.DeriveParameters(cmd);
+		_metadataCache.DeriveParameters(cmd);
 		var sqlParams = cmd.Parameters;
 		SqlParameter? retParam = null;
 		if (cmd.Parameters.Contains(RET_PARAM_NAME))

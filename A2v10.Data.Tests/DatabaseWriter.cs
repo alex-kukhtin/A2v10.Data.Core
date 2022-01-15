@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -75,6 +75,8 @@ namespace A2v10.Data.Tests
 			tdsubarray.AreArrayValueEqual(8, 1, "X");
 			tdsubarray.AreArrayValueEqual(9, 1, "Y");
 			tdsubarray.AreArrayValueEqual(7.23M, 1, "D");
+
+			dm = await _dbContext.SaveModelAsync(null, "a2test.[NestedObject.Update]", dataToSave);
 		}
 
 		[TestMethod]
@@ -125,6 +127,15 @@ namespace A2v10.Data.Tests
 			dt.AreValueEqual("null", "RootId");
 			dt.AreValueEqual("null", "SubId");
 			dt.AreValueEqual("null", "SubIdString");
+
+			IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
+			dt = new DataTester(dm2, "MainObject");
+			dt.AreValueEqual("null", "RootId");
+			dt.AreValueEqual("null", "SubId");
+			dt.AreValueEqual("null", "SubIdString");
+
+			Assert.IsNotNull(dataToSave);
+			dm = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
 		}
 
 		[TestMethod]
@@ -168,6 +179,12 @@ namespace A2v10.Data.Tests
 			dt.AreValueEqual(112233L, "Id");
 			dt.AreValueEqual("Test Agent", "Name");
 			dt.AreValueEqual("CODE", "Code");
+
+			IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[Json.Update]", dataToSave);
+			dt = new DataTester(dm2, "MainObject");
+			dt.AreValueEqual("null", "RootId");
+			dt.AreValueEqual("not null", "SubId");
+			dt.AreValueEqual("null", "SubIdString");
 		}
 
 		[TestMethod]
@@ -214,6 +231,21 @@ namespace A2v10.Data.Tests
 			subrows.AreArrayValueEqual(2, 1, "RowNo");
 			subrows.AreArrayValueEqual(1, 0, "ParentRN"); // 1-based
 			subrows.AreArrayValueEqual(1, 1, "ParentRN");
+
+			// next time
+			IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[Guid.Update]", dataToSave);
+			dt = new DataTester(dm2, "Document");
+			dt.AreValueEqual(150L, "Id");
+			rows = new DataTester(dm, "Document.Rows");
+			rows.IsArray(2);
+			rows.IsArray(2);
+			rows.AreArrayValueEqual(guid, 0, "ParentGuid");
+			rows.AreArrayValueEqual(guid, 1, "ParentGuid");
+			rows.AreArrayValueEqual(10L, 0, "Id");
+			rows.AreArrayValueEqual(20L, 1, "Id");
+			rows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
+			rows.AreArrayValueEqual(2, 1, "RowNo");
+
 		}
 
 		[TestMethod]
@@ -244,6 +276,20 @@ namespace A2v10.Data.Tests
 			nv0.AreValueEqual("Value3", "Value");
 
 			var nv1 = new DataTester(dm, "Document.Rows[1].Nested");
+			nv1.AreValueEqual(5, "Key");
+			nv1.AreValueEqual("Value5", "Value");
+
+			dm = await _dbContext.SaveModelAsync(null, "a2test.[Fallback.Update]", dataToSave);
+			dt = new DataTester(dm, "Document");
+			dt.AreValueEqual(150L, "Id");
+			rows = new DataTester(dm, "Document.Rows");
+			rows.IsArray(2);
+
+			nv0 = new DataTester(dm, "Document.Rows[0].Nested");
+			nv0.AreValueEqual(3, "Key");
+			nv0.AreValueEqual("Value3", "Value");
+
+			nv1 = new DataTester(dm, "Document.Rows[1].Nested");
 			nv1.AreValueEqual(5, "Key");
 			nv1.AreValueEqual("Value5", "Value");
 		}

@@ -5,6 +5,7 @@ namespace A2v10.Data.Interfaces;
 public interface IDataConfiguration
 {
 	String ConnectionString(String? source);
-	TimeSpan CommandTimeout { get; }
+	TimeSpan CommandTimeout { get; }	
+	Boolean IsWriteMetadataCacheEnabled { get; }
 }
 
