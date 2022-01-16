@@ -6,10 +6,10 @@ namespace A2v10.Data;
 
 internal class WriterMetadata
 {
-	private readonly IDictionary<String, Tuple<DataTable, String>> _tables = new Dictionary<String, Tuple<DataTable, String>>();
+	private readonly IDictionary<String, DataTablePatternTuple> _tables = new Dictionary<String, DataTablePatternTuple>();
 	private readonly IDictionary<String, String> _jsonParams = new Dictionary<String, String>();
 
-	internal IDictionary<String, Tuple<DataTable, String>> Tables => _tables;
+	internal IDictionary<String, DataTablePatternTuple> Tables => _tables;
 	internal IDictionary<String, String> JsonParams => _jsonParams;
 	internal void ProcessOneMetadata(IDataReader rdr)
 	{
@@ -26,7 +26,7 @@ internal class WriterMetadata
 		}
 		else
 		{
-			var table = new DataTable();
+			var table = new DataTablePattern();
 			var schemaTable = rdr.GetSchemaTable();
 			if (schemaTable == null)
 				return;
@@ -42,18 +42,12 @@ internal class WriterMetadata
 						throw new DataWriterException($"Field name '{rsName}' is invalid. 'Name!!Modifier' expected.");
 					fn = fx[0];
 				}
-				var fieldColumn = new DataColumn(fn, ftp);
+				var fieldColumn = new DataColumnPattern(fn, ftp);
 				if (ftp == typeof(String))
 					fieldColumn.MaxLength = Convert.ToInt32(schemaTable.Rows[c]["ColumnSize"]);
-				table.Columns.Add(fieldColumn);
+				table.AddColumn(fieldColumn);
 			}
-			_tables.Add("@" + paramName, new Tuple<DataTable, String>(table, tablePath));
+			_tables.Add("@" + paramName, new DataTablePatternTuple(table, tablePath));
 		}
 	}
-
-	internal void Clear()
-    {
-		foreach (var t in _tables)
-			t.Value.Item1.Clear();
-    }
 }

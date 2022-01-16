@@ -65,6 +65,12 @@ namespace A2v10.Data.Tests
 			Assert.AreEqual("Elem 55,Elem 56,Elem 57", eo.Get<String>("Text"));
 
 			eo = await _dbContext.ReadExpandoAsync(null, "a2test.[Expando.Tables]", dataToSave);
+			Assert.IsNotNull(eo);
+			Assert.AreEqual(45, eo.Get<Int64>("Id"));
+			Assert.AreEqual("RootName", eo.Get<String>("Name"));
+			Assert.AreEqual(3, eo.Get<Int32>("Count"));
+			Assert.AreEqual(55 + 56 + 57, eo.Get<Int64>("Sum"));
+			Assert.AreEqual("Elem 55,Elem 56,Elem 57", eo.Get<String>("Text"));
 		}
 
 

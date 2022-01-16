@@ -1,6 +1,5 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using System.Data;
 using System.Globalization;
 
 namespace A2v10.Data;
@@ -9,10 +8,10 @@ internal class TableDescription : ITableDescription
 
 	public IFormatProvider? FormatProvider { get; set; }
 
-	private readonly DataTable _table;
+	private readonly DataTablePattern _table;
 	private readonly List<Object> _list;
 
-	public TableDescription(DataTable table)
+	public TableDescription(DataTablePattern table)
 	{
 		_table = table;
 		_list = new List<Object>();
@@ -27,7 +26,7 @@ internal class TableDescription : ITableDescription
 
 	public void SetValue(ExpandoObject obj, String propName, Object? value)
 	{
-		var col = _table.Columns[propName];
+		var col = _table.GetColumn(propName);
 		if (col == null)
 			return;
 		var val = ConvertTo(col.DataType, value);

@@ -97,6 +97,11 @@ namespace A2v10.Data.Tests
 
 			var dt = new DataTester(dm, "MainObject");
 			dt.AreValueEqual("Id is null", "Name");
+
+			dm = await _dbContext.SaveModelAsync(null, "a2test.[NewObject.Update]", dataToSave);
+
+			dt = new DataTester(dm, "MainObject");
+			dt.AreValueEqual("Id is null", "Name");
 		}
 
 		[TestMethod]

@@ -391,7 +391,7 @@ public class SqlDbContext : IDbContext
 		using var token = _profiler.Start(command);
 		//var metadataCommand = command.Update2Metadata();
 		using var cnn = GetConnection(source);
-		using var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
+		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
 		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
 		{
@@ -433,7 +433,7 @@ public class SqlDbContext : IDbContext
 
 		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
-		using var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
+		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
 
 		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
@@ -485,7 +485,7 @@ public class SqlDbContext : IDbContext
 
 		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
-		using var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
+		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
 
 		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))

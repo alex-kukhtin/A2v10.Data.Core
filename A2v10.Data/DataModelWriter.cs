@@ -8,25 +8,13 @@ using Newtonsoft.Json;
 
 namespace A2v10.Data;
 
-internal class DataModelWriter : IDisposable
+internal class DataModelWriter
 {
-	//private readonly IDictionary<String, Tuple<DataTable, String>> _tables = new Dictionary<String, Tuple<DataTable, String>>();
-	//private readonly IDictionary<String, String> _jsonParams = new Dictionary<String, String>();
-
 	private readonly WriterMetadata _writerMetadata;
-
-	public void Dispose()
-    {
-		_writerMetadata.Clear();
-    }
 
 	public DataModelWriter(WriterMetadata writerMetadata)
     {
 		_writerMetadata = writerMetadata;
-	}
-	internal void ProcessOneMetadataOld(IDataReader rdr)
-	{
-		_writerMetadata.ProcessOneMetadata(rdr);
 	}
 
 	internal void SetTableParameters(SqlCommand cmd, ExpandoObject data, Object? prms)
@@ -38,12 +26,12 @@ internal class DataModelWriter : IDisposable
 			var simpleParamName = prm.ParameterName[1..]; /*skip @*/
 			if (prm.SqlDbType == SqlDbType.Structured)
 			{
-				if (_writerMetadata.Tables.TryGetValue(prm.ParameterName, out Tuple<DataTable, String>? table))
+				if (_writerMetadata.Tables.TryGetValue(prm.ParameterName, out DataTablePatternTuple? table))
 				{
 					// table parameters (binging by object name)
-					table.Item1.Clear();
-					FillDataTable(table.Item1, GetDataForSave(data, table.Item2 /*path*/));
-					prm.Value = table.Item1;
+					var dt = table.Table.ToDataTable();
+					FillDataTable(dt, GetDataForSave(data, table.Path /*path*/));
+					prm.Value = dt;
 					prm.RemoveDbName(); // remove first segment (database name)
 				}
 				else
@@ -81,7 +69,7 @@ internal class DataModelWriter : IDisposable
 	{
 		if (dbVal == DBNull.Value)
 			return dbVal;
-		if (colName.EndsWith("Id") && dataType == typeof(Int64))
+		if (colName.EndsWith("Id") && (dataType == typeof(Int64) || dataType == typeof(Int32)))
 		{
 			if (dbVal.ToString() == "0")
 				return DBNull.Value;
@@ -158,13 +146,13 @@ internal class DataModelWriter : IDisposable
 					for (Int32 j = 0; j < expList.Count; j++)
 					{
 						var currVal = expList[j];
-						currVal.Set("RowNumber", j + 1);
-						currVal.SetNotNull("ParentId", currentId);
-						currVal.SetNotNull("ParentKey", parentKey);
-						var rowGuid = currVal.GetOrCreate<Guid>("GUID", () => Guid.NewGuid());
+						currVal.Set(Const.Fileds.RowNumber, j + 1);
+						currVal.SetNotNull(Const.Fileds.ParentId, currentId);
+						currVal.SetNotNull(Const.Fileds.ParentKey, parentKey);
+						var rowGuid = currVal.GetOrCreate<Guid>(Const.Fileds.Guid, () => Guid.NewGuid());
 						if (parentIndex != null)
-							currVal.Set("ParentRowNumber", parentIndex.Value + 1);
-						currVal.SetNotNull("ParentGUID", parentGuid);
+							currVal.Set(Const.Fileds.ParentRowNumber, parentIndex.Value + 1);
+						currVal.SetNotNull(Const.Fileds.ParentGuid, parentGuid);
 						if (bLast)
 							yield return currVal;
 						else
@@ -183,13 +171,13 @@ internal class DataModelWriter : IDisposable
 					{
 						if (listObj[j] is not ExpandoObject currVal)
 							continue;
-						currVal.Set("RowNumber", j + 1);
-						currVal.SetNotNull("ParentId", currentId);
-						currVal.SetNotNull("ParentKey", parentKey);
-						var rowGuid = currVal.GetOrCreate<Guid>("GUID", () => Guid.NewGuid());
+						currVal.Set(Const.Fileds.RowNumber, j + 1);
+						currVal.SetNotNull(Const.Fileds.ParentId, currentId);
+						currVal.SetNotNull(Const.Fileds.ParentKey, parentKey);
+						var rowGuid = currVal.GetOrCreate<Guid>(Const.Fileds.Guid, () => Guid.NewGuid());
 						if (parentIndex != null)
-							currVal.Set("ParentRowNumber", parentIndex.Value + 1);
-						currVal.SetNotNull("ParentGUID", parentGuid);
+							currVal.Set(Const.Fileds.ParentRowNumber, parentIndex.Value + 1);
+						currVal.SetNotNull(Const.Fileds.ParentGuid, parentGuid);
 						if (bLast)
 							yield return currVal;
 						else
@@ -214,21 +202,21 @@ internal class DataModelWriter : IDisposable
 							foreach (var (k, v) in propValD)
 							{
 								var mapItem = (v as ExpandoObject)!;
-								mapItem.Set("CurrentKey", k);
+								mapItem.Set(Const.Fileds.CurrentKey, k);
 								if (parentIndex != null)
-									mapItem.Set("ParentRowNumber", parentIndex.Value + 1);
-								mapItem.SetNotNull("ParentGUID", parentGuid);
+									mapItem.Set(Const.Fileds.ParentRowNumber, parentIndex.Value + 1);
+								mapItem.SetNotNull(Const.Fileds.ParentGuid, parentGuid);
 								yield return mapItem;
 							}
 						}
 						else
 						{
-							currVal.SetNotNull("ParentId", currentId);
-							currVal.SetNotNull("ParentKey", parentKey);
+							currVal.SetNotNull(Const.Fileds.ParentId, currentId);
+							currVal.SetNotNull(Const.Fileds.ParentKey, parentKey);
 							if (parentIndex != null)
-								currVal.Set("ParentRowNumber", parentIndex.Value + 1);
-							currentGuid = currVal.GetOrCreate<Guid>("GUID", () => Guid.NewGuid());
-							currVal.SetNotNull("ParentGUID", parentGuid);
+								currVal.Set(Const.Fileds.ParentRowNumber, parentIndex.Value + 1);
+							currentGuid = currVal.GetOrCreate<Guid>(Const.Fileds.Guid, () => Guid.NewGuid());
+							currVal.SetNotNull(Const.Fileds.ParentGuid, parentGuid);
 							yield return currVal;
 						}
 					}
@@ -248,12 +236,12 @@ internal class DataModelWriter : IDisposable
 										yield return dx;
 								}
 								else
-									throw new InvalidProgramException("map item is not an Expando");
+									throw new InvalidProgramException("Map item is not an Expando");
 							}
 						}
 						else
 						{
-							currentGuid = currVal.GetOrCreate<Guid>("GUID", () => Guid.NewGuid());
+							currentGuid = currVal.GetOrCreate<Guid>(Const.Fileds.Guid, () => Guid.NewGuid());
 							foreach (var dx in GetDataForSave(currVal, newPath, parentIndex: 0, parentKey: null, parentGuid: currentGuid))
 								yield return dx;
 						}
@@ -268,6 +256,6 @@ internal class DataModelWriter : IDisposable
 		var tables = _writerMetadata.Tables;
 		if (tables.Count != 1)
 			throw new DataWriterException("Invalid tables for GetTableDescription");
-		return new TableDescription(tables.First().Value.Item1);
+		return new TableDescription(tables.First().Value.Table);
 	}
 }
