@@ -30,7 +30,7 @@ public class MetadataCache
             _cache.TryAdd(command, metadata);
     }
 
-    SqlParameter CloneParam(Object prm)
+    static SqlParameter CloneParam(Object prm)
     {
         if (prm is ICloneable cloneable)
         {

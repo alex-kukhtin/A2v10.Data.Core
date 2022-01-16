@@ -77,6 +77,9 @@ namespace A2v10.Data.Tests
 			tdsubarray.AreArrayValueEqual(7.23M, 1, "D");
 
 			dm = await _dbContext.SaveModelAsync(null, "a2test.[NestedObject.Update]", dataToSave);
+			dt = new DataTester(dm, "MainObject");
+			dt.AreValueEqual(45L, "Id");
+			dt.AreValueEqual("MainObjectName", "Name");
 		}
 
 		[TestMethod]
@@ -141,6 +144,8 @@ namespace A2v10.Data.Tests
 
 			Assert.IsNotNull(dataToSave);
 			dm = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
+			dt = new DataTester(dm, "MainObject");
+			dt.AreValueEqual("null", "RootId");
 		}
 
 		[TestMethod]

@@ -89,6 +89,10 @@ namespace A2v10.Data.Tests
 
 			Assert.IsNotNull(dataToSave);
 			dm = await _dbContext.SaveModelBatchAsync(null, "a2test.[BatchModel.Update]", dataToSave, prms, batches);
+			docT = new DataTester(dm, "Document");
+			docT.AreValueEqual(45L, "Id");
+			docT.AreValueEqual("MainDocument", "Name");
+			docT.AreValueEqual("MainMemo", "Memo");
 
 			dm = await _dbContext.LoadModelAsync(null, "a2test.[BatchModel.Load]", new { Id = 45 });
 
