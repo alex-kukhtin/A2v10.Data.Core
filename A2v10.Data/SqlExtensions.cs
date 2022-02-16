@@ -39,6 +39,21 @@ public static class SqlExtensions
 		};
 	}
 
+	public static Object ParseString(String str, Type to)
+    {
+		if (to == typeof(Int64))
+			return Int64.Parse(str, CultureInfo.InvariantCulture);
+		else if (to == typeof(Int32))
+			return Int32.Parse(str, CultureInfo.InvariantCulture);
+		else if (to == typeof(Decimal))
+			return Decimal.Parse(str, CultureInfo.InvariantCulture);	
+		else if (to == typeof(Double))
+			return Double.Parse(str, CultureInfo.InvariantCulture);
+		else if (to == typeof(Guid))
+			return Guid.Parse(str);
+		return str;
+    }
+
 	public static Object ConvertTo(Object? value, Type to)
 	{
 		if (value == null)
@@ -54,9 +69,9 @@ public static class SqlExtensions
 		{
 			if (String.IsNullOrEmpty(str))
 				return DBNull.Value;
-			if (to == typeof(Guid))
-				return Guid.Parse(str);
-			return value;
+			if (to == typeof(String))
+				return value;
+			return ParseString(value.ToString()!, to);
 		}
 		if (value.GetType() == to)
 			return value;

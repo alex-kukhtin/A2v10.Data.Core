@@ -62,7 +62,7 @@ internal class BatchCommandBuilder
 			{ 
 				var originalName = sqlParam.ParameterName;
 				sqlParam.ParameterName = $"{sqlParam.ParameterName}_${index}";
-				sqlParam.Value = propValue;
+				sqlParam.Value = SqlExtensions.ConvertTo(propValue, sqlParam.SqlDbType.ToType());
 				_values.Add(sqlParam);
 				paramDefs.Add(new ParameterDef(originalName, sqlParam.ParameterName));
 			}

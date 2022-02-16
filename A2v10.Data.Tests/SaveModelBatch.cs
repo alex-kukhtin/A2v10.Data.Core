@@ -54,16 +54,22 @@ namespace A2v10.Data.Tests
 			var batches = new List<BatchProcedure>
 			{
 				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
-			{
-				{"Id", 55 },
-				{ "Delta", 5.0}
-			}),
+				{
+					{"Id", 55 },
+					{ "Delta", 5.0}
+				}),
 
 				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
-			{
-				{"Id", 66 },
-				{"Delta", 12.0}
-			})
+				{
+					{"Id", "66" },
+					{"Delta", 12.0}
+				}),
+
+				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+				{
+					{"Id", (Double) 77 },
+					{"Delta", 12.0}
+				})
 			};
 
 			var prms = new ExpandoObject()
