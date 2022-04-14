@@ -1,9 +1,7 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
 using A2v10.Data.Tests;
 using A2v10.Data.Tests.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 
 namespace A2v10.Data.Models
@@ -50,6 +48,49 @@ namespace A2v10.Data.Models
 			dt.IsArray(2);
 			dt.AreArrayValueEqual("K2", 1, "Key");
 			dt.AreArrayValueEqual(22, 1, "Val");
+		}
+
+		[TestMethod]
+		public async Task LoadCrossArrayMulti()
+		{
+			var dm = await _dbContext.LoadModelAsync(null, "a2test.[CrossModelMulti.Load]");
+
+			var md = new MetadataTester(dm);
+			md.IsAllKeys("TRoot,TData,TCross");
+			md.HasAllProperties("TRoot", "RepData");
+			md.HasAllProperties("TData", "Id,Sum,CrossDt,CrossCt,Items");
+			md.IsId("TData", "Id");
+			md.HasAllProperties("TCross", "Acc,Sum");
+			md.IsKey("TCross", "Acc");
+			md.IsItemType("TData", "CrossDt", FieldType.CrossArray);
+			md.IsItemType("TData", "CrossCt", FieldType.CrossArray);
+
+			var dt = new DataTester(dm, "RepData.Items");
+			dt.IsArray(3);
+			dt.AreArrayValueEqual(10, 0, "Id");
+			dt.AreArrayValueEqual(20, 1, "Id");
+			dt.AreArrayValueEqual(30, 2, "Id");
+			dt.AreArrayValueEqual(100, 0, "Sum");
+			dt.AreArrayValueEqual(200, 1, "Sum");
+			dt.AreArrayValueEqual(300, 2, "Sum");
+
+			int dtSize = 2;
+			dt = new DataTester(dm, "RepData.Items[0].CrossDt");
+			dt.IsArray(dtSize);
+			dt.AreArrayValueEqual("A1", 0, "Acc");
+			dt.AreArrayValueEqual(11, 0, "Sum");
+			dt.AreArrayValueEqual("A2", 1, "Acc");
+			dt.AreArrayValueEqual(22, 1, "Sum");
+			dt = new DataTester(dm, "RepData.Items[1].CrossDt");
+			dt.IsArray(dtSize);
+			dt = new DataTester(dm, "RepData.Items[2].CrossDt");
+			dt.IsArray(dtSize);
+
+			var ctSize = 2;
+			dt = new DataTester(dm, "RepData.Items[0].CrossCt");
+			dt.IsArray(ctSize);
+			dt.AreArrayValueEqual("A2", 0, "Acc");
+			dt.AreArrayValueEqual(44, 0, "Sum");
 		}
 
 		[TestMethod]

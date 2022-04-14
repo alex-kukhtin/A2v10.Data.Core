@@ -1,6 +1,6 @@
-﻿-- Copyright © 2008-2021 Alex Kukhtin
+﻿-- Copyright © 2008-2022 Alex Kukhtin
 
-/* 20211201-7303 */
+/* 20220414-7304 */
 
 use a2v10test;
 go
@@ -984,6 +984,42 @@ begin
 	select [!TCross!CrossArray] = null, [Key!!Key] = N'K1', Val = 11, [!TData.Cross1!ParentId] = 10
 	union all
 	select null, N'K2', 22, 20;
+end
+go
+------------------------------------------------
+if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'CrossModelMulti.Load')
+	drop procedure a2test.[CrossModelMulti.Load]
+go
+------------------------------------------------
+create procedure a2test.[CrossModelMulti.Load]
+	@TenantId int = null,
+	@UserId bigint = null
+as
+begin
+	set nocount on;
+	select [RepData!TData!Group] = null, [Id!!Id] = cast(null as int), [Sum] = 100, [Id!!GroupMarker] = cast(1 as bit),
+		[CrossDt!TCross!CrossArray] = null, [CrossCt!TCross!CrossArray] = null,
+		[Items!TData!Items] = null
+	union all
+	select null, 10, 100, 0, null, null, null
+	union all
+	select null, 20, 200, 0, null, null, null
+	union all
+	select null, 30, 300, 0, null, null, null
+
+	-- cross dt
+	select [!TCross!CrossArray] = null, [Acc!!Key] = N'A1', [Sum] = 11, [!TData.CrossDt!ParentId] = 10
+	union all
+	select null, N'A2', 22, 10
+	union all
+	select null, N'A2', 33, 20
+	order by 2;
+
+	-- cross ct
+	select [!TCross!CrossArray] = null, [Acc!!Key] = N'A3', [Sum] = 33, [!TData.CrossCt!ParentId] = 10
+	union all
+	select null, N'A2', 44, 10
+	order by 2;
 end
 go
 ------------------------------------------------

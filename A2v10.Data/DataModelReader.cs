@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Data.SqlClient;
@@ -273,6 +273,7 @@ public class DataModelReader
 		Boolean bAddMap = false;
 		Object? id = null;
 		Object? key = null;
+		String? keyName = null;
 		Int32 rowCount = 0;
 		Boolean bHasRowCount = false;
 		List<Boolean>? groupKeys = null;
@@ -320,6 +321,8 @@ public class DataModelReader
 
 
 			AddValueToRecord(currentRecord, fi, dataVal);
+			if (fi.IsCrossArray)
+				_crossMap.AddParentRecord(rootFI.TypeName, fi.PropertyName, currentRecord);
 			if (fi.IsRowCount)
 			{
 				if (dataVal is Int32 int32Val)
@@ -340,6 +343,7 @@ public class DataModelReader
 			}
 			else if (fi.IsKey)
 			{
+				keyName = fi.PropertyName;
 				key = dataVal;
 			}
 			if (fi.IsParentId)
@@ -396,9 +400,9 @@ public class DataModelReader
 				}
 				else if (rootFI.IsCrossArray || rootFI.IsCrossObject)
 				{
-					if (dataVal == null || key == null)
-						throw new DataLoaderException("CrossArray or CrossObject: dataVal or key are null");
-					AddRecordToCross(fi.TypeName, dataVal, currentRecord, key, rootFI);
+					if (dataVal == null || key == null || keyName == null)
+						throw new DataLoaderException("CrossArray or CrossObject: dataVal, keyName or key are null");
+					AddRecordToCross(fi.TypeName, dataVal, currentRecord, key, keyName, rootFI);
 				}
 			}
 		}
@@ -595,10 +599,10 @@ public class DataModelReader
 	void AddRecordToGroup(ExpandoObject currentRecord, FieldInfo field, List<Boolean> groupKeys)
 	{
 		if (groupKeys == null)
-			throw new DataLoaderException($"There is no groups property for '{field.TypeName}");
+			throw new DataLoaderException($"There is no groups property for '{field.TypeName}'");
 		ElementMetadata elemMeta = GetOrCreateMetadata(field.TypeName);
 		if (String.IsNullOrEmpty(elemMeta.Items))
-			throw new DataLoaderException($"There is no 'Items' property for '{field.TypeName}");
+			throw new DataLoaderException($"There is no 'Items' property for '{field.TypeName}'");
 		GroupMetadata groupMeta = GetOrCreateGroupMetadata(field.TypeName);
 		if (groupMeta.IsRoot(groupKeys))
 		{
@@ -616,7 +620,7 @@ public class DataModelReader
 		}
 	}
 
-	void AddRecordToCross(String propName, Object id, ExpandoObject currentRecord, Object keyProp, FieldInfo rootFI)
+	void AddRecordToCross(String propName, Object id, ExpandoObject currentRecord, Object keyProp, String keyName, FieldInfo rootFI)
 	{
 		if (keyProp == null)
 			throw new DataLoaderException("Key not found in cross object");
@@ -626,7 +630,7 @@ public class DataModelReader
 		if (!_idMap.TryGetValue(key, out ExpandoObject? mapObj))
 			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
 		mapObj.AddToCross(pxa[1], currentRecord, keyProp.ToString()!);
-		_crossMap.Add(propName, pxa[1], mapObj, keyProp.ToString()!, rootFI);
+		_crossMap.Add(propName, pxa[1], mapObj, keyProp.ToString()!, keyName, rootFI);
 	}
 
 

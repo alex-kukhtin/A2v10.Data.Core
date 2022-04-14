@@ -1,4 +1,4 @@
-﻿// Copyright © 2019-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2019-2022 Alex Kukhtin. All rights reserved.
 
 namespace A2v10.Data;
 
@@ -11,12 +11,14 @@ internal class CrossItem
 	public Boolean IsArray { get; }
 	public String CrossType { get; }
 
+	public String KeyName { get; }
 
-	public CrossItem(String targetProp, Boolean isArray, String crossType)
+	public CrossItem(String targetProp, Boolean isArray, String crossType, String keyName)
 	{
 		TargetProp = targetProp;
 		IsArray = isArray;
 		CrossType = crossType;
+		KeyName = keyName;
 	}
 
 	public void Add(String propName, ExpandoObject target)
@@ -55,7 +57,12 @@ internal class CrossItem
 				continue; // already array?
 			foreach (var (key, index) in _keys)
 			{
-				arr[index] = targetVal.Get<ExpandoObject>(key);
+				var val = targetVal.Get<ExpandoObject>(key);
+				if (val == null)
+					val = new ExpandoObject() { {
+							KeyName, key}
+						};
+				arr[index] = val;
 			}
 			eo.Set(TargetProp, arr);
 		}
@@ -65,21 +72,48 @@ internal class CrossItem
 	{
 		var l = new List<ExpandoObject?>();
 		for (Int32 i = 0; i < cnt; i++)
-		{
-			l.Add(new ExpandoObject());
-		}
+			l.Add(null);
 		return l;
 	}
 
+	static void SetIntoArray(List<ExpandoObject?> array, ExpandoObject obj, int ix)
+	{
+		while (array.Count <= ix)
+			array.Add(null);
+		array[ix] = obj;
+	}
+
+	public List<ExpandoObject?> GetEmptyArray()
+	{
+		var arr = new List<ExpandoObject?>();
+		foreach (var key in _keys)
+		{
+			SetIntoArray(arr, new ExpandoObject() {
+					{ KeyName, key.Key}}, key.Value
+			);
+
+		}
+		return arr;
+	}
 }
 
 internal class CrossMapper : Dictionary<String, CrossItem>
 {
-	public void Add(String key, String targetProp, ExpandoObject target, String propName, FieldInfo rootFI)
+	private readonly IDictionary<Tuple<String, String>, List<ExpandoObject?>> _parentRecords = new Dictionary<Tuple<String, String>, List<ExpandoObject?>>();
+	public void AddParentRecord(String typeName, String propName, ExpandoObject record)
+	{
+		var key = Tuple.Create<String, String>(typeName, propName);
+		if (_parentRecords.TryGetValue(key, out List<ExpandoObject?>? list))
+			list.Add(record);
+		else
+			_parentRecords.Add(key, new List<ExpandoObject?>() { record });
+	}
+
+	public void Add(String key, String targetProp, ExpandoObject target, String propName, String keyName, FieldInfo rootFI)
 	{
 		if (!TryGetValue(key, out CrossItem? crossItem))
 		{
-			crossItem = new CrossItem(targetProp, rootFI.IsCrossArray, rootFI.TypeName);
+			crossItem = new CrossItem(targetProp, rootFI.IsCrossArray, rootFI.TypeName, keyName);
 			Add(key, crossItem);
 		}
 		// all source elements
@@ -90,6 +124,28 @@ internal class CrossMapper : Dictionary<String, CrossItem>
 	{
 		foreach (var x in this)
 			x.Value.Transform();
+		TransformParentRecords();
+	}
+
+	void TransformParentRecords()
+	{
+		foreach (var kv in _parentRecords)
+		{
+			foreach (var row in kv.Value)
+			{
+				if (row == null)
+					continue;
+				var arr = row.Get<List<ExpandoObject?>>(kv.Key.Item2);
+				if (arr == null)
+				{
+					var crossKey = $"{kv.Key.Item1}.{kv.Key.Item2}";
+					if (this.TryGetValue(crossKey, out CrossItem? crossItem))
+						row.Set(kv.Key.Item2, crossItem.GetEmptyArray());
+					else
+						throw new DataLoaderException($"Cross element {crossKey} not found");
+				}
+			}
+		}
 	}
 }
 
