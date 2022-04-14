@@ -141,8 +141,6 @@ internal class CrossMapper : Dictionary<String, CrossItem>
 					var crossKey = $"{kv.Key.Item1}.{kv.Key.Item2}";
 					if (this.TryGetValue(crossKey, out CrossItem? crossItem))
 						row.Set(kv.Key.Item2, crossItem.GetEmptyArray());
-					else
-						throw new DataLoaderException($"Cross element {crossKey} not found");
 				}
 			}
 		}
