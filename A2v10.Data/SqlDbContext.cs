@@ -21,14 +21,14 @@ public class SqlDbContext : IDbContext
 	private readonly ITokenProvider? _tokenProvider;
 	private readonly MetadataCache _metadataCache;
 
-	public SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDataLocalizer localizer, ITenantManager? tenantManager = null, ITokenProvider? tokenProvider = null)
+	public SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDataLocalizer localizer, MetadataCache metadataCache, ITenantManager? tenantManager = null, ITokenProvider? tokenProvider = null)
 	{
 		_profiler = profiler ?? throw new ArgumentNullException(nameof(profiler));
 		_config = config ?? throw new ArgumentNullException(nameof(config));
 		_localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 		_tenantManager = tenantManager;
 		_tokenProvider = tokenProvider;
-		_metadataCache = new(_config.IsWriteMetadataCacheEnabled);
+		_metadataCache = metadataCache;
 
 	}
 

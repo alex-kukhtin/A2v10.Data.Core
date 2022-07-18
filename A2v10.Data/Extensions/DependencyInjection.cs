@@ -9,6 +9,7 @@ public static class DataCoreDependencyInjection
 	{
 		services.AddOptions<DataConfigurationOptions>();
 		services.AddSingleton<IDataConfiguration, DataConfiguration>()
+		.AddSingleton<MetadataCache>()
 		.AddSingleton<IDataProfiler, NullDataProfiler>()
 		.AddSingleton<IDataLocalizer, NullDataLocalizer>()
 		.AddSingleton<IDbContext, SqlDbContext>();

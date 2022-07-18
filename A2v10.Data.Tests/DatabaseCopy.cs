@@ -5,23 +5,23 @@ using A2v10.Data.Tests.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 
-namespace A2v10.Data.Tests
+namespace A2v10.Data.Tests;
+
+[TestCategory("Copy models")]
+[TestClass]
+public class DatabaseCopy
 {
-	[TestClass]
-	public class DatabaseCopy
+	readonly IDbContext _dbContext;
+
+	public DatabaseCopy()
 	{
-		readonly IDbContext _dbContext;
+		_dbContext = Starter.Create();
+	}
 
-		public DatabaseCopy()
-		{
-			_dbContext = Starter.Create();
-		}
-
-		[TestMethod]
-		public async Task CopyComplexModel()
-		{
-			IDataModel dm = await _dbContext.LoadModelAsync(null, "a2test.ComplexModel");
-			dm.MakeCopy();
-		}
+	[TestMethod]
+	public async Task CopyComplexModel()
+	{
+		IDataModel dm = await _dbContext.LoadModelAsync(null, "a2test.ComplexModel");
+		dm.MakeCopy();
 	}
 }

@@ -34,7 +34,8 @@ namespace A2v10.Data.Tests.Configuration
 			.AddSingleton<IDataProfiler, TestProfiler>()
 			.AddSingleton<IDataConfiguration, DataConfiguration>()
 			.AddSingleton<IDataLocalizer, TestLocalizer>()
-			.AddSingleton<IDbContext, SqlDbContext>();
+			.AddSingleton<IDbContext, SqlDbContext>()
+			.AddSingleton<MetadataCache>();
 
 			sc.Configure<DataConfigurationOptions>(opts =>
 			{
@@ -62,7 +63,8 @@ namespace A2v10.Data.Tests.Configuration
 			IDataConfiguration config = new TestConfig(configuration);
 			IDataLocalizer localizer = new TestLocalizer();
 			ITenantManager tenantManager = new TestTenantManager();
-			return new SqlDbContext(profiler, config, localizer, tenantManager);
+			MetadataCache metadataCache = new (config);
+			return new SqlDbContext(profiler, config, localizer, metadataCache, tenantManager);
 		}
 	}
 }

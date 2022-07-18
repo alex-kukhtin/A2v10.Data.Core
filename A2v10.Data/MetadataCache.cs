@@ -9,9 +9,9 @@ public class MetadataCache
     private readonly Dictionary<String , List<SqlParameter>> _params = new();
     private readonly Boolean _cacheEnabled;
 
-    internal MetadataCache(Boolean cacheEnabled)
+    public MetadataCache(IDataConfiguration configuration)
     {
-        _cacheEnabled = cacheEnabled;
+        _cacheEnabled = configuration.IsWriteMetadataCacheEnabled;
     }
 
     internal WriterMetadata? GetWriterMetadata(String command)
