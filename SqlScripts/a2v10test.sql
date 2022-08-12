@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2022 Alex Kukhtin
 
-/* 20220414-7304 */
+/* 20220812-7310 */
 
 use a2v10test;
 go
@@ -217,24 +217,11 @@ go
 }
 ------------------------------------------------
 */
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'NestedObject.Metadata')
-	drop procedure a2test.[NestedObject.Metadata]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'NestedObject.Update')
-	drop procedure a2test.[NestedObject.Update]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'NewObject.Metadata')
-	drop procedure a2test.[NewObject.Metadata]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'NewObject.Update')
-	drop procedure a2test.[NewObject.Update]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'SubObjects.Metadata')
-	drop procedure a2test.[SubObjects.Metadata]
+drop procedure if exists a2test.[NestedObject.Metadata];
+drop procedure if exists a2test.[NestedObject.Update];
+drop procedure if exists a2test.[NewObject.Metadata];
+drop procedure if exists a2test.[NewObject.Update];
+drop procedure if exists a2test.[SubObjects.Metadata];
 go
 ------------------------------------------------
 if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'SubObjects.Update')
@@ -263,40 +250,15 @@ drop procedure if exists a2test.[Fallback.Metadata];
 drop procedure if exists a2test.[Fallback.Update];
 go
 ------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'NestedMain.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[NestedMain.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'NestedSub.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[NestedSub.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'NestedSubArray.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[NestedSubArray.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'Document.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[Document.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'Row.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[Row.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'Method.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[Method.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'MethodData.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[MethodData.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'GuidMain.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[GuidMain.TableType];
-go
-------------------------------------------------
-if exists (select * from sys.types st join sys.schemas ss ON st.schema_id = ss.schema_id where st.name = N'GuidRow.TableType' AND ss.name = N'a2test')
-	drop type [a2test].[GuidRow.TableType];
+drop type if exists [a2test].[NestedMain.TableType];
+drop type if exists [a2test].[NestedSub.TableType];
+drop type if exists [a2test].[NestedSubArray.TableType];
+drop type if exists [a2test].[Document.TableType];
+drop type if exists [a2test].[Row.TableType];
+drop type if exists [a2test].[Method.TableType];
+drop type if exists [a2test].[MethodData.TableType];
+drop type if exists [a2test].[GuidMain.TableType];
+drop type if exists [a2test].[GuidRow.TableType];
 go
 ------------------------------------------------
 create type [a2test].[NestedSub.TableType] as
@@ -305,6 +267,7 @@ table (
 	[ParentId] bigint null,
 	[ParentKey] nvarchar(255) null,
 	[Name] nvarchar(255),
+	GuidValue uniqueidentifier,
 	ParentGUID uniqueidentifier
 )
 go
@@ -352,12 +315,13 @@ table (
 )
 go
 ------------------------------------------------
-create type [a2test].[NestedMain.TableType] as
+create type a2test.[NestedMain.TableType] as
 table (
 	[Id] bigint null,
 	[Name] nvarchar(255),
 	[NumValue] float,
 	[BitValue] bit,
+	[GuidValue] uniqueidentifier,
 	[SubObject] bigint,
 	[SubObjectString] nchar(4),
 	[GUID] uniqueidentifier
@@ -419,8 +383,8 @@ begin
 	--set @msg = (select * from @SubObjectArray for xml auto);
 	-- raiserror(@msg, 16, -1) with nowait;
 
-	select [MainObject!TMainObject!Object] = null, [Id!!Id] = Id, [Name!!Name] = Name,
-		NumValue = NumValue, BitValue= BitValue,
+	select [MainObject!TMainObject!Object] = null, [Id!!Id] = Id, [Name!!Name] = [Name],
+		NumValue, BitValue, GuidValue,
 		[SubObject!TSubObject!RefId] = SubObject, [GUID]
 	from @MainObject;
 
