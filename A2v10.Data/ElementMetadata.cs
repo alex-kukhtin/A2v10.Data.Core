@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2022 Alex Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
@@ -15,6 +15,7 @@ public class ElementMetadata : IDataMetadata
 	public String? HasChildren { get; private set; }
 	public String? Permissions { get; set; }
 	public String? Items { get; set; }
+	public String? Expanded { get; set; }
 	public String? MapItemType { get; set; }
 	public String? MainObject { get; set; }
 	public String? Token { get; set; }
