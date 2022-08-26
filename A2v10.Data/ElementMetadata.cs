@@ -72,6 +72,9 @@ public class ElementMetadata : IDataMetadata
 			case SpecType.Items:
 				Items = field.PropertyName;
 				break;
+			case SpecType.Expanded:
+				Expanded = field.PropertyName;
+				break;
 			case SpecType.Token:
 				Token = field.PropertyName;
 				break;
