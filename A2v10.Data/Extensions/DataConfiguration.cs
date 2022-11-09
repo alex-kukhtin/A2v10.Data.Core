@@ -29,7 +29,7 @@ public class DataConfiguration : IDataConfiguration
 
 	public TimeSpan CommandTimeout => _options.DefaultCommandTimeout;
 
-	public String ConnectionString(String? source)
+	public String? ConnectionString(String? source)
 	{
 		if (String.IsNullOrEmpty(source))
 			source = _options.ConnectionStringName;

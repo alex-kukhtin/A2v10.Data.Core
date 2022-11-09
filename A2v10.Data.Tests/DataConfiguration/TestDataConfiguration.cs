@@ -1,6 +1,7 @@
 ﻿// Copyright © 2021-2022 Alex Kukhtin. All rights reserved.
 
 
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,11 +24,11 @@ public class TestDataConfiguration
 	[TestMethod]
 	public void DefaultConfig()
 	{
-		var inMemoryConfig = new Dictionary<string, string> {
+		var inMemoryConfig = new Dictionary<String, String> {
 			{"ConnectionStrings:DefaultConnection", "DefaultConnectionStringValue"}
 		};
 		var configuration = new ConfigurationBuilder()
-			.AddInMemoryCollection(inMemoryConfig)
+			.AddInMemoryCollection(inMemoryConfig!)
 			.Build();
 		var sp = GetServiceProvider(configuration);
 
@@ -41,13 +42,13 @@ public class TestDataConfiguration
 	[TestMethod]
 	public void ConfigWithOptions()
 	{
-		var inMemoryConfig = new Dictionary<String, String> {
+		var inMemoryConfig = new Dictionary<string, string> {
 			{"ConnectionStrings:MyConnectionString", "MyConnectionStringValue"},
 			{"A2v10:Data:CommandTimeout", "00:01:20" },
 			{"A2v10:Data:MetadataCache", "false" },
 		};
 		var configuration = new ConfigurationBuilder()
-			.AddInMemoryCollection(inMemoryConfig)
+			.AddInMemoryCollection(inMemoryConfig!)
 			.Build();
 
 		var sp = GetServiceProvider(configuration, sp =>

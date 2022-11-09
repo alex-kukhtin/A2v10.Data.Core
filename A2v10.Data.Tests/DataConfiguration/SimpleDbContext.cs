@@ -1,4 +1,4 @@
-﻿// Copyright © 2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2021-2022 Alex Kukhtin. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
 
 namespace A2v10.Data.Tests
@@ -46,11 +44,11 @@ namespace A2v10.Data.Tests
 		[TestMethod]
 		public async Task SimpleDbConfigWithConfigure()
 		{
-			var inMemoryConfig = new Dictionary<string, string> {
+			var inMemoryConfig = new Dictionary<String, String> {
 				{"ConnectionStrings:MyConnectionString", "MyConnectionStringValue"},
 			};
 			var configuration = new ConfigurationBuilder()
-				.AddInMemoryCollection(inMemoryConfig)
+				.AddInMemoryCollection(inMemoryConfig!)
 				.Build();
 
 			var sp = GetServiceProvider(sp =>
