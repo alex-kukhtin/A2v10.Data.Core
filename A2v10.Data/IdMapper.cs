@@ -27,8 +27,7 @@ internal class RefMapperItem
 
 	public IList<ExpandoObject> AddToList(ExpandoObject eo)
 	{
-		if (List == null)
-			List = new List<ExpandoObject>();
+		List ??= new List<ExpandoObject>();
 		List.Add(eo);
 		return List;
 	}
@@ -75,6 +74,17 @@ internal class RefMapper : Dictionary<Tuple<String, Object?>, RefMapperItem>
 			};
 			Add(key, item);
 		}
+	}
+	public void Correct(Tuple<String, Object?> key)
+	{
+		if (!TryGetValue(key, out RefMapperItem? item))
+			return;
+		if (item == null)
+			return;
+		if (item.List == null)
+			return;
+		foreach (var target in item.List)
+			target.CopyFromUnconditional(item.Source);
 	}
 }
 

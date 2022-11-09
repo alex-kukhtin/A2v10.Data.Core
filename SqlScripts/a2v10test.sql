@@ -1450,3 +1450,17 @@ begin
 	select Id=@Id, [Name]=@Name, [Number] = @Number;
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[ChildMapObject.Load]
+as
+begin
+	set nocount on;
+	select [Model!TModel!Object] = null, [Id!!Id] = 5, [Agent!TAgent!RefId]=7;
+
+	select [!TAgent!Map] = null, [Id!!Id] = 7, [Name] = N'AgentName', 
+		[AgChild!TChild!Object] = null;
+
+	select [!TChild!Object] = null, [Id!!Id] = 284, [Name] = 'Child', [!TAgent.AgChild!ParentId] = 7;
+end
+go
+

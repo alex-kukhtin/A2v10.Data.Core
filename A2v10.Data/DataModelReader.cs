@@ -691,6 +691,7 @@ public class DataModelReader
 		if (!_idMap.TryGetValue(key, out ExpandoObject? mapObj))
 			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
 		mapObj.Set(pxa[1], currentRecord);
+		_refMap.Correct(key);
 	}
 
 	void AddRecordToModel(ExpandoObject currentRecord, FieldInfo field, Object? id, Object? key)
