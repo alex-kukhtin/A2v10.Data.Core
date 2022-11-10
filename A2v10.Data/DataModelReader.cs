@@ -288,8 +288,7 @@ public class DataModelReader
 			var fi = new FieldInfo(fn);
 			if (fi.IsGroupMarker)
 			{
-				if (groupKeys == null)
-					groupKeys = new List<Boolean>();
+				groupKeys ??= new List<Boolean>();
 				Boolean bVal = (dataVal != null) && (dataVal.ToString() == "1");
 				groupKeys.Add(bVal);
 				continue;
@@ -556,8 +555,7 @@ public class DataModelReader
 
 	GroupMetadata GetOrCreateGroupMetadata(String typeName)
 	{
-		if (_groupMetadata == null)
-			_groupMetadata = new Dictionary<String, GroupMetadata>();
+		_groupMetadata ??= new Dictionary<String, GroupMetadata>();
 		if (_groupMetadata.TryGetValue(typeName, out GroupMetadata? groupMeta))
 			return groupMeta;
 		groupMeta = new GroupMetadata();

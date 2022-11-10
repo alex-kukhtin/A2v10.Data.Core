@@ -93,8 +93,7 @@ public class ElementMetadata : IDataMetadata
 
 	public void AddCross(String key, IList<String?>? cross)
 	{
-		if (_cross == null)
-			_cross = new Dictionary<String, IList<String?>?>();
+		_cross ??= new Dictionary<String, IList<String?>?>();
 		if (_cross.ContainsKey(key))
 			_cross[key] = cross;
 		else

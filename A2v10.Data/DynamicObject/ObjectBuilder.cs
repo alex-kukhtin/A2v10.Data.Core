@@ -33,8 +33,7 @@ internal class ObjectBuilder
 			{
 				if (listItem is ExpandoObject expListItem)
 				{
-					if (arraySign == null)
-						arraySign = new Signature(expListItem);
+					arraySign ??= new Signature(expListItem);
 					retList.Add(CreateObjectSimple(expListItem, arraySign, path));
 				}
 				else

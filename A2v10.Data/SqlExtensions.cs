@@ -63,6 +63,8 @@ public static class SqlExtensions
 			var id = eo.GetObject("Id");
 			if (DataHelpers.IsIdIsNull(id))
 				return DBNull.Value;
+			if (to == typeof(Guid))
+				return Guid.Parse(id!.ToString()!);
 			return Convert.ChangeType(id, to, CultureInfo.InvariantCulture)!;
 		}
 		if (value is String str)
@@ -121,12 +123,9 @@ public static class SqlExtensions
 		IDictionary<String, Object?>? valsD;
 		// may be EpandoObject
 		valsD = vals as IDictionary<String, Object?>;
-		if (valsD == null)
-		{
-			valsD = vals.GetType()
+		valsD ??= vals.GetType()
 				.GetProperties()
 				.ToDictionary(key => key.Name, val => val.GetValue(vals));
-		}
 		foreach (var prop in valsD)
 		{
 			prms.AddWithValue("@" + prop.Key, prop.Value);

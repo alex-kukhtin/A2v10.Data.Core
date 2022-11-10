@@ -26,8 +26,7 @@ public class GroupMetadata
 
 	public void AddMarkerMetadata(String fieldName)
 	{
-		if (_fields == null)
-			_fields = new List<String>();
+		_fields ??= new List<String>();
 		_fields.Add(fieldName);
 	}
 
@@ -51,8 +50,7 @@ public class GroupMetadata
 
 	public void CacheElement(String key, ExpandoObject record)
 	{
-		if (_cache == null)
-			_cache = new Dictionary<String, ExpandoObject>();
+		_cache ??= new Dictionary<String, ExpandoObject>();
 		if (_cache.ContainsKey(key))
 			throw new DataLoaderException($"Group.Cache. Element with the key '{key}' already has been added.");
 		_cache.Add(key, record);

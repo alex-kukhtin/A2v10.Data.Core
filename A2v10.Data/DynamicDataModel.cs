@@ -54,8 +54,7 @@ public class DynamicDataModel : IDataModel
 		}
 		else
 		{
-			if (_lambdas == null)
-				_lambdas = new Dictionary<String, Delegate>();
+			_lambdas ??= new Dictionary<String, Delegate>();
 			var prms = new ParameterExpression[] {
 				Expression.Parameter(typeof(ExpandoObject), "Root")
 			};
@@ -94,8 +93,7 @@ public class DynamicDataModel : IDataModel
 
 	public void SetReadOnly()
 	{
-		if (System == null)
-			System = new ExpandoObject();
+		System ??= new ExpandoObject();
 		System.Set("ReadOnly", true);
 		System.Set("StateReadOnly", true);
 	}
@@ -166,8 +164,7 @@ public class DynamicDataModel : IDataModel
 		}
 		if (src.System is IDictionary<String, Object> srcSystem)
 		{
-			if (trgSystem == null)
-				trgSystem = new ExpandoObject();
+			trgSystem ??= new ExpandoObject();
 			foreach (var (k, v) in srcSystem)
 				trgSystem.AddChecked(k, v);
 		}
@@ -189,8 +186,7 @@ public class DynamicDataModel : IDataModel
 			IDataMetadata md = m.Value;
 			if (md.HasCross)
 			{
-				if (rt == null)
-					rt = new ExpandoObject();
+				rt ??= new ExpandoObject();
 				var cross = new ExpandoObject();
 				rt.Add("$cross", cross);
 				var xo = new ExpandoObject();

@@ -674,8 +674,7 @@ public class SqlDbContext : IDbContext
 		else
 		{
 			var idProp = element.GetType().GetProperty("Id");
-			if (idProp != null)
-				idProp.SetValue(element, retParam.Value);
+			idProp?.SetValue(element, retParam.Value);
 		}
 	}
 

@@ -1,4 +1,4 @@
-﻿// Copyright © 2019-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2019-2022 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data;
 
@@ -58,10 +58,9 @@ internal class CrossItem
 			foreach (var (key, index) in _keys)
 			{
 				var val = targetVal.Get<ExpandoObject>(key);
-				if (val == null)
-					val = new ExpandoObject() { {
-							KeyName, key}
-						};
+				val ??= new ExpandoObject() { 
+					{ KeyName, key}
+				};
 				arr[index] = val;
 			}
 			eo.Set(TargetProp, arr);

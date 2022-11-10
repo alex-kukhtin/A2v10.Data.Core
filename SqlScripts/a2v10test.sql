@@ -1463,4 +1463,63 @@ begin
 	select [!TChild!Object] = null, [Id!!Id] = 284, [Name] = 'Child', [!TAgent.AgChild!ParentId] = 7;
 end
 go
+------------------------------------------------
+drop procedure if exists a2test.[Document.Guids.Metadata];
+drop procedure if exists a2test.[Document.Guids.Update];
+drop type if exists [a2test].[Document.Guids.TableType];
+drop type if exists [a2test].[Document.GuidsRows.TableType];
+go
+------------------------------------------------
+create type [a2test].[Document.Guids.TableType] as
+table (
+	[Id] bigint null,
+	Agent uniqueidentifier
+)
+go
+------------------------------------------------
+create type [a2test].[Document.GuidsRows.TableType] as
+table (
+	[Id] bigint null,
+	Item uniqueidentifier
+)
+go
+------------------------------------------------
+create or alter procedure a2test.[Document.Guids.Metadata]
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
 
+	declare @Document [a2test].[Document.Guids.TableType];
+	declare @Rows [a2test].[Document.GuidsRows.TableType];
+
+	select [Document!Document!Metadata] = null, * from @Document;
+	select [Rows!Document.Rows!Metadata] = null, * from @Rows;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Document.Guids.Update]
+@TenantId int = null,
+@UserId bigint = null,
+@Document [a2test].[Document.Guids.TableType] readonly,
+@Rows [a2test].[Document.GuidsRows.TableType] readonly
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	/*
+	declare @xml nvarchar(max);
+	set @xml = (select * from @Document for xml auto);
+	throw 60000, @xml, 0;
+	*/
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Agent], [Rows!TRow!Array] = null
+	from @Document;
+
+	declare @id bigint;
+	select @id = Id from @Document;
+
+	select [!TRow!Array] = null, [Id!!Id] = Id, [Item], [!TDocument.Rows!ParentId] = @id
+	from @Rows;
+end
+go
