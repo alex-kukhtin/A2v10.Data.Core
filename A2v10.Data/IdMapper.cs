@@ -83,6 +83,8 @@ internal class RefMapper : Dictionary<Tuple<String, Object?>, RefMapperItem>
 			return;
 		if (item.List == null)
 			return;
+		if (item.List == null)
+			return;
 		foreach (var target in item.List)
 			target.CopyFromUnconditional(item.Source);
 	}

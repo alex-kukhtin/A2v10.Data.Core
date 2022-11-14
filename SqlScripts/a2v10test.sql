@@ -1464,6 +1464,21 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2test.[ChildMapArray.Load]
+as
+begin
+	set nocount on;
+
+	select [Agents!TAgent!Array] = null, [Id!!Id] = 7, [Name] = N'Agent1', 
+		[AgChild!TChild!Object] = null
+	union all
+	select [Agents!TAgent!Array] = null, [Id!!Id] = 8, [Name] = N'Agent2', 
+		[AgChild!TChild!Object] = null;
+
+	select [!TChild!Object] = null, [Id!!Id] = 284, [Name] = 'Child', [!TAgent.AgChild!ParentId] = 7;
+end
+go
+------------------------------------------------
 drop procedure if exists a2test.[Document.Guids.Metadata];
 drop procedure if exists a2test.[Document.Guids.Update];
 drop type if exists [a2test].[Document.Guids.TableType];

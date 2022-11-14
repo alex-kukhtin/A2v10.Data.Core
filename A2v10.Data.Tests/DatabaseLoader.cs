@@ -464,6 +464,21 @@ public class LoadList
 
 
 	[TestMethod]
+	public async Task LoadChildMapArray()
+	{
+		var dm = await _dbContext.LoadModelAsync(null, "a2test.[ChildMapArray.Load]");
+		var dt = new DataTester(dm, "Agents");
+		dt.IsArray(2);
+		dt.AreArrayValueEqual<Int32>(7, 0, "Id");
+		dt.AreArrayValueEqual<String>("Agent1", 0, "Name");
+		dt.AreArrayValueEqual<Int32>(8, 1, "Id");
+
+		dt = new DataTester(dm, "Agents[0].AgChild");
+		dt.AreValueEqual<Int32>(284, "Id");
+		dt.AreValueEqual<String>("Child", "Name");
+	}
+
+	[TestMethod]
 	public void InvalidElementType()
 	{
 		var ex = Assert.ThrowsException<DataLoaderException>(() =>
