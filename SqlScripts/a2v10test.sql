@@ -1317,6 +1317,14 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2test.[ClrTypes.LoadListItemG]
+as
+begin
+	set nocount on;
+	select StringValue = N'String 1', TValue = 22, TValueNull = null, Severity = N'Warning', SeverityNull = null;
+end
+go
+------------------------------------------------
 create or alter procedure a2test.[ClrTypes.LoadJson]
 as
 begin

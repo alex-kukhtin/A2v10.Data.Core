@@ -30,6 +30,16 @@ namespace A2v10.Data.Tests
 		public ExpandoObject? Json { get; set; }
 	}
 
+	public class ListItemG<T> where T: struct
+	{
+		public String? StringValue { get; set; }
+		public T TValue { get; set; }
+		public T? TValueNull { get; set; }
+		public Severity Severity { get; set; }
+		public Severity? SeverityNull { get; set; }
+		public ExpandoObject? Json { get; set; }
+	}
+
 	public record BinaryItem
 	{
 		public String? Name { get; set; }
@@ -65,6 +75,19 @@ namespace A2v10.Data.Tests
 			Assert.AreEqual("String 1", item?.StringValue);
 			Assert.AreEqual(22, item?.Int32Value);
 			Assert.IsNull(item?.Int32ValueNull);
+			Assert.AreEqual(Severity.Warning, item?.Severity);
+			Assert.IsNull(item?.SeverityNull);
+		}
+
+		[TestMethod]
+		public async Task LoadGenericAsync()
+		{
+			var item = await _dbContext.LoadAsync<ListItemG<Int32>>(null, "a2test.[ClrTypes.LoadListItemG]", null);
+
+			Assert.IsNotNull(item);
+			Assert.AreEqual("String 1", item?.StringValue);
+			Assert.AreEqual(22, item?.TValue);
+			Assert.IsNull(item?.TValueNull);
 			Assert.AreEqual(Severity.Warning, item?.Severity);
 			Assert.IsNull(item?.SeverityNull);
 		}
