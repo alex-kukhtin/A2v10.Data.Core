@@ -6,7 +6,7 @@ public record TenantInfo : ITenantInfo
 {
 	public String Procedure => "a2test.[SetTenantId]";
 	public String ParamName => "@TenantId";
-	public Int32 TenantId => 123;
+	public Object TenantId => (Int32) 123;
 }
 
 public class TestTenantManager : ITenantManager

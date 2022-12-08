@@ -49,6 +49,8 @@ public abstract class LoadHelperBase<T> where T : class
 					else
 						throw new DataLoaderException($"Property '{p.Name}' (Stream). Source must be varbianry");
 				}
+				else if (pt != dbVal.GetType())
+					p.SetValue(result, Convert.ChangeType(dbVal, pt));
 				else
 					p.SetValue(result, dbVal);
 			}

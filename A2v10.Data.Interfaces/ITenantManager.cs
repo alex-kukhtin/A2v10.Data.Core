@@ -6,7 +6,7 @@ public interface ITenantInfo
 {
 	String Procedure { get; }
 	String ParamName { get; }
-	Int32 TenantId { get; }
+	Object TenantId { get; }
 }
 
 public interface ITenantManager

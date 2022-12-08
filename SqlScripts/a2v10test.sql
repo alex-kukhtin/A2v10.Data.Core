@@ -1321,7 +1321,7 @@ create or alter procedure a2test.[ClrTypes.LoadListItemG]
 as
 begin
 	set nocount on;
-	select StringValue = N'String 1', TValue = 22, TValueNull = null, Severity = N'Warning', SeverityNull = null;
+	select StringValue = N'String 1', TValue = 22, TValueNull = null, TValueNull2 = cast(1 as smallint), Severity = N'Warning', SeverityNull = null;
 end
 go
 ------------------------------------------------

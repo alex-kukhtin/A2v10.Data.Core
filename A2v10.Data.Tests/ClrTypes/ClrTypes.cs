@@ -35,6 +35,7 @@ namespace A2v10.Data.Tests
 		public String? StringValue { get; set; }
 		public T TValue { get; set; }
 		public T? TValueNull { get; set; }
+		public T? TValueNull2 { get; set; }
 		public Severity Severity { get; set; }
 		public Severity? SeverityNull { get; set; }
 		public ExpandoObject? Json { get; set; }
@@ -88,6 +89,7 @@ namespace A2v10.Data.Tests
 			Assert.AreEqual("String 1", item?.StringValue);
 			Assert.AreEqual(22, item?.TValue);
 			Assert.IsNull(item?.TValueNull);
+			Assert.AreEqual(1, item?.TValueNull2);
 			Assert.AreEqual(Severity.Warning, item?.Severity);
 			Assert.IsNull(item?.SeverityNull);
 		}
