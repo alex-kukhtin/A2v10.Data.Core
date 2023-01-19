@@ -134,6 +134,20 @@ public class LoadList
 	}
 
 	[TestMethod]
+	public async Task EmptyTreeModel()
+	{
+		IDataModel dm = await _dbContext.LoadModelAsync(null, "a2test.EmptyTreeModel");
+		var md = new MetadataTester(dm);
+		md.IsAllKeys("TRoot,TMenu");
+		md.HasAllProperties("TRoot", "Menu");
+		md.HasAllProperties("TMenu", "Menu,Name");
+		md.IsName("TMenu", "Name");
+
+		var dt = new DataTester(dm, "Menu");
+		dt.IsArray(0);
+	}
+
+	[TestMethod]
 	public async Task LoadGroupModel()
 	{
 		IDataModel dm = await _dbContext.LoadModelAsync(null, "a2test.GroupModel");

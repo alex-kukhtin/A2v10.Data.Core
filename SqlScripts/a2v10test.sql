@@ -1,4 +1,4 @@
-﻿-- Copyright © 2008-2022 Alex Kukhtin
+﻿-- Copyright © 2008-2023 Oleksandr Kukhtin
 
 /* 20220812-7310 */
 
@@ -106,11 +106,7 @@ begin
 end
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'TreeModel')
-	drop procedure a2test.TreeModel
-go
-------------------------------------------------
-create procedure a2test.TreeModel
+create or alter procedure a2test.TreeModel
 	@TenantId int = null,
 	@UserId bigint = null
 as
@@ -133,7 +129,19 @@ begin
 		[Menu!TMenu!Items] = null
 end
 go
+------------------------------------------------
+create or alter procedure a2test.EmptyTreeModel
+	@TenantId int = null,
+	@UserId bigint = null
+as
+begin
+	set nocount on;
 
+	select [Menu!TMenu!Tree]=null, [!!Id] = 10, [!TMenu.Menu!ParentId]=null, [Name!!Name]=N'Item 1',
+		[Menu!TMenu!Items] = null
+	where 0 <> 0
+end
+go
 ------------------------------------------------
 if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'GroupModel')
 	drop procedure a2test.GroupModel

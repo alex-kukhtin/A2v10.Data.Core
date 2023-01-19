@@ -52,18 +52,15 @@ internal class ObjectBuilder
 		var dict = source as IDictionary<String, Object>;
 		foreach (var prop in props)
 		{
-			if (dict.ContainsKey(prop.Name))
-			{
-				var val = dict[prop.Name];
-				prop.SetValue(target, CreateObject(val, path + "." + prop.Name));
-			}
+			if (dict.TryGetValue(prop.Name, out var val))
+				prop.SetValue(target, CreateObject(val, $"{path}.{prop.Name}"));
 		}
 	}
 
 	public static Dictionary<String, Object> BuildObject(ExpandoObject root)
 	{
 		var list = new Dictionary<String, Object>();
-		foreach (var (k, v) in root as IDictionary<String, Object>)
+		foreach (var (k, v) in root)
 		{
 			var o = CreateObject(v, k);
 			if (o != null)

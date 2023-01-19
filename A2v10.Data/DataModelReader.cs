@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Data.SqlClient;
@@ -467,7 +467,7 @@ public class DataModelReader
 			typeMetadata.IsArrayType = true;
 		if (objectDef.IsGroup)
 			typeMetadata.IsGroup = true;
-		if (objectDef.IsArray && objectDef.IsVisible)
+		if ((objectDef.IsArray || objectDef.IsTree) && objectDef.IsVisible)
 			_root.AddToArray(objectDef.PropertyName, null); // empty record
 		Boolean hasRowCount = false;
 		for (Int32 i = 1; i < rdr.FieldCount; i++)
