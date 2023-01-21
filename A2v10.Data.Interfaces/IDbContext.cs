@@ -38,5 +38,9 @@ public interface IDbContext
 
 	TOut? ExecuteAndLoad<TIn, TOut>(String? source, String command, TIn element) where TIn : class where TOut : class;
 	Task<TOut?> ExecuteAndLoadAsync<TIn, TOut>(String? source, String command, TIn element) where TIn : class where TOut : class;
+
+	// TYPED inteface
+	Task<T> LoadTypedModelAsync<T>(String? source, String command, Object? prms, Int32 commandTimeout = 0) where T : new();
+
 }
 

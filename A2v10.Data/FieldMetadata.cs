@@ -67,10 +67,13 @@ public class FieldMetadata : IDataFieldMetadata
 	public Boolean IsJson { get; set; }
 	public SqlDataType SqlDataType { get; }
 
+	public Int32 FieldIndex { get; }
+
 	public Boolean IsArrayLike { get { return ItemType == FieldType.Object || ItemType == FieldType.Array || ItemType == FieldType.Map; } }
 
-	public FieldMetadata(FieldInfo fi, DataType type, SqlDataType sqlDataType, Int32 length)
+	public FieldMetadata(Int32 index, FieldInfo fi, DataType type, SqlDataType sqlDataType, Int32 length)
 	{
+		FieldIndex = index;
 		DataType = type;
 		SqlDataType = sqlDataType;
 		Length = length;

@@ -1,5 +1,6 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
+using A2v10.Data.Core;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
@@ -292,6 +293,20 @@ public class SqlDbContext : IDbContext
 		return source;
 	}
 
+	public async Task<T> LoadTypedModelAsync<T>(String? source, String command, Object? prms, Int32 commandTimeout = 0) where T: new()
+	{
+		var modelReader = new TypedDataModelReader<T>(_metadataCache, _localizer, _tokenProvider);
+		source = ResolveSource(source, prms);
+		using var token = _profiler.Start(command);
+		await ReadDataAsync(source, command,
+			(prm) => prm.SetParameters(prms),
+			(no, rdr) => modelReader.ProcessOneRecord(rdr),
+			(no, rdr) => modelReader.ProcessOneMetadata(rdr)
+		);
+		modelReader.PostProcess();
+		return modelReader.DataModel;
+	}
+
 	public IDataModel LoadModel(String? source, String command, System.Object? prms = null)
 	{
 		var modelReader = new DataModelReader(_localizer, _tokenProvider);
@@ -300,7 +315,7 @@ public class SqlDbContext : IDbContext
 		ReadData(source, command,
 			(prm) =>
 			{
-				modelReader.SetParameters(prm, prms);
+				prm.SetParameters(prms);
 			},
 			(no, rdr) =>
 			{
@@ -322,7 +337,7 @@ public class SqlDbContext : IDbContext
 		await ReadDataAsync(source, command,
 			(prm) =>
 			{
-				modelReader.SetParameters(prm, prms);
+				prm.SetParameters(prms);
 			},
 			(no, rdr) =>
 			{

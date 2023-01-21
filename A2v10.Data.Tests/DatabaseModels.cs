@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -12,6 +12,7 @@ using System.Data;
 namespace A2v10.Data.Tests;
 
 [TestClass]
+[TestCategory("Complex Models")]
 public class DatabaseModels
 {
 	readonly IDbContext _dbContext;

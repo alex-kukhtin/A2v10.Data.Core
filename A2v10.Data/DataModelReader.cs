@@ -1,8 +1,6 @@
 ﻿// Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
 
 using System.Data;
-using System.Data.SqlClient;
-using System.Reflection;
 
 using Newtonsoft.Json;
 
@@ -34,35 +32,6 @@ public class DataModelReader
 	{
 		_localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 		_tokenProvider = tokenProvider;
-	}
-
-#pragma warning disable CA1822 // Mark members as static
-	public void SetParameters(SqlParameterCollection prms, Object? values)
-#pragma warning restore CA1822 // Mark members as static
-	{
-		if (values == null)
-			return;
-		if (values is ExpandoObject eo)
-		{
-			foreach (var e in eo as IDictionary<String, Object>)
-			{
-				var val = e.Value;
-				if (val != null)
-				{
-					prms.AddWithValue($"@{e.Key}", val);
-				}
-			}
-		}
-		else
-		{
-			var props = values.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-			foreach (var prop in props)
-			{
-				var val = prop.GetValue(values);
-				if (val != null)
-					prms.AddWithValue($"@{prop.Name}", val);
-			}
-		}
 	}
 
 	Dictionary<String, String>? _aliases = null;
@@ -455,7 +424,7 @@ public class DataModelReader
 			throw new DataLoaderException($"Invalid element type: '{firstFieldName}'");
 		}
 		var rootMetadata = GetOrCreateMetadata(ROOT);
-		rootMetadata.AddField(objectDef, DataType.Undefined, SqlDataType.Unknown);
+		rootMetadata.AddField(0, objectDef, DataType.Undefined, SqlDataType.Unknown);
 		// other fields = object fields
 		var typeMetadata = GetOrCreateMetadata(objectDef.TypeName);
 		if (objectDef.IsMain && mainElement == null)
@@ -484,7 +453,7 @@ public class DataModelReader
 			if (fieldDef.IsPermissions)
 			{
 				fieldDef.CheckPermissionsName();
-				typeMetadata.AddField(fieldDef, DataType.Number, 0);
+				typeMetadata.AddField(i, fieldDef, DataType.Number, 0);
 				continue;
 			}
 			if (fieldDef.IsCrossArray)
@@ -506,7 +475,7 @@ public class DataModelReader
 				ProcessMapObjectMetadata(fieldDef, typeMetadata);
 			else
 			{
-				var fm = typeMetadata.AddField(fieldDef, dt, sqlDataType, fieldLength);
+				var fm = typeMetadata.AddField(i, fieldDef, dt, sqlDataType, fieldLength);
 				if (fieldDef.IsNestedType)
 				{
 					// create metadata for nested object or array
@@ -741,8 +710,8 @@ public class DataModelReader
 			throw new DataLoaderException($"Invalid complex name {fieldInfo.PropertyName}");
 		var fi = new FieldInfo($"{fna[0]}!{fieldInfo.TypeName}");
 		fi.CheckTypeName();
-		elem.AddField(fi, DataType.Undefined, SqlDataType.Unknown);
-		innerElem.AddField(new FieldInfo(fieldInfo, fna[1]), dt, sqlType, fieldLen);
+		elem.AddField(0, fi, DataType.Undefined, SqlDataType.Unknown);
+		innerElem.AddField(0, new FieldInfo(fieldInfo, fna[1]), dt, sqlType, fieldLen);
 	}
 
 	void ProcessMapObjectMetadata(FieldInfo fieldInfo, ElementMetadata elem)
@@ -753,9 +722,9 @@ public class DataModelReader
 		if (fieldInfo.MapFields != null)
 		{
 			foreach (var f in fieldInfo.MapFields)
-				innerElem.AddField(new FieldInfo($"{f}!{fieldInfo.TypeName}"), DataType.Undefined, SqlDataType.Unknown);
+				innerElem.AddField(0, new FieldInfo($"{f}!{fieldInfo.TypeName}"), DataType.Undefined, SqlDataType.Unknown);
 		}
-		elem.AddField(new FieldInfo($"{fieldInfo.PropertyName}!{mapType}"), DataType.Undefined, SqlDataType.Unknown);
+		elem.AddField(0, new FieldInfo($"{fieldInfo.PropertyName}!{mapType}"), DataType.Undefined, SqlDataType.Unknown);
 	}
 
 	public void PostProcess()
@@ -785,7 +754,7 @@ public class DataModelReader
 					if (key == null)
 						throw new InvalidOperationException("CrossKey not defined");
 					var fi = new FieldInfo(key, v.CrossType);
-					crossMeta.AddField(fi, DataType.String, SqlDataType.String);
+					crossMeta.AddField(0, fi, DataType.String, SqlDataType.String);
 				}
 				typeMeta.SetCrossObject(prop, crossObjType);
 				typeMeta.AddCross(prop, crossKeys);

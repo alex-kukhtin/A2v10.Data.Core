@@ -1,9 +1,11 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
+using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 
 namespace A2v10.Data;
 public static class SqlExtensions
@@ -129,6 +131,31 @@ public static class SqlExtensions
 		foreach (var prop in valsD)
 		{
 			prms.AddWithValue("@" + prop.Key, prop.Value);
+		}
+	}
+
+	public static void SetParameters(this SqlParameterCollection prms, Object? vals)
+	{
+		if (vals == null)
+			return;
+		if (vals is ExpandoObject eo)
+		{
+			foreach (var e in eo)
+			{
+				var val = e.Value;
+				if (val != null)
+					prms.AddWithValue($"@{e.Key}", val);
+			}
+		}
+		else
+		{
+			var props = vals.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			foreach (var prop in props)
+			{
+				var val = prop.GetValue(vals);
+				if (val != null)
+					prms.AddWithValue($"@{prop.Name}", val);
+			}
 		}
 	}
 

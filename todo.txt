@@ -1,0 +1,22 @@
+
+select [Document!TDocument!Object] = null, [Id!!Id] = 222,
+	[Agent!TAgent!RefId] = 223,
+	[Rows!TRow!Array] = null
+
+select [!TRow!Array] = null, [!TDocument.Rows!ParentId] = 222 
+
+Map
+	"Document", {TDocument, Rdr, () => root.Document}
+	"Rows",     {TRow,      Rdr,          () => {var r = new Row(); root.Document.Rows.Add(r); return r;}
+	"Agent",    {TAgent,    Rdr,       () => root.Document.Agent }
+
+select [!TAgent!Map] = null,
+
+ metadata.GetReader
+---- Reader
+	var rdr = GetReader("Document", root) -> returns Document & Reader
+	rdr.ReadTo(rdr);
+
+	Id = SqlConvert.ConvertTo<Int64>(rdr.GetValue(1))
+	No = SqlConvert.ConvertTo<String>(rdr.GetValue(2))
+
