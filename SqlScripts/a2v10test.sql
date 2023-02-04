@@ -256,6 +256,8 @@ drop procedure if exists a2test.[Nullable.SaveModel.Metadata];
 drop procedure if exists a2test.[Nullable.SaveModel.Update];
 drop procedure if exists a2test.[Fallback.Metadata];
 drop procedure if exists a2test.[Fallback.Update];
+drop procedure if exists a2test.[EmptyString.Metadata];
+drop procedure if exists a2test.[EmptyString.Update];
 go
 ------------------------------------------------
 drop type if exists [a2test].[NestedMain.TableType];
@@ -1552,5 +1554,35 @@ begin
 
 	select [!TRow!Array] = null, [Id!!Id] = Id, [Item], [!TDocument.Rows!ParentId] = @id
 	from @Rows;
+end
+go
+
+------------------------------------------------
+create procedure a2test.[EmptyString.Metadata]
+as
+begin
+	set nocount on;
+	declare @Document [a2test].[Document.TableType];
+	select [Document!Document!Metadata]=null, * from @Document;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[EmptyString.Update]
+@TenantId int = null,
+@UserId bigint = null,
+@Document [a2test].[Document.TableType] readonly
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	/*
+	declare @xml nvarchar(max);
+	set @xml = (select * from @Document for xml auto);
+	throw 60000, @xml, 0;
+	*/
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id,
+		[Name], [String] = case when [Name] is null then N'NULL' else N'EMPTY' end
+	from @Document
 end
 go

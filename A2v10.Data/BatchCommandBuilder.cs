@@ -14,7 +14,11 @@ internal class BatchCommandBuilder
 
 	private readonly List<SqlParameter> _values = new();
 	private readonly HashSet<String> _globalParams = new();
-
+	private readonly Boolean _allowEmptyStrings;
+	public BatchCommandBuilder(Boolean allowEmptyStrings)
+	{
+		_allowEmptyStrings = allowEmptyStrings;
+	}
 	public String CommandText => BuildText();
 
 
@@ -62,7 +66,7 @@ internal class BatchCommandBuilder
 			{ 
 				var originalName = sqlParam.ParameterName;
 				sqlParam.ParameterName = $"{sqlParam.ParameterName}_${index}";
-				sqlParam.Value = SqlExtensions.ConvertTo(propValue, sqlParam.SqlDbType.ToType());
+				sqlParam.Value = SqlExtensions.ConvertTo(propValue, sqlParam.SqlDbType.ToType(), _allowEmptyStrings);
 				_values.Add(sqlParam);
 				paramDefs.Add(new ParameterDef(originalName, sqlParam.ParameterName));
 			}

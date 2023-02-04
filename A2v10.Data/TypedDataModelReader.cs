@@ -27,7 +27,6 @@ internal class TypedDataModelReader<T> where T : new()
 		var rsDef = new FieldInfo(rdr.GetName(0));
 		if (!String.IsNullOrEmpty(rsDef.PropertyName))
 		{
-			int z = 55;
 		}
 		/*
 		 * var rdr = metadataCashe.GetReader(fi.PropertyName);

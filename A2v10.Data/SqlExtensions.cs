@@ -1,6 +1,5 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -56,7 +55,7 @@ public static class SqlExtensions
 		return str;
     }
 
-	public static Object ConvertTo(Object? value, Type to)
+	public static Object ConvertTo(Object? value, Type to, Boolean allowEmptyString)
 	{
 		if (value == null)
 			return DBNull.Value;
@@ -69,9 +68,9 @@ public static class SqlExtensions
 				return Guid.Parse(id!.ToString()!);
 			return Convert.ChangeType(id, to, CultureInfo.InvariantCulture)!;
 		}
-		if (value is String str)
+		else if (value is String str)
 		{
-			if (String.IsNullOrEmpty(str))
+			if (!allowEmptyString && String.IsNullOrEmpty(str))
 				return DBNull.Value;
 			if (to == typeof(String))
 				return value;

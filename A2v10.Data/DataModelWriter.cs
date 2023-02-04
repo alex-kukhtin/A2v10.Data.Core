@@ -11,10 +11,12 @@ namespace A2v10.Data;
 internal class DataModelWriter
 {
 	private readonly WriterMetadata _writerMetadata;
+	private readonly Boolean _allowEmptyStrings;
 
-	public DataModelWriter(WriterMetadata writerMetadata)
+	public DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmptyStrings)
     {
 		_writerMetadata = writerMetadata;
+		_allowEmptyStrings	= allowEmptyStrings;
 	}
 
 	internal void SetTableParameters(SqlCommand cmd, ExpandoObject data, Object? prms)
@@ -89,7 +91,7 @@ internal class DataModelWriter
 				// complex value
 				if (GetComplexValue(data, col.ColumnName, out Object? rowVal1))
 				{
-					var dbVal = SqlExtensions.ConvertTo(rowVal1, col.DataType);
+					var dbVal = SqlExtensions.ConvertTo(rowVal1, col.DataType, _allowEmptyStrings);
 					dbVal = CheckId(col.ColumnName, dbVal, col.DataType);
 					row[col.ColumnName] = dbVal;
 					continue;
@@ -97,7 +99,7 @@ internal class DataModelWriter
 			}
 			if (dataD.TryGetValue(col.ColumnName, out Object? rowVal2))
 			{
-				var dbVal = SqlExtensions.ConvertTo(rowVal2, col.DataType);
+				var dbVal = SqlExtensions.ConvertTo(rowVal2, col.DataType, _allowEmptyStrings);
 				dbVal = CheckId(col.ColumnName, dbVal, col.DataType);
 				row[col.ColumnName] = dbVal;
 			}

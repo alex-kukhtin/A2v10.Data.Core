@@ -406,7 +406,7 @@ public class SqlDbContext : IDbContext
 		using var token = _profiler.Start(command);
 		//var metadataCommand = command.Update2Metadata();
 		using var cnn = GetConnection(source);
-		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
+		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout), _config.AllowEmptyStrings);
 		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
 		{
@@ -448,7 +448,7 @@ public class SqlDbContext : IDbContext
 
 		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
-		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
+		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout), _config.AllowEmptyStrings);
 
 		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
@@ -494,13 +494,13 @@ public class SqlDbContext : IDbContext
 			return await SaveModelAsync(source, command, data, prms);
 
 		var dataReader = new DataModelReader(_localizer, _tokenProvider);
-		var batchBuilder = new BatchCommandBuilder();
+		var batchBuilder = new BatchCommandBuilder(_config.AllowEmptyStrings);
 
 		using var token = _profiler.Start(command);
 
 		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
-		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout));
+		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout), _config.AllowEmptyStrings);
 
 		/*
 		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
@@ -595,7 +595,7 @@ public class SqlDbContext : IDbContext
 				}
 				else
 				{
-					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType());
+					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType(), _config.AllowEmptyStrings);
 				}
 			}
 		}
@@ -669,7 +669,7 @@ public class SqlDbContext : IDbContext
 				}
 				else
 				{
-					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType());
+					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType(), _config.AllowEmptyStrings);
 				}
 			}
 		}
@@ -737,7 +737,7 @@ public class SqlDbContext : IDbContext
 		} while (rdr.NextResult());
 	}
 
-	static SqlParameter? SetParametersWithList<T>(SqlCommand cmd, Object? prms, IEnumerable<T> list) where T : class
+	SqlParameter? SetParametersWithList<T>(SqlCommand cmd, Object? prms, IEnumerable<T> list) where T : class
 	{
 		if (prms == null)
 			return null;
@@ -774,7 +774,7 @@ public class SqlDbContext : IDbContext
 					{
 						var col = dt.Columns[c];
 						var rowVal = propsD[col.ColumnName].GetValue(itm);
-						var dbVal = SqlExtensions.ConvertTo(rowVal, col.DataType);
+						var dbVal = SqlExtensions.ConvertTo(rowVal, col.DataType, _config.AllowEmptyStrings);
 						row[col.ColumnName] = dbVal;
 					}
 					dt.Rows.Add(row);
