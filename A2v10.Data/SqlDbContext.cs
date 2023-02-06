@@ -808,7 +808,8 @@ public class SqlDbContext : IDbContext
 		if (ti == null)
 			return Task.CompletedTask;
 		using var cmd = cnn.CreateCommandSP(ti.Procedure, CommandTimeout);
-		cmd.Parameters.AddWithValue(ti.ParamName, ti.TenantId);
+		foreach (var tp in ti.Params)
+			cmd.Parameters.AddWithValue(tp.ParamName, tp.Value);
 		return cmd.ExecuteNonQueryAsync();
 	}
 
@@ -820,7 +821,8 @@ public class SqlDbContext : IDbContext
 		if (ti == null)
 			return;
 		using var cmd = cnn.CreateCommandSP(ti.Procedure, CommandTimeout);
-		cmd.Parameters.AddWithValue(ti.ParamName, ti.TenantId);
+		foreach (var tp in ti.Params)
+			cmd.Parameters.AddWithValue(tp.ParamName, tp.Value);
 		cmd.ExecuteNonQuery();
 	}
 }

@@ -2,11 +2,13 @@
 
 
 namespace A2v10.Data.Interfaces;
+
+public record TenantInfoParam(String ParamName, Object? Value);
+
 public interface ITenantInfo
 {
 	String Procedure { get; }
-	String ParamName { get; }
-	Object TenantId { get; }
+	IEnumerable<TenantInfoParam> Params { get; }
 }
 
 public interface ITenantManager

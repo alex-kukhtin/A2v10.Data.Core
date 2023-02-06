@@ -7,11 +7,11 @@ using A2v10.Data.Tests.Configuration;
 namespace A2v10.Data.Tests;
 
 [TestClass]
-[TestCategory("TenantManager")]
-public class TenantManager
+[TestCategory("Tenant Manager")]
+public class TenantManagerTests
 {
 	readonly IDbContext _dbContext;
-	public TenantManager()
+	public TenantManagerTests()
 	{
 		_dbContext = Starter.CreateWithTenants();
 	}

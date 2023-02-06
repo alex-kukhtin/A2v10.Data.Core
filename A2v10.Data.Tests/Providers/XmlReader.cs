@@ -1,12 +1,13 @@
 ﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
 
+
+using System.IO;
+using System.Text;
+
 using A2v10.Data.Providers.Csv;
 using A2v10.Data.Providers.Xml;
 using A2v10.Data.Tests.Configuration;
 using A2v10.Data.Tests.Providers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
-using System.Text;
 
 namespace A2v10.Data.Providers
 {
