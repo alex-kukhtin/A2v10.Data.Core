@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2023 Oleksandr Kukhtin
 
-/* 20220812-7310 */
+/* 20230207-7320 */
 
 use a2v10test;
 go
@@ -258,6 +258,8 @@ drop procedure if exists a2test.[Fallback.Metadata];
 drop procedure if exists a2test.[Fallback.Update];
 drop procedure if exists a2test.[EmptyString.Metadata];
 drop procedure if exists a2test.[EmptyString.Update];
+drop procedure if exists a2test.[Agent.SameProps.Metadata];
+drop procedure if exists a2test.[Agent.SameProps.Update];
 go
 ------------------------------------------------
 drop type if exists [a2test].[NestedMain.TableType];
@@ -269,6 +271,7 @@ drop type if exists [a2test].[Method.TableType];
 drop type if exists [a2test].[MethodData.TableType];
 drop type if exists [a2test].[GuidMain.TableType];
 drop type if exists [a2test].[GuidRow.TableType];
+drop type if exists [a2test].[Id.TableType];
 go
 ------------------------------------------------
 create type [a2test].[NestedSub.TableType] as
@@ -354,6 +357,13 @@ table (
 	RowNumber int,
 	ParentRowNumber int,
 	[Code] nvarchar(255)
+)
+go
+------------------------------------------------
+create type [a2test].[Id.TableType] as
+table (
+	[Id] bigint null,
+	[RowNumber] int null
 )
 go
 ------------------------------------------------
@@ -1584,5 +1594,42 @@ begin
 	select [Document!TDocument!Object] = null, [Id!!Id] = Id,
 		[Name], [String] = case when [Name] is null then N'NULL' else N'EMPTY' end
 	from @Document
+end
+go
+
+------------------------------------------------
+create procedure a2test.[Agent.SameProps.Metadata]
+as
+begin
+	set nocount on;
+	declare @Agent [a2test].[Id.TableType];
+	select [Agent!Agent!Metadata]=null, * from @Agent;
+	select [Tags!Agent.Tags!Metadata]=null, * from @Agent;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Agent.SameProps.Update]
+@TenantId int = null,
+@UserId bigint = null,
+@Agent [a2test].[Id.TableType] readonly,
+@Tags [a2test].[Id.TableType] readonly
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	/*
+	declare @xml nvarchar(max);
+	set @xml = (select * from @Document for xml auto);
+	throw 60000, @xml, 0;
+	*/
+	declare @id bigint;
+	select @id = Id from @Agent;
+	select [Agent!TAgent!Object] = null, [Id!!Id] = Id,
+		[Tags!TTag!Array] = null
+	from @Agent;
+
+	select [!TTag!Array] = null, [Id!!Id] = Id, [!TAgent.Tags!ParentId] = @id
+	from @Tags;
 end
 go

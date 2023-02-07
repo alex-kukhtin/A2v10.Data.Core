@@ -246,6 +246,7 @@ internal class DataModelWriter
 							currentGuid = currVal.GetOrCreate<Guid>(Const.Fileds.Guid, () => Guid.NewGuid());
 							foreach (var dx in GetDataForSave(currVal, newPath, parentIndex: 0, parentKey: null, parentGuid: currentGuid))
 								yield return dx;
+							yield break;
 						}
 					}
 				}

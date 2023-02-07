@@ -196,4 +196,39 @@ public class DatabaseModels
 		dt.AreArrayValueEqual<Guid>(Guid.Parse("FE7406D9-960A-4EE6-85F9-45FA3450D25A"), 0, "Item");
 		dt.AreArrayValueEqual<Guid>(Guid.Parse("573E31C9-3567-46BF-BB59-D4A49BF3E23F"), 1, "Item");
 	}
+
+	[TestMethod]
+	public async Task WriteModelSameProps()
+	{
+		const String jsonData = @"
+{'Agent': {
+	'Id': 274,
+	'Tags':[
+		{'Id': 7,}, 
+		{'Id': 8,}
+	]},
+  'Tags': [
+	{'Id': 3,}, 
+	{'Id': 4,}
+  ]
+}";
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		IDataModel? dm = null;
+		try
+		{
+			dm = await _dbContext.SaveModelAsync(null, "a2test.[Agent.SameProps.Update]", dataToSave);
+		}
+		catch (Exception /*ex*/)
+		{
+			throw;
+		}
+
+		var dt = new DataTester(dm, "Agent");
+		dt.AreValueEqual<Int64>(274, "Id");
+
+		dt = new DataTester(dm, "Agent.Tags");
+		dt.IsArray(2);
+		dt.AreArrayValueEqual<Int64>(7, 0, "Id");
+		dt.AreArrayValueEqual<Int64>(8, 1, "Id");
+	}
 }
