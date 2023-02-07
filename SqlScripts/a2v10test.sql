@@ -272,6 +272,7 @@ drop type if exists [a2test].[MethodData.TableType];
 drop type if exists [a2test].[GuidMain.TableType];
 drop type if exists [a2test].[GuidRow.TableType];
 drop type if exists [a2test].[Id.TableType];
+drop type if exists [a2test].[Tag.TableType];
 go
 ------------------------------------------------
 create type [a2test].[NestedSub.TableType] as
@@ -364,6 +365,16 @@ create type [a2test].[Id.TableType] as
 table (
 	[Id] bigint null,
 	[RowNumber] int null
+)
+go
+------------------------------------------------
+create type [a2test].[Tag.TableType] as
+table (
+	--[GUID] uniqueidentifier,
+	--[ParentGUID] uniqueidentifier,
+	[Id] bigint null,
+	[RowNumber] int null,
+	[ParentId] bigint null
 )
 go
 ------------------------------------------------
@@ -1603,8 +1614,10 @@ as
 begin
 	set nocount on;
 	declare @Agent [a2test].[Id.TableType];
+	declare @Tag [a2test].[Tag.TableType];
 	select [Agent!Agent!Metadata]=null, * from @Agent;
-	select [Tags!Agent.Tags!Metadata]=null, * from @Agent;
+	select [Tags!Agent.Tags!Metadata]=null, * from @Tag;
+	select [SubTags!Agent.Tags.SubTags!Metadata]=null, * from @Tag;
 end
 go
 ------------------------------------------------
@@ -1612,7 +1625,8 @@ create or alter procedure a2test.[Agent.SameProps.Update]
 @TenantId int = null,
 @UserId bigint = null,
 @Agent [a2test].[Id.TableType] readonly,
-@Tags [a2test].[Id.TableType] readonly
+@Tags [a2test].[Tag.TableType] readonly,
+@SubTags [a2test].[Tag.TableType] readonly
 as
 begin
 	set nocount on;
@@ -1620,16 +1634,21 @@ begin
 
 	/*
 	declare @xml nvarchar(max);
-	set @xml = (select * from @Document for xml auto);
+	set @xml = (select * from @SubTags for xml auto);
 	throw 60000, @xml, 0;
 	*/
+
 	declare @id bigint;
 	select @id = Id from @Agent;
 	select [Agent!TAgent!Object] = null, [Id!!Id] = Id,
 		[Tags!TTag!Array] = null
 	from @Agent;
 
-	select [!TTag!Array] = null, [Id!!Id] = Id, [!TAgent.Tags!ParentId] = @id
+	select [!TTag!Array] = null, [Id!!Id] = Id, [!TAgent.Tags!ParentId] = @id,
+		[SubTags!TTag!Array] = null
 	from @Tags;
+
+	select [!TTag!Array] = null, [Id!!Id] = Id, [!TTag.SubTags!ParentId] = ParentId
+	from @SubTags;
 end
 go

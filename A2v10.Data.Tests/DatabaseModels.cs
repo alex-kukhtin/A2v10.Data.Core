@@ -204,8 +204,8 @@ public class DatabaseModels
 {'Agent': {
 	'Id': 274,
 	'Tags':[
-		{'Id': 7,}, 
-		{'Id': 8,}
+		{'Id': 7, SubTags: [{Id: 15 }, {Id: 20}] }, 
+		{'Id': 8, SubTags: [{Id: 12 }, {Id: 21}] }
 	]},
   'Tags': [
 	{'Id': 3,}, 
@@ -230,5 +230,15 @@ public class DatabaseModels
 		dt.IsArray(2);
 		dt.AreArrayValueEqual<Int64>(7, 0, "Id");
 		dt.AreArrayValueEqual<Int64>(8, 1, "Id");
+
+		dt = new DataTester(dm, "Agent.Tags[0].SubTags");
+		dt.IsArray(2);
+		dt.AreArrayValueEqual<Int64>(15, 0, "Id");
+		dt.AreArrayValueEqual<Int64>(20, 1, "Id");
+
+		dt = new DataTester(dm, "Agent.Tags[1].SubTags");
+		dt.IsArray(2);
+		dt.AreArrayValueEqual<Int64>(12, 0, "Id");
+		dt.AreArrayValueEqual<Int64>(21, 1, "Id");
 	}
 }
