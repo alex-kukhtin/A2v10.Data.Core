@@ -260,6 +260,8 @@ drop procedure if exists a2test.[EmptyString.Metadata];
 drop procedure if exists a2test.[EmptyString.Update];
 drop procedure if exists a2test.[Agent.SameProps.Metadata];
 drop procedure if exists a2test.[Agent.SameProps.Update];
+drop procedure if exists a2test.[ScalarTypes.Metadata]
+drop procedure if exists a2test.[ScalarTypes.Update]
 go
 ------------------------------------------------
 drop type if exists [a2test].[NestedMain.TableType];
@@ -273,6 +275,7 @@ drop type if exists [a2test].[GuidMain.TableType];
 drop type if exists [a2test].[GuidRow.TableType];
 drop type if exists [a2test].[Id.TableType];
 drop type if exists [a2test].[Tag.TableType];
+drop type if exists [a2test].[ScalarTypes.TableType];
 go
 ------------------------------------------------
 create type [a2test].[NestedSub.TableType] as
@@ -375,7 +378,20 @@ table (
 	[Id] bigint null,
 	[RowNumber] int null,
 	[ParentId] bigint null
-)
+);
+go
+------------------------------------------------
+create type [a2test].[ScalarTypes.TableType] as 
+table (
+	Int32Value int,
+	Int64Value bigint,
+	StringValue nvarchar(255),
+	MoneyValue money,
+	FloatValue float,
+	BitValue bit,
+	GuidValue uniqueidentifier,
+	DateTimeValue datetime
+);
 go
 ------------------------------------------------
 create procedure a2test.[NestedObject.Metadata]
@@ -1650,5 +1666,29 @@ begin
 
 	select [!TTag!Array] = null, [Id!!Id] = Id, [!TTag.SubTags!ParentId] = ParentId
 	from @SubTags;
+end
+go
+-----------------------------------------------
+create or alter procedure a2test.[ScalarTypes.Metadata]
+as
+begin
+	set nocount on;
+	declare @Obj [a2test].[ScalarTypes.TableType];
+	select [Obj!MainObject!Metadata] = null, * from @Obj;
+
+end
+go
+-----------------------------------------------
+create or alter procedure a2test.[ScalarTypes.Update]
+@Obj [a2test].[ScalarTypes.TableType] readonly
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [MainObject!TMain!Object] = null,
+		Int32Value, Int64Value, StringValue, MoneyValue, FloatValue, BitValue,
+		GuidValue,	DateTimeValue
+	from @Obj;
 end
 go
