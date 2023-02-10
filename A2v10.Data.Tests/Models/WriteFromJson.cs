@@ -65,8 +65,10 @@ public class WriteFromJson
 
 	private async Task TestAsync(String jsonData)
 	{
-		IDataModel dm = null;
+		IDataModel? dm = null;
 		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		if (dataToSave == null)
+			throw new InvalidOperationException("Data is null");
 		try
 		{
 			dm = await _dbContext.SaveModelAsync(null, "a2test.[ScalarTypes.Update]", dataToSave);
@@ -86,7 +88,7 @@ public class WriteFromJson
 		var guidVal = dt.GetValue<Guid>("GuidValue");
 		Assert.AreEqual(Guid.Parse("0db82076-0bec-4c5c-adbf-73A056FCCB04"), guidVal);
 		var dateVal = dt.GetValue<DateTime>("DateTimeValue");
-		dt.AreValueEqual(new DateTime(2022, 04, 30), "DateTimeValue");
+		Assert.AreEqual(new DateTime(2022, 04, 30), dateVal);
 	}
 
 

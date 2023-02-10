@@ -213,6 +213,8 @@ public class DatabaseModels
   ]
 }";
 		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		if (dataToSave == null)
+			throw new InvalidOperationException("Data is null");
 		IDataModel? dm = null;
 		try
 		{
