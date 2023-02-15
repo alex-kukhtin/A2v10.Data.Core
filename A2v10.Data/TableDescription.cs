@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Globalization;
 
@@ -41,7 +41,10 @@ internal class TableDescription : ITableDescription
 			return null;
 		if (type == value.GetType())
 			return value;
-		var fp = FormatProvider ?? CultureInfo.InvariantCulture;
+		// special cases
+        if (type == typeof(DateTime) && value is Double dblVal)
+            return DateTime.FromOADate(dblVal);
+        var fp = FormatProvider ?? CultureInfo.InvariantCulture;
 		return Convert.ChangeType(value, type, fp);
 	}
 
