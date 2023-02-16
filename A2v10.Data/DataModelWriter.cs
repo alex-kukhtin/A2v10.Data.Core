@@ -79,7 +79,15 @@ internal class DataModelWriter
 		return dbVal;
 	}
 
-	void ProcessOneDataElem(DataTable table, ExpandoObject data)
+    void CheckStringLength(DataColumn col, Object value, Int32 rowIndex)
+    {
+        if (col.DataType != typeof(String) || value is not String valString)
+            return;
+        if (value != null && valString.Length > col.MaxLength)
+            throw new InvalidOperationException($"Line {rowIndex + 1}. The string '{valString}' is too long for the '{col.ColumnName}' field. The max length is {col.MaxLength}.");
+    }
+
+    void ProcessOneDataElem(DataTable table, ExpandoObject data)
 	{
 		var row = table.NewRow();
 		var dataD = data as IDictionary<String, Object>;
