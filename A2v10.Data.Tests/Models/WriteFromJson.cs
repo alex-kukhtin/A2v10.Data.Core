@@ -91,5 +91,40 @@ public class WriteFromJson
 		Assert.AreEqual(new DateTime(2022, 04, 30), dateVal);
 	}
 
+    [TestMethod]
+    public async Task WriteModelNulls()
+    {
+        // DATA with ROOT
+        var jsonData = @"
+            {
+			    MainObject: {
+				    StringValue: null,
+				}
+            }
+			";
+        var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+        var dm = await _dbContext.SaveModelAsync(null, "a2test.[ScalarTypes.Update]", dataToSave!);
 
+        var dt = new DataTester(dm, "MainObject");
+        dt.IsNull("Int32Value");
+        dt.IsNull("Int64Value");
+        dt.IsNull("StringValue");
+        dt.IsNull("MoneyValue");
+        dt.IsNull("FloatValue");
+        dt.IsNull("BitValue");
+        dt.IsNull("GuidValue");
+        dt.IsNull("DateTimeValue");
+
+        jsonData = @"
+            {
+			    MainObject: {
+				    StringValue: '',
+				}
+            }
+			";
+        dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+        dm = await _dbContext.SaveModelAsync(null, "a2test.[ScalarTypes.Update]", dataToSave!);
+        dt = new DataTester(dm, "MainObject");
+        dt.IsNull("StringValue");
+    }
 }

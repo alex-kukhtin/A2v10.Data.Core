@@ -29,7 +29,7 @@ internal class TypedDataModelReader<T> where T : new()
 		{
 		}
 		/*
-		 * var rdr = metadataCashe.GetReader(fi.PropertyName);
+		 * var rdr = metadataCache.GetReader(fi.PropertyName);
 		 * rdr.Read(rdr);
 		 * 
 		 */

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Data.SqlClient;
@@ -101,7 +101,8 @@ internal class DataModelWriter
 				{
 					var dbVal = SqlExtensions.ConvertTo(rowVal1, col.DataType, _allowEmptyStrings);
 					dbVal = CheckId(col.ColumnName, dbVal, col.DataType);
-					row[col.ColumnName] = dbVal;
+                    CheckStringLength(col, dbVal, table.Rows.Count);
+                    row[col.ColumnName] = dbVal;
 					continue;
 				}
 			}
