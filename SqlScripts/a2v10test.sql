@@ -1692,3 +1692,23 @@ begin
 	from @Obj;
 end
 go
+-------------------------------------------------
+create or alter procedure a2test.[Blob.Update]
+@TenantId int = 1,
+@UserId bigint,
+@Name nvarchar(255), 
+@Mime nvarchar(255),
+@Stream varbinary(max),
+@BlobName nvarchar(255)
+as
+begin
+	set nocount on;
+	set transaction isolation level read committed;
+
+	set @TenantId = isnull(@TenantId, 1); -- required for image
+
+	declare @rtable table(id bigint, token uniqueidentifier);
+	insert into @rtable(id, token) values (123, newid());
+
+	select Id = id, Token = token, [Stream] = @Stream, [Name] = @Name, [Mime] = @Mime from @rtable;
+end

@@ -4,7 +4,7 @@
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>10.0.7324</Version>
+		<Version>10.0.7325</Version>
 		<Product>A2v10</Product>
 		<IsPackable>false</IsPackable>
 		<UserSecretsId>ae859289-41f3-465c-9d47-8a42f7ef06fb</UserSecretsId>

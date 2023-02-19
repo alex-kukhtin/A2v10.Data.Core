@@ -42,6 +42,8 @@ public abstract class LoadHelperBase<T> where T : class
 					p.SetValue(result, Enum.Parse(pt, dbVal.ToString()!));
 				else if (pt == typeof(ExpandoObject))
 					p.SetValue(result, DataHelpers.DeserializeJson(dbVal.ToString()));
+				else if (pt == typeof(Object))
+					p.SetValue(result, dbVal);
 				else if (pt.IsAssignableFrom(typeof(MemoryStream)))
 				{
 					if (dbVal is Byte[] dbByteArray)
