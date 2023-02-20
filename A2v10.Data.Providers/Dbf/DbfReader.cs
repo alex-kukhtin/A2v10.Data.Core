@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Globalization;
@@ -44,8 +44,12 @@ public class DbfReader : IExternalDataReader
 		rdr.ReadByte(); // char
 		Byte y = rdr.ReadByte(); // modified date
 		Byte m = rdr.ReadByte();
-		Byte d = rdr.ReadByte();
-		_file.LastModifedDate = new DateTime(y + 1900, m, d);
+        if (m < 1 || m > 12)
+            m = 1;
+        Byte d = rdr.ReadByte();
+        if (d < 1 || d > 31)
+            d = 1;
+        _file.LastModifedDate = new DateTime(y + 1900, m, d);
 		Int32 numRecords = rdr.ReadInt32();
 		Int16 headerSize = rdr.ReadInt16();
 		Int16 recordSize = rdr.ReadInt16();

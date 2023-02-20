@@ -43,11 +43,13 @@ public class TypedDataTests
 	[TestMethod]
 	public async Task UpdateStream()
 	{
-		var bi = new BlobUpdateInfo();
-		bi.Name = "test_name";
-		bi.Mime = "test_mime";
-		bi.UserId = 99;
-		var bytes = RandomNumberGenerator.GetBytes(100);
+        var bi = new BlobUpdateInfo
+        {
+            Name = "test_name",
+            Mime = "test_mime",
+            UserId = 99
+        };
+        var bytes = RandomNumberGenerator.GetBytes(100);
 		bi.Stream = new MemoryStream(bytes) as Stream;
 
 		var output = await _dbContext.ExecuteAndLoadAsync<BlobUpdateInfo, BlobUpdateOutput>("", "a2test.[Blob.Update]", bi);
@@ -58,7 +60,7 @@ public class TypedDataTests
 		Assert.IsNotNull(output.Token);
 		for (int i=0; i< bytes.Length; i++)
 		{
-			Assert.AreEqual(bytes[i], output.Stream[i]);
+			Assert.AreEqual(bytes[i], output.Stream![i]);
 		}
     }
 }
