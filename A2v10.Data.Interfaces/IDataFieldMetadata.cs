@@ -30,8 +30,9 @@ public interface IDataFieldMetadata
 	Int32 Length { get; }
 
 	String GetObjectType(String fieldName);
+    void ToDynamicGroup();
 
-	String TypeForValidate { get; }
+    String TypeForValidate { get; }
 	String TypeScriptName { get; }
 }
 

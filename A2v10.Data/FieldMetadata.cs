@@ -60,7 +60,7 @@ public enum SpecType
 public class FieldMetadata : IDataFieldMetadata
 {
 	public DataType DataType { get; }
-	public FieldType ItemType { get; } // for object, array
+	public FieldType ItemType { get; private set; } // for object, array
 	public String RefObject { get; private set; } // for object, array
 	public Boolean IsLazy { get; }
 	public Int32 Length { get; }
@@ -122,8 +122,12 @@ public class FieldMetadata : IDataFieldMetadata
 	{
 		RefObject = type;
 	}
+    public void ToDynamicGroup()
+    {
+        ItemType = FieldType.Group;
+    }
 
-	public String TypeForValidate =>
+    public String TypeForValidate =>
 		ItemType switch
 		{
 			FieldType.Array or

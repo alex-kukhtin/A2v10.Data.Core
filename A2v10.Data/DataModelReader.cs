@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 
@@ -15,8 +15,9 @@ public class DataModelReader
 	const String ROOT = "TRoot";
 	const String SYSTEM_TYPE = "$System";
 	const String ALIASES_TYPE = "$Aliases";
+    const String GROUPING_TYPE = "$Grouping";
 
-	private readonly IDataLocalizer _localizer;
+    private readonly IDataLocalizer _localizer;
 	private readonly ITokenProvider? _tokenProvider;
 
 	private IDataModel? _dataModel;
@@ -26,9 +27,11 @@ public class DataModelReader
 	private readonly CrossMapper _crossMap = new();
 	private readonly ExpandoObject _root = new();
 	private readonly IDictionary<String, Object> _sys = new ExpandoObject() as IDictionary<String, Object>;
-	FieldInfo? mainElement;
 
-	public DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenProvider = null)
+	private FieldInfo? mainElement;
+    private DynamicDataGrouping? _dynamicGrouping = null;
+
+    public DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenProvider = null)
 	{
 		_localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 		_tokenProvider = tokenProvider;
@@ -88,7 +91,11 @@ public class DataModelReader
 		return name;
 	}
 
-	void ProcessJsonRecord(FieldInfo fi, IDataReader rdr)
+    static void AddGroupingFromReader(IDataReader _)
+    {
+    }
+
+    void ProcessJsonRecord(FieldInfo fi, IDataReader rdr)
 	{
 		var val = rdr.GetString(0);
 		val = _localizer.Localize(val);
@@ -97,7 +104,13 @@ public class DataModelReader
 
 	}
 
-	void ProcessAliasesRecord(IDataReader rdr)
+    void ProcessGroupingRecord(IDataReader rdr)
+    {
+        _dynamicGrouping ??= new DynamicDataGrouping(_root, _metadata, this);
+        _dynamicGrouping.AddGrouping(rdr);
+    }
+
+    void ProcessAliasesRecord(IDataReader rdr)
 	{
 		if (_aliases == null)
 			throw new InvalidOperationException();
@@ -231,7 +244,11 @@ public class DataModelReader
 			ProcessAliasesRecord(rdr);
 			return;
 		}
-		if (rootFI.IsJson)
+        else if (rootFI.TypeName == GROUPING_TYPE)
+        {
+            ProcessGroupingRecord(rdr);
+        }
+        if (rootFI.IsJson)
 		{
 			ProcessJsonRecord(rootFI, rdr);
 			return;
@@ -406,10 +423,9 @@ public class DataModelReader
 		if (rdr.FieldCount == 0)
 			return;
 		// first field = self object
-		var schemaTable = rdr.GetSchemaTable();
-		if (schemaTable == null)
-			throw new DataLoaderException($"Invalid schema table");
-		var firstFieldName = GetAlias(rdr.GetName(0));
+		var schemaTable = rdr.GetSchemaTable() 
+			?? throw new DataLoaderException($"Invalid schema table");
+        var firstFieldName = GetAlias(rdr.GetName(0));
 		var objectDef = new FieldInfo(firstFieldName);
 		objectDef.CheckTypeName(); // for first field only
 		if (objectDef.TypeName == SYSTEM_TYPE)
@@ -419,7 +435,12 @@ public class DataModelReader
 			AddAliasesFromReader(rdr);
 			return;
 		}
-		if (objectDef.FieldType == FieldType.Scalar)
+        else if (objectDef.TypeName == GROUPING_TYPE)
+        {
+            AddGroupingFromReader(rdr);
+            return;
+        }
+        if (objectDef.FieldType == FieldType.Scalar)
 		{
 			throw new DataLoaderException($"Invalid element type: '{firstFieldName}'");
 		}
@@ -522,7 +543,7 @@ public class DataModelReader
 		return newMeta;
 	}
 
-	GroupMetadata GetOrCreateGroupMetadata(String typeName)
+	internal GroupMetadata GetOrCreateGroupMetadata(String typeName)
 	{
 		_groupMetadata ??= new Dictionary<String, GroupMetadata>();
 		if (_groupMetadata.TryGetValue(typeName, out GroupMetadata? groupMeta))
@@ -760,6 +781,7 @@ public class DataModelReader
 				typeMeta.AddCross(prop, crossKeys);
 			}
 		}
-	}
+        _dynamicGrouping?.Process();
+    }
 }
 
