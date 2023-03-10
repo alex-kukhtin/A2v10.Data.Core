@@ -92,19 +92,17 @@ public class SqlDbContext : IDbContext
 		using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
 
 		var retParam = SetParametersFromExpandoObject(cmd, prms);
-		using (var rdr = cmd.ExecuteReader())
-		{
-			if (rdr.Read())
-			{
-				var eo = new ExpandoObject();
-				for (Int32 i = 0; i < rdr.FieldCount; i++)
-				{
-					eo.Set(rdr.GetName(i), rdr.IsDBNull(i) ? null : rdr.GetValue(i));
-				}
-				return eo;
-			}
-		}
-		return null;
+        using var rdr = cmd.ExecuteReader();
+        if (rdr.Read())
+        {
+            var eo = new ExpandoObject();
+            for (Int32 i = 0; i < rdr.FieldCount; i++)
+            {
+                eo.Set(rdr.GetName(i), rdr.IsDBNull(i) ? null : rdr.GetValue(i));
+            }
+            return eo;
+        }
+        return null;
 	}
 
 	public async Task<ExpandoObject?> ReadExpandoAsync(String? source, String command, ExpandoObject? prms = null)
@@ -114,19 +112,17 @@ public class SqlDbContext : IDbContext
 		using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
 
 		var retParam = SetParametersFromExpandoObject(cmd, prms);
-		using (var rdr = await cmd.ExecuteReaderAsync())
-		{
-			if (rdr.Read())
-			{
-				var eo = new ExpandoObject();
-				for (Int32 i = 0; i < rdr.FieldCount; i++)
-				{
-					eo.Set(rdr.GetName(i), rdr.IsDBNull(i) ? null : rdr.GetValue(i));
-				}
-				return eo;
-			}
-		}
-		return null;
+        using var rdr = await cmd.ExecuteReaderAsync();
+        if (rdr.Read())
+        {
+            var eo = new ExpandoObject();
+            for (Int32 i = 0; i < rdr.FieldCount; i++)
+            {
+                eo.Set(rdr.GetName(i), rdr.IsDBNull(i) ? null : rdr.GetValue(i));
+            }
+            return eo;
+        }
+        return null;
 	}
 
 

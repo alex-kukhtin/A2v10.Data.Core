@@ -66,11 +66,10 @@ public class WriteFromJson
 	private async Task TestAsync(String jsonData)
 	{
 		IDataModel? dm = null;
-		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-		if (dataToSave == null)
-			throw new InvalidOperationException("Data is null");
-		try
-		{
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter()) 
+			?? throw new InvalidOperationException("Data is null");
+        try
+        {
 			dm = await _dbContext.SaveModelAsync(null, "a2test.[ScalarTypes.Update]", dataToSave);
 		}
 		catch (Exception /*ex*/)

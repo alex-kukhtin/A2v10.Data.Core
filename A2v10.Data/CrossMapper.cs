@@ -23,10 +23,9 @@ internal class CrossItem
 
 	public void Add(String propName, ExpandoObject target)
 	{
-		var id = target.Get<Object>("Id");
-		if (id == null)
-			throw new DataLoaderException("Cross.Add. Id not found");
-		if (!_items.ContainsKey(id))
+		var id = target.Get<Object>("Id") 
+			?? throw new DataLoaderException("Cross.Add. Id not found");
+        if (!_items.ContainsKey(id))
 			_items.Add(id, target);
 		if (!_keys.ContainsKey(propName))
 		{

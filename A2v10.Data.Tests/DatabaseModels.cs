@@ -212,10 +212,9 @@ public class DatabaseModels
 	{'Id': 4,}
   ]
 }";
-		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-		if (dataToSave == null)
-			throw new InvalidOperationException("Data is null");
-		IDataModel? dm = null;
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter()) 
+			?? throw new InvalidOperationException("Data is null");
+        IDataModel? dm = null;
 		try
 		{
 			dm = await _dbContext.SaveModelAsync(null, "a2test.[Agent.SameProps.Update]", dataToSave);

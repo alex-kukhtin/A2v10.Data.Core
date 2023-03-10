@@ -9,10 +9,9 @@ internal class ObjectBuilder
 		if (source is null)
 			throw new DataDynamicException($"Invalid dynamic object. {sign}");
 		var type = ClassFactory.CreateClass(sign.Properties);
-		var target = System.Activator.CreateInstance(type);
-		if (target == null)
-			throw new DataDynamicException($"Couldn't create type {type}");
-		SetProperties(source, target, path);
+		var target = System.Activator.CreateInstance(type) 
+			?? throw new DataDynamicException($"Couldn't create type {type}");
+        SetProperties(source, target, path);
 		return target;
 	}
 

@@ -225,10 +225,9 @@ public class DataFile : IExternalDataFile
 		{
 			var f = r.Fields[prop];
 			CreateStructure(model.Metadata[f.RefObject]);
-			var array = model.Eval<IList<ExpandoObject>>(prop);
-			if (array == null)
-				throw new ExternalDataException($"External data. '{prop}' field must be an array");
-			FillData(array);
+			var array = model.Eval<IList<ExpandoObject>>(prop) 
+				?? throw new ExternalDataException($"External data. '{prop}' field must be an array");
+            FillData(array);
 			FitStringFields();
 			return;
 		}

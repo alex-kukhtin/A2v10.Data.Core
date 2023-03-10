@@ -79,7 +79,7 @@ internal class DataModelWriter
 		return dbVal;
 	}
 
-    void CheckStringLength(DataColumn col, Object value, Int32 rowIndex)
+    static void CheckStringLength(DataColumn col, Object value, Int32 rowIndex)
     {
         if (col.DataType != typeof(String) || value is not String valString)
             return;
