@@ -1778,3 +1778,16 @@ begin
 
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[RawData.Load]
+@Id uniqueidentifier
+as
+begin
+	set nocount on;
+	select Id = @Id, 23, N'string';
+
+	select Id = @Id, 77, N'item1'
+	union all
+	select Id = @Id, 99, N'item2'
+end
+go

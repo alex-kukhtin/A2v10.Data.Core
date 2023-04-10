@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Threading.Tasks;
@@ -42,5 +42,8 @@ public interface IDbContext
 	// TYPED inteface
 	Task<T> LoadTypedModelAsync<T>(String? source, String command, Object? prms, Int32 commandTimeout = 0) where T : new();
 
+	// Raw loading
+	void LoadRaw(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);
+	Task LoadRawAsync(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);
 }
 

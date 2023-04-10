@@ -7,6 +7,7 @@ using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -691,8 +692,8 @@ public class SqlDbContext : IDbContext
 
 	async Task ReadDataAsync(String? source, String command,
 		Action<SqlParameterCollection> setParams,
-		Action<Int32, IDataReader> onRead,
-		Action<Int32, IDataReader> onMetadata)
+		Action<Int32, IDataReader>? onRead,
+		Action<Int32, IDataReader>? onMetadata)
 	{
 		Int32 rdrNo = 0;
 		using var cnn = await GetConnectionAsync(source);
@@ -713,8 +714,8 @@ public class SqlDbContext : IDbContext
 
 	void ReadData(String? source, String command,
 		Action<SqlParameterCollection> setParams,
-		Action<Int32, IDataReader> onRead,
-		Action<Int32, IDataReader> onMetadata)
+		Action<Int32, IDataReader>? onRead,
+		Action<Int32, IDataReader>? onMetadata)
 	{
 		using var cnn = GetConnection(source);
 		using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
@@ -820,6 +821,23 @@ public class SqlDbContext : IDbContext
 		foreach (var tp in ti.Params)
 			cmd.Parameters.AddWithValue(tp.ParamName, tp.Value);
 		cmd.ExecuteNonQuery();
+	}
+
+	public void LoadRaw(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action) 
+	{
+		ReadData(source, procedure,
+			(prm) => prm.SetParameters(prms),
+			(no, rdr) => action(no, rdr),
+			null
+		);
+	}
+	public Task LoadRawAsync(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action)
+	{
+		return ReadDataAsync(source, procedure,
+			(prm) => prm.SetParameters(prms),
+			(no, rdr) => action(no, rdr),
+			null
+		);
 	}
 }
 
