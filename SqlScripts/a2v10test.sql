@@ -1791,3 +1791,15 @@ begin
 	select Id = @Id, 99, N'item2'
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[LookupModel]
+as
+begin
+	set nocount on;
+	select [Methods!TMtdLookup!Lookup] = null, [!!Key] = 23, [Name!!Name] = N'Element 23', [Value] = N'Value 23'
+	union all
+	select [Methods!TMtdLookup!Lookup] = null, [!!Key] = 34, [Name!!Name] = N'Element 34', [Value] = N'Value 34'
+	union all
+	select [Methods!TMtdLookup!Lookup] = null, [!!Key] = 45, [Name!!Name] = N'Element 45', [Value] = N'Value 45'
+end
+go

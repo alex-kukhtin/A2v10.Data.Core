@@ -502,5 +502,38 @@ public class LoadList
 		// with grammatical error
 		Assert.AreEqual(ex.Message, "Invalid element type: 'Model!TModel!Aray'");
 	}
+
+	[TestMethod]
+	public async Task LookupModel()
+	{
+		IDataModel dm = await _dbContext.LoadModelAsync(null, "a2test.LookupModel");
+		var md = new MetadataTester(dm);
+		md.IsAllKeys("TRoot,TMtdLookup,TMtdLookupMap");
+		md.HasAllProperties("TRoot", "Methods");
+		md.HasAllProperties("TMtdLookup", "Name,Value");
+		md.HasAllProperties("TMtdLookupMap", "23,34,45");
+		md.IsName("TMtdLookup", "Name");
+		md.IsItemRefObject("TMtdLookupMap", "23", "TMtdLookup", FieldType.Object);
+		md.IsItemRefObject("TMtdLookupMap", "34", "TMtdLookup", FieldType.Object);
+		md.IsItemRefObject("TMtdLookupMap", "45", "TMtdLookup", FieldType.Object);
+
+		var dt = new DataTester(dm, "Methods");
+		dt.AllProperties("23,34,45");
+
+		dt = new DataTester(dm, "Methods.23");
+		dt.AllProperties("Name,Value");
+		dt.AreValueEqual("Element 23", "Name");
+		dt.AreValueEqual("Value 23", "Value");
+
+		dt = new DataTester(dm, "Methods.34");
+		dt.AllProperties("Name,Value");
+		dt.AreValueEqual("Element 34", "Name");
+		dt.AreValueEqual("Value 34", "Value");
+
+		dt = new DataTester(dm, "Methods.45");
+		dt.AllProperties("Name,Value");
+		dt.AreValueEqual("Element 45", "Name");
+		dt.AreValueEqual("Value 45", "Value");
+	}
 }
 

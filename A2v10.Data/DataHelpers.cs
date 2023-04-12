@@ -57,6 +57,7 @@ public static class DataHelpers
 			"CrossArray" => FieldType.CrossArray,
 			"CrossObject" => FieldType.CrossObject,
 			"Json" => FieldType.Json,
+			"Lookup" => FieldType.Lookup,
 			_ => FieldType.Scalar,
 		};
 	}
@@ -116,6 +117,16 @@ public static class DataHelpers
 		}
 		if (value != null)
 			arr?.Add(value);
+	}
+
+	public static ExpandoObject CreateOrAddObject(this ExpandoObject eo, String key)
+	{
+		var d = eo as IDictionary<String, Object>;
+		if (d.TryGetValue(key, out Object? value))
+			return (ExpandoObject)value;
+		var neweo = new ExpandoObject();
+		d.Add(key, neweo);
+		return neweo;
 	}
 
 	public static void AddToMap(this ExpandoObject eo, String key, ExpandoObject value, String keyProp)

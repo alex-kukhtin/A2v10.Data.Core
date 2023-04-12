@@ -44,6 +44,8 @@ public class ElementMetadata : IDataMetadata
 			return null;
 		if (IsFieldExists(field.PropertyName, type, out FieldMetadata? fm))
 			return fm;
+		if (index == -1)
+			index = _fields.Count - 1;
 		fm = new FieldMetadata(index, field, type, sqlType, fieldLen);
 		_fields.Add(field.PropertyName, fm);
 		switch (field.SpecType)

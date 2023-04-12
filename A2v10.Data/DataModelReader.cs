@@ -453,12 +453,14 @@ public class DataModelReader
 			mainElement = objectDef;
 			rootMetadata.MainObject = objectDef.PropertyName;
 		}
-		if (objectDef.IsArray || objectDef.IsTree || objectDef.IsMap)
+		if (objectDef.IsArray || objectDef.IsTree || objectDef.IsMap || objectDef.IsLookup)
 			typeMetadata.IsArrayType = true;
 		if (objectDef.IsGroup)
 			typeMetadata.IsGroup = true;
 		if ((objectDef.IsArray || objectDef.IsTree) && objectDef.IsVisible)
 			_root.AddToArray(objectDef.PropertyName, null); // empty record
+		if (objectDef.IsLookup)
+			ProcessLookupMetadata(objectDef); // for root here
 		Boolean hasRowCount = false;
 		for (Int32 i = 1; i < rdr.FieldCount; i++)
 		{
@@ -494,6 +496,8 @@ public class DataModelReader
 				ProcessComplexMetadata(fieldDef, typeMetadata, dt, sqlDataType, fieldLength);
 			else if (fieldDef.IsMapObject)
 				ProcessMapObjectMetadata(fieldDef, typeMetadata);
+			else if (fieldDef.IsLookup)
+				ProcessLookupMetadata(fieldDef);
 			else
 			{
 				var fm = typeMetadata.AddField(i, fieldDef, dt, sqlDataType, fieldLength);
@@ -693,6 +697,15 @@ public class DataModelReader
 			_root.AddToArray(field.PropertyName, currentRecord);
 		else if (field.IsObject)
 			_root.Add(field.PropertyName, currentRecord);
+		else if (field.IsLookup)
+		{
+			var leo = _root.CreateOrAddObject(field.PropertyName);
+			String fieldKey = key != null ? key.ToString()! :
+				throw new InvalidOperationException($"Key for lookup is null");
+			leo.Add(fieldKey, currentRecord);
+			var lookupMeta = GetOrCreateMetadata($"{field.TypeName}Map");
+			lookupMeta.AddField(-1, new FieldInfo($"{fieldKey}!{field.TypeName}"), DataType.Undefined, SqlDataType.Unknown);
+		}
 		else if (field.IsMap)
 		{
 			_refMap.MergeObject(field.TypeName, id, currentRecord);
@@ -733,6 +746,13 @@ public class DataModelReader
 		fi.CheckTypeName();
 		elem.AddField(0, fi, DataType.Undefined, SqlDataType.Unknown);
 		innerElem.AddField(0, new FieldInfo(fieldInfo, fna[1]), dt, sqlType, fieldLen);
+	}
+
+	void ProcessLookupMetadata(FieldInfo fieldInfo)
+	{
+		var mapType = fieldInfo.TypeName + "Map";
+		var innerElem = GetOrCreateMetadata(mapType);
+		innerElem.MapItemType = fieldInfo.TypeName;
 	}
 
 	void ProcessMapObjectMetadata(FieldInfo fieldInfo, ElementMetadata elem)

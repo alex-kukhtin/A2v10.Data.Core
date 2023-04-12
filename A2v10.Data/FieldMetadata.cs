@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
@@ -24,7 +24,8 @@ public enum FieldType
 	MapObject,
 	Json,
 	CrossArray,
-	CrossObject
+	CrossObject,
+	Lookup
 }
 
 public enum SpecType
@@ -69,7 +70,17 @@ public class FieldMetadata : IDataFieldMetadata
 
 	public Int32 FieldIndex { get; }
 
-	public Boolean IsArrayLike { get { return ItemType == FieldType.Object || ItemType == FieldType.Array || ItemType == FieldType.Map; } }
+	public Boolean IsArrayLike
+	{
+		get
+		{
+			return
+				ItemType == FieldType.Object ||
+				ItemType == FieldType.Array ||
+				ItemType == FieldType.Map ||
+				ItemType == FieldType.Lookup;
+		}
+	}
 
 	public FieldMetadata(Int32 index, FieldInfo fi, DataType type, SqlDataType sqlDataType, Int32 length)
 	{
@@ -107,6 +118,7 @@ public class FieldMetadata : IDataFieldMetadata
 			case FieldType.Group:
 				return RefObject;
 			case FieldType.MapObject:
+			case FieldType.Lookup:
 				return RefObject + "Map";
 			case FieldType.Json:
 				return "Json";
@@ -133,7 +145,8 @@ public class FieldMetadata : IDataFieldMetadata
 			FieldType.Array or
 			FieldType.Tree or
 			FieldType.Map or
-			FieldType.MapObject => RefObject + "[]",
+			FieldType.MapObject or
+			FieldType.Lookup => RefObject + "[]",
 			FieldType.Object or
 			FieldType.Group => RefObject,
 			_ => DataType.ToString(),
@@ -153,7 +166,7 @@ public class FieldMetadata : IDataFieldMetadata
 			},
 			FieldType.Array or
 			FieldType.Tree => $"IElementArray<{RefObject}>",
-			FieldType.Map or
+			FieldType.Map or FieldType.Lookup or
 			FieldType.MapObject => RefObject + "[]",
 			FieldType.Object or
 			FieldType.Group => RefObject,
