@@ -1,22 +1,23 @@
 
-select [Document!TDocument!Object] = null, [Id!!Id] = 222,
-	[Agent!TAgent!RefId] = 223,
-	[Rows!TRow!Array] = null
+MULTITENANT
+===========================
+1. SetTenantId - to batch
 
-select [!TRow!Array] = null, [!TDocument.Rows!ParentId] = 222 
 
-Map
-	"Document", {TDocument, Rdr, () => root.Document}
-	"Rows",     {TRow,      Rdr,          () => {var r = new Row(); root.Document.Rows.Add(r); return r;}
-	"Agent",    {TAgent,    Rdr,       () => root.Document.Agent }
+GENERIC READER/WRITER
+===========================
+a2v10test.sql - a2test.ComplexModel
+---- TypedElements
 
-select [!TAgent!Map] = null,
+TypedReader 
+	1. TargetMetadata & CreateElement
+	2. Map
+	3. ChildArray
+	4. RootArrays
 
- metadata.GetReader
----- Reader
-	var rdr = GetReader("Document", root) -> returns Document & Reader
-	rdr.ReadTo(rdr);
+TypedWriter
+	1. ToDo
 
-	Id = SqlConvert.ConvertTo<Int64>(rdr.GetValue(1))
-	No = SqlConvert.ConvertTo<String>(rdr.GetValue(2))
+CODE GENERATOR -> C# DTO Objects from DataModel
+===========================
 

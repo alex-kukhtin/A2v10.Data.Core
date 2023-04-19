@@ -1,6 +1,8 @@
 ﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
 
 
+using System.Reflection.Metadata.Ecma335;
+
 namespace A2v10.Data;
 
 public enum DataType
@@ -70,7 +72,9 @@ public class FieldMetadata : IDataFieldMetadata
 
 	public Int32 FieldIndex { get; }
 
-	public Boolean IsArrayLike
+	public Boolean IsRefId { get; private set; }
+
+    public Boolean IsArrayLike
 	{
 		get
 		{
@@ -101,6 +105,7 @@ public class FieldMetadata : IDataFieldMetadata
 		{
 			ItemType = FieldType.Object;
 			RefObject = fi.TypeName;
+			IsRefId = true;
 		}
 	}
 

@@ -27,8 +27,10 @@ public class TypedModelTest
 	{
 		var root = await _dbContext.LoadTypedModelAsync<LoadedDocument>(null, "a2test.ComplexModel", null);
 		var doc = root.Document;
-		Assert.IsNotNull(doc);	
-
+		Assert.IsNotNull(doc);
+		Assert.AreEqual(123, doc.Id);
+		Assert.AreEqual("DocNo", doc.No);
+		Assert.IsTrue(Math.Abs((doc.Date - DateTime.Now).TotalSeconds) < 1);
 		/*
 		var md = new MetadataTester(dm);
 		md.IsAllKeys("TRoot,TDocument,TRow,TAgent,TProduct,TSeries,TUnit");

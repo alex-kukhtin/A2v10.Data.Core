@@ -18,6 +18,7 @@ public record ModelScriptInfo
 	public Boolean IsDialog { get; init; }
 	public Boolean IsIndex { get; init; }
 	public Boolean IsSkipDataStack { get; init; }
+	public Boolean IsPlain { get; init; }
 	public String? RawData { get; init; }
 }
 

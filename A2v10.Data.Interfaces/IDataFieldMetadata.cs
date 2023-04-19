@@ -28,11 +28,13 @@ public interface IDataFieldMetadata
 
 	String RefObject { get; }
 	Int32 Length { get; }
-
+	Int32 FieldIndex { get; }
 	String GetObjectType(String fieldName);
     void ToDynamicGroup();
 
     String TypeForValidate { get; }
 	String TypeScriptName { get; }
+
+	Boolean IsRefId { get; }
 }
 

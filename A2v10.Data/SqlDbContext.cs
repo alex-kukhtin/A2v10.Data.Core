@@ -292,7 +292,7 @@ public class SqlDbContext : IDbContext
 
 	public async Task<T> LoadTypedModelAsync<T>(String? source, String command, Object? prms, Int32 commandTimeout = 0) where T: new()
 	{
-		var modelReader = new TypedDataModelReader<T>(_metadataCache, _localizer, _tokenProvider);
+		var modelReader = new TypedDataModelReader<T>(_localizer, _tokenProvider);
 		source = ResolveSource(source, prms);
 		using var token = _profiler.Start(command);
 		await ReadDataAsync(source, command,
