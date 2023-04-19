@@ -1,7 +1,8 @@
-﻿// Copyright © 2012-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
+
 public class ElementMetadata : IDataMetadata
 {
 	private readonly IDictionary<String, IDataFieldMetadata> _fields = new Dictionary<String, IDataFieldMetadata>();
@@ -9,6 +10,8 @@ public class ElementMetadata : IDataMetadata
 	public IDictionary<String, IList<String?>?>? _cross = null;
 
 	public String? Id { get; private set; }
+	public Int32 IdIndex { get; private set; } = -1;
+	public Int32 ParentIdIndex { get; private set; } = -1;	
 	public String? Key { get; private set; }
 	public String? Name { get; private set; }
 	public String? RowNumber { get; private set; }
@@ -19,8 +22,10 @@ public class ElementMetadata : IDataMetadata
 	public String? MapItemType { get; set; }
 	public String? MainObject { get; set; }
 	public String? Token { get; set; }
+    public String? ParentIdTargetType { get; set; }
+	public String? ParentIdTargetProp { get; set; }
 
-	public Boolean IsArrayType { get; set; }
+    public Boolean IsArrayType { get; set; }
 	public Boolean IsRowCount { get; set; }
 	public Boolean IsGroup { get; set; }
 	public Boolean HasCross => _cross != null;
@@ -52,6 +57,7 @@ public class ElementMetadata : IDataMetadata
 		{
 			case SpecType.Id:
 				Id = field.PropertyName;
+				IdIndex = index;
 				break;
 			case SpecType.Key:
 				Key = field.PropertyName;
@@ -136,6 +142,16 @@ public class ElementMetadata : IDataMetadata
 			return (fm as FieldMetadata)!;
 		}
 		throw new DataLoaderException($"Field '{name}' not found.");
+	}
+
+	public void SetParentId(Int32 index, String key)
+	{
+		ParentIdIndex = index;
+		var s = key.Split('.');
+		if (s.Length < 2)
+			throw new InvalidOperationException($"Invalid ParentId key ({key})");
+		ParentIdTargetType = s[0];
+		ParentIdTargetProp = s[1];
 	}
 }
 

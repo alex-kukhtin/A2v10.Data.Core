@@ -4,7 +4,8 @@ namespace A2v10.Data.Interfaces;
 public interface IDataMetadata
 {
 	String? Id { get; }
-	String? Name { get; }
+    Int32 IdIndex { get; }
+    String? Name { get; }
 	String? RowNumber { get; }
 	String? HasChildren { get; }
 	String? Permissions { get; }

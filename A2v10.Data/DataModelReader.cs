@@ -5,11 +5,8 @@ using System.Data;
 using Newtonsoft.Json;
 
 namespace A2v10.Data;
-/*
-	* TODO: Map with keys: Metadata
-	*/
 
-public class DataModelReader
+internal class DataModelReader
 {
 
 	const String ROOT = "TRoot";

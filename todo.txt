@@ -10,10 +10,8 @@ a2v10test.sql - a2test.ComplexModel
 ---- TypedElements
 
 TypedReader 
-	1. TargetMetadata & CreateElement
-	2. Map
-	3. ChildArray
-	4. RootArrays
+	4. RootArrays ?
+	5. ComplexElements
 
 TypedWriter
 	1. ToDo

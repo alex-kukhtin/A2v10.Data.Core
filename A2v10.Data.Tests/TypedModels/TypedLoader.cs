@@ -31,71 +31,43 @@ public class TypedModelTest
 		Assert.AreEqual(123, doc.Id);
 		Assert.AreEqual("DocNo", doc.No);
 		Assert.IsTrue(Math.Abs((doc.Date - DateTime.Now).TotalSeconds) < 1);
-		/*
-		var md = new MetadataTester(dm);
-		md.IsAllKeys("TRoot,TDocument,TRow,TAgent,TProduct,TSeries,TUnit");
-		md.HasAllProperties("TRoot", "Document");
-		md.HasAllProperties("TDocument", "Id,No,Date,Agent,Company,Rows1,Rows2");
-		md.HasAllProperties("TRow", "Id,Product,Qty,Price,Sum,Series1");
-		md.HasAllProperties("TProduct", "Id,Name,Unit");
-		md.HasAllProperties("TUnit", "Id,Name");
+		Assert.IsNotNull(doc.Agent);
+		Assert.IsNotNull(doc.Company);
+		Assert.AreEqual(doc.Agent, doc.Company);
+		Assert.AreEqual(doc.Agent.Id, 512);
+		Assert.AreEqual(doc.Agent.Name, "Agent 512");
+		Assert.AreEqual(doc.Agent.Code, "Code 512");
+		Assert.AreEqual(1, doc.Rows1.Count);
+        Assert.AreEqual(1, doc.Rows2.Count);
 
-		var docT = new DataTester(dm, "Document");
-		docT.AreValueEqual(123, "Id");
-		docT.AreValueEqual("DocNo", "No");
+		var row1 = doc.Rows1[0];
+		Assert.AreEqual(78, row1.Id);
+		Assert.AreEqual(4.0, row1.Qty);
+		Assert.AreEqual(8M, row1.Price);
+		Assert.AreEqual(32M, row1.Sum);
+		var prod1 = row1.Product;
+        Assert.IsNotNull(prod1);
+        Assert.AreEqual(782, prod1.Id);
+        Assert.AreEqual("Product 782", prod1.Name);
+		Assert.AreEqual(1, row1.Series1.Count);
+		var ser1 = row1.Series1[0];
+        Assert.AreEqual(500, ser1.Id);
+        Assert.AreEqual(5.0, ser1.Price);
 
-		var agentT = new DataTester(dm, "Document.Agent");
-		agentT.AreValueEqual(512, "Id");
-		agentT.AreValueEqual("Agent 512", "Name");
-		agentT.AreValueEqual("Code 512", "Code");
-
-		agentT = new DataTester(dm, "Document.Company");
-		agentT.AreValueEqual(512, "Id");
-		agentT.AreValueEqual("Agent 512", "Name");
-		agentT.AreValueEqual("Code 512", "Code");
-
-		var row1T = new DataTester(dm, "Document.Rows1");
-		row1T.IsArray(1);
-		row1T.AreArrayValueEqual(78, 0, "Id");
-		row1T.AreArrayValueEqual(4.0, 0, "Qty");
-
-		var row2T = new DataTester(dm, "Document.Rows2");
-		row2T.IsArray(1);
-		row2T.AreArrayValueEqual(79, 0, "Id");
-		row2T.AreArrayValueEqual(7.0, 0, "Qty");
-
-		var row1Obj = new DataTester(dm, "Document.Rows1[0]");
-		row1Obj.AreValueEqual(78, "Id");
-		row1Obj.AreValueEqual(4.0, "Qty");
-		row1Obj.AllProperties("Id,Qty,Price,Sum,Product,Series1");
-
-		var prodObj = new DataTester(dm, "Document.Rows1[0].Product");
-		prodObj.AreValueEqual(782, "Id");
-		prodObj.AreValueEqual("Product 782", "Name");
-		prodObj.AllProperties("Id,Name,Unit");
-		var unitObj = new DataTester(dm, "Document.Rows1[0].Product.Unit");
-		unitObj.AreValueEqual(7, "Id");
-		unitObj.AreValueEqual("Unit7", "Name");
-		unitObj.AllProperties("Id,Name");
-
-		prodObj = new DataTester(dm, "Document.Rows2[0].Product");
-		prodObj.AreValueEqual(785, "Id");
-		prodObj.AreValueEqual("Product 785", "Name");
-		unitObj = new DataTester(dm, "Document.Rows2[0].Product.Unit");
-		unitObj.AreValueEqual(8, "Id");
-		unitObj.AreValueEqual("Unit8", "Name");
-
-		var seriesObj = new DataTester(dm, "Document.Rows1[0].Series1");
-		seriesObj.IsArray(1);
-		seriesObj.AreArrayValueEqual(500, 0, "Id");
-		seriesObj.AreArrayValueEqual(5.0, 0, "Price");
-
-		seriesObj = new DataTester(dm, "Document.Rows2[0].Series1");
-		seriesObj.IsArray(1);
-		seriesObj.AreArrayValueEqual(501, 0, "Id");
-		seriesObj.AreArrayValueEqual(10.0, 0, "Price");
-		*/
-	}
+        var row2 = doc.Rows2[0];
+        Assert.AreEqual(79, row2.Id);
+        Assert.AreEqual(7.0, row2.Qty);
+        Assert.AreEqual(2M, row2.Price);
+        Assert.AreEqual(14M, row2.Sum);
+        var prod2 = row2.Product;
+        Assert.IsNotNull(prod2);
+        Assert.AreEqual(785, prod2.Id);
+        Assert.AreEqual("Product 785", prod2.Name);
+        Assert.AreEqual(1, row2.Series1.Count);
+        var ser2 = row2.Series1[0];
+        Assert.AreEqual(501, ser2.Id);
+        Assert.AreEqual(10.0, ser2.Price);
+    }
 
 }
 

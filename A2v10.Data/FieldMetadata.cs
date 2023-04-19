@@ -1,8 +1,5 @@
 ﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
 
-
-using System.Reflection.Metadata.Ecma335;
-
 namespace A2v10.Data;
 
 public enum DataType

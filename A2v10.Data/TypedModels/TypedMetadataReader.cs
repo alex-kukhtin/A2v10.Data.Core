@@ -2,7 +2,7 @@
 
 using System.Data;
 
-namespace A2v10.Data.Core;
+namespace A2v10.Data;
 
 internal class TypedMetadataReader
 {
@@ -52,9 +52,10 @@ internal class TypedMetadataReader
                 continue;
             }
             if (fieldDef.IsCrossArray)
-            {
                 typeMetadata.AddCross(fieldDef.PropertyName, null);
-            }
+            if (fieldDef.IsParentId)
+                typeMetadata.SetParentId(i, fieldDef.TypeName);
+
             if (!fieldDef.IsVisible)
                 continue;
             DataType dt = rdr.GetFieldType(i).Name.TypeName2DataType();

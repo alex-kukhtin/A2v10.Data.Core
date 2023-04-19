@@ -1,17 +1,16 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-using A2v10.Data.Core;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 
 namespace A2v10.Data;
+
 public class SqlDbContext : IDbContext
 {
 	const String RET_PARAM_NAME = "@RetId";
