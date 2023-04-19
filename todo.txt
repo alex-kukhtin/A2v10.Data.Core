@@ -4,7 +4,7 @@ MULTITENANT
 1. SetTenantId - to batch
 
 
-GENERIC READER/WRITER
+TYPED GENERIC READER/WRITER
 ===========================
 a2v10test.sql - a2test.ComplexModel
 ---- TypedElements
@@ -15,6 +15,8 @@ TypedReader
 
 TypedWriter
 	1. ToDo
+
+Test performance
 
 CODE GENERATOR -> C# DTO Objects from DataModel
 ===========================
