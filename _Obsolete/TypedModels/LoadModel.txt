@@ -1,0 +1,20 @@
+	public async Task<T?> LoadTypedModelAsync<T>(String? source, String command, Object? prms = null) where T: new()
+	{
+		var dm = await LoadModelAsync(source, command, prms);
+		if (dm == null)
+			return default;
+		var jsonString = JsonConvert.SerializeObject(dm.Root);
+		return JsonConvert.DeserializeObject<T>(jsonString) ?? default;
+		/*
+		var modelReader = new TypedDataModelReader<T>(_localizer, _tokenProvider);
+		source = ResolveSource(source, prms);
+		using var token = _profiler.Start(command);
+		await ReadDataAsync(source, command,
+			(prm) => prm.SetParameters(prms),
+			(no, rdr) => modelReader.ProcessOneRecord(rdr),
+			(no, rdr) => modelReader.ProcessOneMetadata(rdr)
+		);
+		modelReader.PostProcess();
+		return modelReader.DataModel;
+		*/
+	}

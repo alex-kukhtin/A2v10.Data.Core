@@ -40,7 +40,8 @@ public interface IDbContext
 	Task<TOut?> ExecuteAndLoadAsync<TIn, TOut>(String? source, String command, TIn element) where TIn : class where TOut : class;
 
 	// TYPED inteface
-	Task<T> LoadTypedModelAsync<T>(String? source, String command, Object? prms, Int32 commandTimeout = 0) where T : new();
+	Task<T?> LoadTypedModelAsync<T>(String? source, String command, Object? prms = null) where T : new();
+	Task<T?> SaveTypedModelAsync<T>(String? source, String command, T data, Object? prms = null) where T : new();
 
 	// Raw loading
 	void LoadRaw(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);

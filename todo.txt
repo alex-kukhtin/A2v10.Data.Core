@@ -8,7 +8,7 @@ TYPED GENERIC READER/WRITER
 ===========================
 a2v10test.sql - a2test.ComplexModel
 ---- TypedElements
-
+   
 TypedReader 
 	4. RootArrays ?
 	5. ComplexElements
@@ -16,7 +16,7 @@ TypedReader
 TypedWriter
 	1. ToDo
 
-Test performance
+Test performance diff
 
 CODE GENERATOR -> C# DTO Objects from DataModel
 ===========================

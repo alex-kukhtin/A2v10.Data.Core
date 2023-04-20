@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace A2v10.Data.Tests;
 
-public record Unit
-{
-    public Int64 Id { get; set; }
-    public String? Name { get; set; }
-}
-
 public record Series
 {
     public Int64 Id { get; set; }
@@ -22,7 +16,6 @@ public record Product
 {
     public Int64 Id { get; set; }
     public String? Name { get; set; }
-	public Unit? Unit { get; set; }
 }
 
 public record Row
@@ -56,4 +49,13 @@ public record Document
 public record LoadedDocument
 {
 	public Document? Document { get; set; }
+	public List<Agent> Agents { get; init; } = new();
+	public List<Product> Products { get; init; } = new();
+}
+
+public record LoadedDocuments
+{
+    public List<Document> Documents { get; set; } = new();
+    public List<Agent> Agents { get; init; } = new();
+    public List<Product> Products { get; init; } = new();
 }

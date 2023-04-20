@@ -106,6 +106,80 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2test.ComplexModelTyped
+	@TenantId int = null,
+	@UserId bigint = null
+as
+begin
+	set nocount on;
+	select [Document!TDocument!Object] = null, [Id!!Id] = 123, [No]='DocNo', [Date]=a2sys.fn_getCurrentDate(),
+		[Agent!TAgent!RefId] = 512, [Company!TAgent!RefId] = 512,
+		[Rows1!TRow!Array] = null, [Rows2!TRow!Array] = null;
+
+	select [!TRow!Array] = null, [Id!!Id] = 78, [!TDocument.Rows1!ParentId] = 123, 
+		[Product!TProduct!RefId] = 782,
+		Qty=cast(4.0 as float), Price=cast(8 as money), [Sum] = cast(32.0 as money),
+		[Series1!TSeries!Array] = null
+
+	select [!TRow!Array] = null, [Id!!Id] = 79, [!TDocument.Rows2!ParentId] = 123, 
+		[Product!TProduct!RefId] = 785,
+		Qty=cast(7.0 as float), Price=cast(2 as money), [Sum] = cast(14.0 as money),
+		[Series1!TSeries!Array] = null
+
+	-- series for rows
+	select [!TSeries!Array]=null, [Id!!Id] = 500, [!TRow.Series1!ParentId] = 78, Price=cast(5 as float)
+	union all
+	select [!TSeries!Array]=null, [Id!!Id] = 501, [!TRow.Series1!ParentId] = 79, Price=cast(10 as float)
+
+	-- maps for product
+	select [Products!TProduct!Map] = null, [Id!!Id] = 782, [Name!!Name] = N'Product 782'
+		-- [Unit.Id!TUnit!Id] = 7, [Unit.Name!TUnit!Name] = N'Unit7' - not supported!
+	union all
+	select [Products!TProduct!Map] = null, [Id!!Id] = 785, [Name!!Name] = N'Product 785'
+		-- [Unit.Id!TUnit!Id] = 8, [Unit.Name!TUnit!Name] = N'Unit8'
+
+	-- maps for agent
+	select [Agents!TAgent!Map] = null, [Id!!Id]=512, [Name!!Name] = 'Agent 512', Code=N'Code 512';
+end
+go
+------------------------------------------------
+create or alter procedure a2test.ComplexModelTypedArray
+	@TenantId int = null,
+	@UserId bigint = null
+as
+begin
+	set nocount on;
+	select [Documents!TDocument!Array] = null, [Id!!Id] = 123, [No]='DocNo', [Date]=a2sys.fn_getCurrentDate(),
+		[Agent!TAgent!RefId] = 512, [Company!TAgent!RefId] = 512,
+		[Rows1!TRow!Array] = null, [Rows2!TRow!Array] = null;
+
+	select [!TRow!Array] = null, [Id!!Id] = 78, [!TDocument.Rows1!ParentId] = 123, 
+		[Product!TProduct!RefId] = 782,
+		Qty=cast(4.0 as float), Price=cast(8 as money), [Sum] = cast(32.0 as money),
+		[Series1!TSeries!Array] = null
+
+	select [!TRow!Array] = null, [Id!!Id] = 79, [!TDocument.Rows2!ParentId] = 123, 
+		[Product!TProduct!RefId] = 785,
+		Qty=cast(7.0 as float), Price=cast(2 as money), [Sum] = cast(14.0 as money),
+		[Series1!TSeries!Array] = null
+
+	-- series for rows
+	select [!TSeries!Array]=null, [Id!!Id] = 500, [!TRow.Series1!ParentId] = 78, Price=cast(5 as float)
+	union all
+	select [!TSeries!Array]=null, [Id!!Id] = 501, [!TRow.Series1!ParentId] = 79, Price=cast(10 as float)
+
+	-- maps for product
+	select [Products!TProduct!Map] = null, [Id!!Id] = 782, [Name!!Name] = N'Product 782'
+		-- [Unit.Id!TUnit!Id] = 7, [Unit.Name!TUnit!Name] = N'Unit7' - not supported!
+	union all
+	select [Products!TProduct!Map] = null, [Id!!Id] = 785, [Name!!Name] = N'Product 785'
+		-- [Unit.Id!TUnit!Id] = 8, [Unit.Name!TUnit!Name] = N'Unit8'
+
+	-- maps for agent
+	select [Agents!TAgent!Map] = null, [Id!!Id]=512, [Name!!Name] = 'Agent 512', Code=N'Code 512';
+end
+go
+------------------------------------------------
 create or alter procedure a2test.TreeModel
 	@TenantId int = null,
 	@UserId bigint = null

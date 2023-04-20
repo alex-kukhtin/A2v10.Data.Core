@@ -40,7 +40,6 @@ internal class TypedDataModelReader<T> where T : new()
             return;
 		_idMap.Add(typeName, id, data);
     }
-
     void ProcessObject(FieldInfo fi, IDataReader rdr)
 	{
         var elemMeta = _metadataReader.GetMetadata(fi.TypeName);
@@ -65,15 +64,43 @@ internal class TypedDataModelReader<T> where T : new()
 			return;
 		var idElem = ReadRecord(elemMeta, newelem, rdr);
 		AddToObjectMap(fi.TypeName, idElem, newelem);
+		if (fi.IsVisible)
+            AddToRootArrayObject(fi, elemMeta, newelem);
 	}
+
+	void AddToRootArray(FieldInfo fi, ElementMetadata elemMeta, IDataReader rdr)
+	{
+        var rootFieldMeta = _targetMetadata.GetFieldMetadata(typeof(T), fi.PropertyName);
+        if (rootFieldMeta == null)
+            return;
+        var targetRootObj = rootFieldMeta.CreateObject();
+        var newElemId = ReadRecord(elemMeta, targetRootObj, rdr);
+        var arr = rootFieldMeta.GetValue(_root!);
+        AddToObjectMap(fi.TypeName, newElemId, targetRootObj);
+        rootFieldMeta.AddToArray(arr!, targetRootObj);
+    }
+    void AddToRootArrayObject(FieldInfo fi, ElementMetadata elemMeta, Object? targetObj)
+    {
+		if (targetObj == null)
+			return;
+        var rootFieldMeta = _targetMetadata.GetFieldMetadata(typeof(T), fi.PropertyName);
+        if (rootFieldMeta == null)
+            return;
+        var arr = rootFieldMeta.GetValue(_root!);
+        rootFieldMeta.AddToArray(arr!, targetObj);
+    }
+
     void ProcessArray(FieldInfo fi, IDataReader rdr)
     {
         var elemMeta = _metadataReader.GetMetadata(fi.TypeName);
         if (elemMeta == null)
             return;
-		if (elemMeta.ParentIdIndex == -1)
+		if (elemMeta.ParentIdIndex == -1 && fi.IsVisible)
+		{
+			AddToRootArray(fi, elemMeta, rdr);
 			return;
-		var parentId = rdr.GetValue(elemMeta.ParentIdIndex);
+        }
+        var parentId = rdr.GetValue(elemMeta.ParentIdIndex);
 		if (elemMeta.ParentIdTargetType == null || elemMeta.ParentIdTargetProp == null)
 			throw new InvalidOperationException("ParentIdTargetType is null");
 		var parentElement = _idMap.GetElement(elemMeta.ParentIdTargetType, parentId);
@@ -83,12 +110,13 @@ internal class TypedDataModelReader<T> where T : new()
 		if (targetMeta == null)	
 			return;
 		var targetObj = targetMeta.CreateObject();
-		var array = targetMeta.GetValue(parentElement);
-		if (array == null)
-			throw new InvalidOperationException($"Array '{elemMeta.ParentIdTargetProp}' for element (id = {parentId}) is null");
-		targetMeta.AddToArray(array, targetObj);
+		var array = targetMeta.GetValue(parentElement) 
+			?? throw new InvalidOperationException($"Array '{elemMeta.ParentIdTargetProp}' for element (id = {parentId}) is null");
+        targetMeta.AddToArray(array, targetObj);
 		var newElemId = ReadRecord(elemMeta, targetObj, rdr);
 		AddToObjectMap(fi.TypeName, newElemId, targetObj);
+		if (fi.IsVisible)
+			AddToRootArrayObject(fi, elemMeta, targetObj);
     }
 
     public Object? GetElement(Object data, String name)

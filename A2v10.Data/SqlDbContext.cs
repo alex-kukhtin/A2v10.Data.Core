@@ -1,5 +1,6 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
+using Newtonsoft.Json;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
@@ -289,8 +290,14 @@ public class SqlDbContext : IDbContext
 		return source;
 	}
 
-	public async Task<T> LoadTypedModelAsync<T>(String? source, String command, Object? prms, Int32 commandTimeout = 0) where T: new()
+	public async Task<T?> LoadTypedModelAsync<T>(String? source, String command, Object? prms = null) where T: new()
 	{
+		var dm = await LoadModelAsync(source, command, prms);
+		if (dm == null)
+			return default;
+		var jsonString = JsonConvert.SerializeObject(dm.Root);
+		return JsonConvert.DeserializeObject<T>(jsonString) ?? default;
+		/*
 		var modelReader = new TypedDataModelReader<T>(_localizer, _tokenProvider);
 		source = ResolveSource(source, prms);
 		using var token = _profiler.Start(command);
@@ -301,9 +308,24 @@ public class SqlDbContext : IDbContext
 		);
 		modelReader.PostProcess();
 		return modelReader.DataModel;
+		*/
 	}
 
-	public IDataModel LoadModel(String? source, String command, System.Object? prms = null)
+    public async Task<T?> SaveTypedModelAsync<T>(String? source, String command, T data, Object? prms = null) where T : new()
+	{
+		var jsonData = JsonConvert.SerializeObject(data);
+		var expData = JsonConvert.DeserializeObject<ExpandoObject>(jsonData);
+		if (expData == null)
+			return default;
+		var newModel = await SaveModelAsync(source, command, expData, prms, null, 0);
+		if (newModel == null) 
+			return default;
+        var jsonString = JsonConvert.SerializeObject(newModel.Root);
+        return JsonConvert.DeserializeObject<T>(jsonString) ?? default;
+    }
+
+
+    public IDataModel LoadModel(String? source, String command, System.Object? prms = null)
 	{
 		var modelReader = new DataModelReader(_localizer, _tokenProvider);
 		source = ResolveSource(source, prms);

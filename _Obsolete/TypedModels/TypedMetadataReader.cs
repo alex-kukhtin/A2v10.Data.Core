@@ -66,7 +66,7 @@ internal class TypedMetadataReader
                 fieldLength = (Int32)schemaTable.Rows[i]["ColumnSize"];
 
             if (fieldDef.IsComplexField)
-                ProcessComplexMetadata(fieldDef, typeMetadata, dt, sqlDataType, fieldLength);
+                throw new InvalidOperationException("Complex fields is not supported");
             else if (fieldDef.IsMapObject)
                 ProcessMapObjectMetadata(fieldDef, typeMetadata);
             else
@@ -121,18 +121,6 @@ internal class TypedMetadataReader
         var newMeta = new ElementMetadata();
         _metadata.Add(typeName, newMeta);
         return newMeta;
-    }
-    void ProcessComplexMetadata(FieldInfo fieldInfo, ElementMetadata elem, DataType dt, SqlDataType sqlType, Int32 fieldLen)
-    {
-        // create metadata for nested type
-        var innerElem = GetOrCreateMetadata(fieldInfo.TypeName);
-        var fna = fieldInfo.PropertyName.Split('.');
-        if (fna.Length != 2)
-            throw new DataLoaderException($"Invalid complex name {fieldInfo.PropertyName}");
-        var fi = new FieldInfo($"{fna[0]}!{fieldInfo.TypeName}");
-        fi.CheckTypeName();
-        elem.AddField(0, fi, DataType.Undefined, SqlDataType.Unknown);
-        innerElem.AddField(0, new FieldInfo(fieldInfo, fna[1]), dt, sqlType, fieldLen);
     }
 
     void ProcessMapObjectMetadata(FieldInfo fieldInfo, ElementMetadata elem)
