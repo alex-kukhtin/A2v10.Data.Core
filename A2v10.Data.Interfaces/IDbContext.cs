@@ -41,7 +41,7 @@ public interface IDbContext
 
 	// TYPED inteface
 	Task<T?> LoadTypedModelAsync<T>(String? source, String command, Object? prms = null) where T : new();
-	Task<T?> SaveTypedModelAsync<T>(String? source, String command, T data, Object? prms = null) where T : new();
+	Task<TOut?> SaveTypedModelAsync<TIn, TOut>(String? source, String command, TIn data, Object? prms = null) where TOut : new();
 
 	// Raw loading
 	void LoadRaw(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);

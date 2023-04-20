@@ -59,3 +59,31 @@ public record LoadedDocuments
     public List<Agent> Agents { get; init; } = new();
     public List<Product> Products { get; init; } = new();
 }
+
+public record RMethodData
+{
+    public Int64 Id { get; set; }
+    public String? Code { get; set; }
+
+}
+public record RMethod
+{
+	public List<RMethodData> Data { get; set; } = new();
+    public Int32 Id { get; set; }
+    public String? Name { get; set; }
+}
+public record RRow
+{
+    public Int32? Id { get; set; }
+	public Dictionary<String, RMethod> Methods { get; set; } = new();
+}
+public record RDocument
+{
+	public Int32 Id { get; set; }
+	public String? Name { get; set; }
+	public List<RRow> Rows { get; init; } = new();
+}
+public record RowsMethods
+{
+	public RDocument? Document { get; set; }
+}

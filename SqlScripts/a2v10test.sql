@@ -112,7 +112,11 @@ create or alter procedure a2test.ComplexModelTyped
 as
 begin
 	set nocount on;
-	select [Document!TDocument!Object] = null, [Id!!Id] = 123, [No]='DocNo', [Date]=a2sys.fn_getCurrentDate(),
+	set transaction isolation level read uncommitted;
+	declare @date datetime;
+	set @date = N'2023-04-20 12:30:17';
+
+	select [Document!TDocument!Object] = null, [Id!!Id] = 123, [No]='DocNo', [Date]= @date,
 		[Agent!TAgent!RefId] = 512, [Company!TAgent!RefId] = 512,
 		[Rows1!TRow!Array] = null, [Rows2!TRow!Array] = null;
 
@@ -323,7 +327,9 @@ if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2te
 go
 ------------------------------------------------
 drop procedure if exists a2test.[Document.RowsMethods.Metadata];
+drop procedure if exists a2test.[Document.RowsMethodsTyped.Metadata];
 drop procedure if exists a2test.[Document.RowsMethods.Update];
+drop procedure if exists a2test.[Document.RowsMethodsTyped.Update];
 drop procedure if exists a2test.[Guid.Metadata];
 drop procedure if exists a2test.[Guid.Update];
 drop procedure if exists a2test.[Nullable.SaveModel.Metadata];
@@ -391,6 +397,7 @@ go
 ------------------------------------------------
 create type [a2test].[Method.TableType] as
 table (
+	[Id] bigint null,
 	[CurrentKey] nvarchar(255) null,
 	ParentRowNumber int null,
 	[Name] nvarchar(255) null
@@ -924,14 +931,16 @@ create procedure a2test.[Document.RowsMethods.Load]
 as
 begin
 	set nocount on;
+	set transaction isolation level read uncommitted;
+
 	select [Document!TDocument!Object] = null, [Id!!Id] = 123, [Name!!Name]='Document', [Rows!TRow!Array] = null;
 
-	select [!TRow!Array] = null, [Id!!Id]=null, [!TDocument.Rows!ParentId]=123, [Methods!TMethod!MapObject!Mtd1:Mtd2] = null;
+	select [!TRow!Array] = null, [Id!!Id]= 7, [!TDocument.Rows!ParentId]=123, [Methods!TMethod!MapObject!Mtd1:Mtd2] = null;
 
-	select [!TMethod!MapObject] = null, [Id!!Id] = 11, [Name!!Name] = N'Method 1', [!TRow.Methods!ParentId] = null, [Key!!Key] = N'Mtd1',
+	select [!TMethod!MapObject] = null, [Id!!Id] = 11, [Name!!Name] = N'Method 1', [!TRow.Methods!ParentId] = 7, [Key!!Key] = N'Mtd1',
 		[Data!TMethodData!Array] = null
 	union all
-	select [!TMethod!MapObject] = null, [Id!!Id] = 22, [Name!!Name] = N'Method 2', [!TRow.Methods!ParentId] = null, [Key!!Key] = N'Mtd2',
+	select [!TMethod!MapObject] = null, [Id!!Id] = 22, [Name!!Name] = N'Method 2', [!TRow.Methods!ParentId] = 7, [Key!!Key] = N'Mtd2',
 		[Data!TMethodData!Array] = null
 
 	select [!TMethodData!Array] = null, [Id!!Id] = 276, Code='Code1', [!TMethod.Data!ParentId] = 11;
@@ -939,6 +948,21 @@ end
 go
 ------------------------------------------------
 create procedure a2test.[Document.RowsMethods.Metadata]
+as
+begin
+	set nocount on;
+	declare @Document [a2test].[Document.TableType];
+	declare @Rows [a2test].[Row.TableType];
+	declare @Methods [a2test].[Method.TableType];
+	declare @MethodData [a2test].[MethodData.TableType];
+	select [Document!Document!Metadata]=null, * from @Document;
+	select [Rows!Document.Rows!Metadata]=null, * from @Rows;
+	select [Methods!Document.Rows.Methods*!Metadata]=null, * from @Methods;
+	select [MethodData!Document.Rows.Methods*.Data!Metadata]=null, * from @MethodData;
+end
+go
+------------------------------------------------
+create procedure a2test.[Document.RowsMethodsTyped.Metadata]
 as
 begin
 	set nocount on;
@@ -976,7 +1000,32 @@ begin
 	from @MethodData;
 end
 go
+------------------------------------------------
+create procedure a2test.[Document.RowsMethodsTyped.Update]
+	@TenantId int = null,
+	@UserId bigint = null,
+	@Document [a2test].[Document.TableType] readonly,
+	@Rows [a2test].[Row.TableType] readonly,
+	@Methods [a2test].[Method.TableType] readonly,
+	@MethodData [a2test].[MethodData.TableType] readonly
+as
+begin
+	set nocount on;
 
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Name!!Name]=[Name], [Rows!TRow!Array] = null
+	from @Document
+
+	select [!TRow!Array] = null, [Id!!Id]= Id, [!TDocument.Rows!ParentId]=123, [Methods!TMethod!MapObject!Mtd1:Mtd2] = null
+	from @Rows
+
+	select [!TMethod!MapObject] = null, [Id!!Id] = Id, [Name!!Name] = [Name], [!TRow.Methods!ParentId] = 7, [Key!!Key] = [Key],
+		[Data!TMethodData!Array] = null
+	from @Methods
+
+	select [!TMethodData!Array] = null, [Id!!Id] = Id, Code, [!TMethod.Data!ParentId] = 11
+	from @MethodData;
+end
+go
 ------------------------------------------------
 if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'InvalidType.Load')
 	drop procedure a2test.[InvalidType.Load]

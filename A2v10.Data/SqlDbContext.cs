@@ -1,6 +1,7 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
@@ -297,21 +298,9 @@ public class SqlDbContext : IDbContext
 			return default;
 		var jsonString = JsonConvert.SerializeObject(dm.Root);
 		return JsonConvert.DeserializeObject<T>(jsonString) ?? default;
-		/*
-		var modelReader = new TypedDataModelReader<T>(_localizer, _tokenProvider);
-		source = ResolveSource(source, prms);
-		using var token = _profiler.Start(command);
-		await ReadDataAsync(source, command,
-			(prm) => prm.SetParameters(prms),
-			(no, rdr) => modelReader.ProcessOneRecord(rdr),
-			(no, rdr) => modelReader.ProcessOneMetadata(rdr)
-		);
-		modelReader.PostProcess();
-		return modelReader.DataModel;
-		*/
 	}
 
-    public async Task<T?> SaveTypedModelAsync<T>(String? source, String command, T data, Object? prms = null) where T : new()
+    public async Task<TOut?> SaveTypedModelAsync<TIn, TOut>(String? source, String command, TIn data, Object? prms = null) where TOut : new()
 	{
 		var jsonData = JsonConvert.SerializeObject(data);
 		var expData = JsonConvert.DeserializeObject<ExpandoObject>(jsonData);
@@ -321,7 +310,7 @@ public class SqlDbContext : IDbContext
 		if (newModel == null) 
 			return default;
         var jsonString = JsonConvert.SerializeObject(newModel.Root);
-        return JsonConvert.DeserializeObject<T>(jsonString) ?? default;
+        return JsonConvert.DeserializeObject<TOut>(jsonString) ?? default;
     }
 
 

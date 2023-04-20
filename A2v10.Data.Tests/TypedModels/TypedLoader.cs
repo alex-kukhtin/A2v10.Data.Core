@@ -27,7 +27,8 @@ public class TypedModelTest
 	[TestMethod]
 	public async Task LoadDocument()
 	{
-		var root = await _dbContext.LoadTypedModelAsync<LoadedDocument>(null, "a2test.ComplexModelTyped", null);
+		var root = await _dbContext.LoadTypedModelAsync<LoadedDocument>(null, "a2test.ComplexModelTyped", null)
+			?? throw new InvalidOperationException("root is null");
 		var doc = root.Document;
 		Assert.IsNotNull(doc);
 		Assert.AreEqual(123, doc.Id);
@@ -77,7 +78,8 @@ public class TypedModelTest
 	[TestMethod]
 	public async Task LoadCollection()
 	{
-		var root = await _dbContext.LoadTypedModelAsync<LoadedDocuments>(null, "a2test.ComplexModelTypedArray", null);
+		var root = await _dbContext.LoadTypedModelAsync<LoadedDocuments>(null, "a2test.ComplexModelTypedArray", null)
+			?? throw new InvalidOperationException("Root is null");
 		var docs = root.Documents;
 		Assert.IsNotNull(docs);
 		Assert.AreEqual(1, docs.Count);
@@ -124,5 +126,16 @@ public class TypedModelTest
         s2.Stop();
 		*/
     }
+
+    [TestMethod]
+    public async Task LoadAndSave()
+	{
+		var srcModel = await _dbContext.LoadTypedModelAsync<RowsMethods>(null, "a2test.[Document.RowsMethods.Load]", null);
+		Assert.IsNotNull(srcModel);
+		var resModel = await _dbContext.SaveTypedModelAsync<RowsMethods, RowsMethods>(null, "a2test.[Document.RowsMethodsTyped.Update]", srcModel, null);
+        Assert.IsNotNull(resModel);
+		srcModel.ShouldDeepEqual(resModel);
+    }
+
 }
 
