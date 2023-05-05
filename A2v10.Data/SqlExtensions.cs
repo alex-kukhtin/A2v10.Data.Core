@@ -40,6 +40,13 @@ public static class SqlExtensions
 		};
 	}
 
+	static readonly String[] dateFormats = new String[]
+	{
+		"yyyyMMdd",
+		"yyyy-MM-dd",
+		"yyyy-MM-ddTHH:mm"
+	};
+
 	public static Object ParseString(String str, Type to)
     {
 		if (to == typeof(Int64))
@@ -52,6 +59,14 @@ public static class SqlExtensions
 			return Double.Parse(str, CultureInfo.InvariantCulture);
 		else if (to == typeof(Guid))
 			return Guid.Parse(str);
+		else if (to == typeof(DateTime))
+		{
+			if (DateTime.TryParseExact(str, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateResult))
+				return dateResult;
+			if (DateTime.TryParse(str, out var dateResult2))
+				return dateResult2;
+			return Convert.ToDateTime(str);
+		}
 		return str;
     }
 

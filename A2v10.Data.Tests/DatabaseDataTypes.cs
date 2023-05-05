@@ -1,5 +1,6 @@
 ﻿// Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
 
+using System.Dynamic;
 using System.Threading.Tasks;
 
 using A2v10.Data.Tests.Configuration;
@@ -40,4 +41,21 @@ public class DatabaseDataTypes
 		dt.AreValueEqual(new DateTime(2018, 02, 19), "Date");
 		dt.AreValueEqual(new DateTime(2018, 02, 19, 15, 10, 20), "DateTime");
 	}
+
+	[TestMethod]
+	public async Task ParamsTypes()
+	{
+
+		var prms = new ExpandoObject()
+		{
+			{"Date", "20230420" },
+			{"Date2", "2023-04-22T12:37:20.000" }
+		};
+		var res = await _dbContext.ReadExpandoAsync(null, "a2test.[TypesModel.Params]", prms)
+			?? throw new InvalidOperationException("Model is null");
+
+		Assert.AreEqual("20230420", res.Get<DateTime>("Date").ToString("yyyyMMdd"));
+		Assert.AreEqual("22.04.2023 12:37:20", res.Get<DateTime>("Date2").ToString());
+	}
 }
+

@@ -27,10 +27,12 @@ public class RawRecordset
 
 	static Info1 ReadInfo(IDataReader rdr)
 	{
-		var info = new Info1();
-		info.GuidValue = !rdr.IsDBNull(0) ? rdr.GetGuid(0) : null;
-		info.IntValue = rdr.GetInt32(1);
-		info.StringValue = rdr.GetString(2);
+		var info = new Info1()
+		{
+			GuidValue = !rdr.IsDBNull(0) ? rdr.GetGuid(0) : null,
+			IntValue = rdr.GetInt32(1),
+			StringValue = rdr.GetString(2)
+		};
 		return info;
 	}
 

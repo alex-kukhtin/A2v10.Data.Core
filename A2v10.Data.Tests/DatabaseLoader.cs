@@ -252,16 +252,18 @@ public class LoadList
 	public async Task LoadDocument()
 	{
 		Int64 docId = 10;
+		var docDate = new DateTime(2023, 04, 20, 15, 20, 23);
 		ExpandoObject prms = new()
 		{
 			{ "UserId", 100 },
-			{ "Id", docId }
+			{ "Id", docId },
+			{ "Date", docDate },
 		};
 		IDataModel dm = await _dbContext.LoadModelAsync(null, "a2test.[Document.Load]", prms);
 		var md = new MetadataTester(dm);
 		md.IsAllKeys("TRoot,TDocument,TAgent,TRow,TPriceList,TPriceKind,TPrice,TEntity");
 		md.HasAllProperties("TRoot", "Document,PriceLists,PriceKinds");
-		md.HasAllProperties("TDocument", "Id,Agent,Company,PriceList,PriceKind,Rows");
+		md.HasAllProperties("TDocument", "Id,Agent,Company,PriceList,PriceKind,Rows,Date");
 		md.HasAllProperties("TPriceList", "Id,Name,PriceKinds");
 		md.HasAllProperties("TPriceKind", "Id,Name,Prices");
 		md.HasAllProperties("TPrice", "Id,Price,PriceKind");
@@ -283,6 +285,7 @@ public class LoadList
 		// data
 		var dt = new DataTester(dm, "Document");
 		dt.AreValueEqual(docId, "Id");
+		dt.AreValueEqual(docDate, "Date");
 
 
 		dt = new DataTester(dm, "Document.PriceKind.Prices");

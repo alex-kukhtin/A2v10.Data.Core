@@ -652,20 +652,16 @@ begin
 	select [!TAgent!Map] = null, [Id!!Id] = 500, Name = N'Company Name';
 end
 go
-
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'Document.Load')
-	drop procedure a2test.[Document.Load]
-go
-------------------------------------------------
-create procedure a2test.[Document.Load]
+create or alter procedure a2test.[Document.Load]
 	@TenantId int = null,
 	@UserId bigint = null,
-	@Id bigint = null
+	@Id bigint = null,
+	@Date datetime = null
 as
 begin
 	set nocount on;
-	select [Document!TDocument!Object] = null, [Id!!Id]=@Id, [Agent!TAgent!RefId] = 300, 
+	select [Document!TDocument!Object] = null, [Id!!Id]=@Id, [Agent!TAgent!RefId] = 300, [Date] = @Date,
 	[Company!TAgent!RefId]= 500, 
 	[PriceList!TPriceList!RefId] = 1,
 	[PriceKind!TPriceKind!RefId] = 7,
@@ -825,7 +821,18 @@ begin
 		[DateTime] = cast(N'20180219 15:10:20' as datetime)
 end
 go
-
+------------------------------------------------
+create or alter procedure a2test.[TypesModel.Params]
+	@TenantId int = null,
+	@UserId bigint = null,
+	@Date date,
+	@Date2 datetime
+as
+begin
+	set nocount on;
+	select [Date] = @Date, [Date2] = @Date2;
+end
+go
 ------------------------------------------------
 if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'PagerModel.Load')
 	drop procedure a2test.[PagerModel.Load]
@@ -1015,14 +1022,14 @@ begin
 	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Name!!Name]=[Name], [Rows!TRow!Array] = null
 	from @Document
 
-	select [!TRow!Array] = null, [Id!!Id]= Id, [!TDocument.Rows!ParentId]=123, [Methods!TMethod!MapObject!Mtd1:Mtd2] = null
+	select [!TRow!Array] = null, [Id!!Id]= Id, [!TDocument.Rows!ParentId]=cast(123 as bigint), [Methods!TMethod!MapObject!Mtd1:Mtd2] = null
 	from @Rows
 
-	select [!TMethod!MapObject] = null, [Id!!Id] = Id, [Name!!Name] = [Name], [!TRow.Methods!ParentId] = 7, [Key!!Key] = [Key],
+	select [!TMethod!MapObject] = null, [Id!!Id] = Id, [Name!!Name] = [Name], [!TRow.Methods!ParentId] = cast(7 as bigint), [Key!!Key] = [CurrentKey],
 		[Data!TMethodData!Array] = null
 	from @Methods
 
-	select [!TMethodData!Array] = null, [Id!!Id] = Id, Code, [!TMethod.Data!ParentId] = 11
+	select [!TMethodData!Array] = null, [Id!!Id] = Id, Code, [!TMethod.Data!ParentId] = cast(11 as bigint)
 	from @MethodData;
 end
 go
