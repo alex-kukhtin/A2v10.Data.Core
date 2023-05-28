@@ -1933,3 +1933,73 @@ begin
 	select [Methods!TMtdLookup!Lookup] = null, [!!Key] = 45, [Name!!Name] = N'Element 45', [Value] = N'Value 45'
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[MultParent.Load]
+	@TenantId int = null,
+	@UserId bigint = null
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+	select [RepInfo!TRepInfo!Object] = null, [Id!!Id] = 1,
+		[Views!TItem!Array] = null, [Grouping!TItem!Array] = null, [Filters!TItem!Array] = null;
+
+	select [!TItem!Array] =  null, [Name] = N'View', [!TRepInfo.Views!ParentId] = 1, [!TRepInfo.Grouping!ParentId] = null, [!TRepInfo.Filters!ParentId] = null
+	union all
+	select [!TItem!Array] =  null, [Name] = N'Grouping', [!TRepInfo.Views!ParentId] = null, [!TRepInfo.Grouping!ParentId] = 1, [!TRepInfo.Filters!ParentId] = null
+	union all
+	select [!TItem!Array] =  null, [Name] = N'Filter', [!TRepInfo.Views!ParentId] = null, [!TRepInfo.Grouping!ParentId] = null, [!TRepInfo.Filters!ParentId] = 1
+end
+go
+-------------------------------------------------
+create or alter procedure a2test.[DynamicGrouping.Date]
+@UserId bigint = null
+as
+begin
+	set nocount on;
+
+	declare @trans table(Id bigint, [Date] date, Agent bigint, Entity bigint, Qty float, Price float);
+	declare @agents table(Id bigint, [Name] nvarchar(255));
+	declare @entities  table(Id bigint, [Name] nvarchar(255));
+
+	declare @cross table(Parent bigint, [Key] nvarchar(20), [Value] float);
+
+	insert into @trans(Id, [Date], [Agent], Entity, Qty, Price) values
+		(20, N'20230101', 100, 20, 1, 5),
+		(21, N'20230101', 100, 21, 5, 9),
+		(22, N'20230201', 101, 20, 3, 5),
+		(30, N'20230201', 101, 22, 8, 4);
+
+	insert into @agents(Id, [Name]) values
+		(100, N'Agent 100'),
+		(101, N'Agent 101');
+
+	insert into @entities(Id, [Name]) values
+		(20, N'Product 20'),
+		(21, N'Product 21'),
+		(22, N'Product 22');
+
+	select [Trans!TTrans!Array] = null, [Id!!Id] = Id, [Date], 
+		[Agent!TAgent!RefId] = Agent, 
+		[Entity!TEntity!RefId] = Entity, 
+		Qty, Price, [Sum] = cast(Qty * Price as money),
+		[Items!TTrans!Items] = null -- array for nested elements
+	from @trans
+	order by [Date];
+
+	select [!TAgent!Map] = null, [Id!!Id] = Id, [Name]
+	from @agents;
+
+	select [!TEntity!Map] = null, [Id!!Id] = Id, [Name]
+	from @entities;
+
+
+	select [Trans!$Grouping!] = null, [Property] = N'Date', Func = 'Group'
+	union all
+	select [Trans!$Grouping!] = null, [Property] = N'Agent', Func = 'Group'
+	union all
+	select [Trans!$Grouping!] = null, [Property] = N'Sum', Func = N'Sum'
+	union all
+	select [Trans!$Grouping!] = null, [Property] = N'Price', Func = N'Avg'
+end
+go

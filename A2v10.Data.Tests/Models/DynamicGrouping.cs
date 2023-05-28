@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using A2v10.Data.Tests.Configuration;
 using A2v10.Data.Tests;
+using Newtonsoft.Json;
 
 namespace A2v10.Data.Models;
 
@@ -45,4 +46,23 @@ public class DynamicGrouping
         dt.AreValueEqual(20.0, "Value");
         dt.AreValueEqual("K2", "Key");
     }
+
+	[TestMethod]
+	public async Task DynamicGroupsDate()
+	{
+		var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping.Date]");
+        // var json = JsonConvert.SerializeObject(dm.Root);
+		Assert.IsNotNull(dm);
+		var md = new MetadataTester(dm);
+		md.HasAllProperties("TRoot", "Trans");
+		var dt = new DataTester(dm, "Trans");
+		dt.AreValueEqual(97M, "Sum");
+		dt.AreValueEqual(5.75, "Price");
+		dt = new DataTester(dm, "Trans.Items");
+		dt.IsArray(2);
+		dt.AreArrayValueEqual(50M, 0, "Sum");
+		dt.AreArrayValueEqual(7.0, 0, "Price");
+		dt = new DataTester(dm, "Trans.Items[0]");
+		dt.AreValueEqual(new DateTime(2023, 01, 01), "Date");
+	}
 }

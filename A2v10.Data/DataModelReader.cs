@@ -333,7 +333,7 @@ internal class DataModelReader
 				if (rootFI.IsArray)
 				{
 					if (dataVal == null)
-						throw new DataLoaderException("AddToArray. dataVal is null");
+						continue;
 					AddRecordToArray(fi.TypeName, dataVal, currentRecord, rootFI.TypeName);
 					if (!rootFI.IsVisible)
 						bAdded = true;

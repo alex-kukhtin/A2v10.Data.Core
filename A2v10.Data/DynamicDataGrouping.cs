@@ -14,7 +14,7 @@ internal class KeyComparer : IEqualityComparer<Object>
         if (x == null || y == null) return false;
         if (x is ExpandoObject eox && y is ExpandoObject eoy)
             return eox.Get<Object>(Id) == eoy.Get<Object>(Id);
-        return x == y;
+        return x.Equals(y);
     }
 
     public int GetHashCode(Object obj)
@@ -31,10 +31,11 @@ internal class DynamicGroupItem
 {
     private readonly Dictionary<Object, DynamicGroupItem> _children = new(new KeyComparer());
     private ExpandoObject _data = new();
+    private readonly List<ExpandoObject> _leafs = new();
     public DynamicGroupItem(Object? key = null, String? elem = null)
     {
-        if (elem != null)
-            _data.Set(elem, key);
+        if (elem == null) return;
+        _data.Set(elem, key);
     }
 
     public ExpandoObject? ToExpando(String? propertyName)
@@ -59,10 +60,23 @@ internal class DynamicGroupItem
 
     public void SetData(ExpandoObject data)
     {
-        _data = data;
-    }
+		_data = data;
+		_leafs.Add(data);
+	}
 
-    public void Calculate<T>(String propName, Func<T?[], T> calc)
+	public void CalculateLeafs<T>(String propName, Func<T?[], T> calc)
+    {
+        if (_leafs.Count == 0) 
+            return;
+		T? result;
+		T?[] values = new T[_leafs.Count];
+        for (int i = 0; i < _leafs.Count; i++)
+            values[i] = _leafs[i].Get<T>(propName);
+		result = calc(values);
+		_data.Set(propName, result);
+	}
+
+	public void Calculate<T>(String propName, Func<T?[], T> calc)
     {
         if (_children.Count == 0)
             return;
@@ -73,6 +87,8 @@ internal class DynamicGroupItem
         {
             if (item?._children.Count > 0)
                 item?.Calculate<T>(propName, calc);
+            else
+                item?.CalculateLeafs<T>(propName, calc);
             if (item != null)
                 values[i] = item._data.Get<T>(propName);
             ++i;
@@ -84,9 +100,12 @@ internal class DynamicGroupItem
 
 internal enum AggregateType
 {
+    None,
     Sum,
     Avg,
-    Count
+    Count,
+    First,
+    Last
 }
 
 record AggregateDescriptor(String Property, AggregateType Type);
@@ -166,7 +185,15 @@ internal class DynamicDataGrouping
             case "Count":
                 rsDescr.AddAggregate(propName, AggregateType.Count);
                 break;
-            default:
+            case "First":
+                rsDescr.AddAggregate(propName, AggregateType.First);
+                break;
+			case "Last":
+				rsDescr.AddAggregate(propName, AggregateType.Last);
+				break;
+            case "None":
+                break;
+			default:
                 throw new InvalidOperationException($"Invalid Function for grouping: {funcName}");
         }
     }
@@ -233,7 +260,7 @@ internal class DynamicDataGrouping
                     break;
             }
         }
-    }
+	}
 
     public void Process()
     {
