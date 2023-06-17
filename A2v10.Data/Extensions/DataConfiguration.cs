@@ -4,6 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
+
+public class DataConfigurationSection
+{
+	public Boolean MetadataCache { get; set; } = true;
+	public TimeSpan CommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
+}
+
 public class DataConfigurationOptions
 {
 	public String ConnectionStringName { get; set; } = "DefaultConnection";

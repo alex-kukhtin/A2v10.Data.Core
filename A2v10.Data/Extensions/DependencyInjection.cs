@@ -1,6 +1,7 @@
-﻿// Copyright © 2020-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2020-2023 Oleksandr Kukhtin. All rights reserved.
 
 using A2v10.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class DataCoreDependencyInjection
@@ -13,6 +14,20 @@ public static class DataCoreDependencyInjection
 		.AddSingleton<IDataProfiler, NullDataProfiler>()
 		.AddSingleton<IDataLocalizer, NullDataLocalizer>()
 		.AddSingleton<IDbContext, SqlDbContext>();
+		return services;
+	}
+
+
+	public static IServiceCollection ConfigureDbContext(this IServiceCollection services, String DefaultConnectioString, IConfiguration config)
+	{
+		var sect = new DataConfigurationSection();
+		config.GetSection("A2v10:Data").Bind(sect);
+		services.Configure<DataConfigurationOptions>(options =>
+		{
+			options.ConnectionStringName = DefaultConnectioString;
+			options.DisableWriteMetadataCaching = !sect.MetadataCache;
+			options.DefaultCommandTimeout = sect.CommandTimeout;
+		});
 		return services;
 	}
 }
