@@ -1,6 +1,7 @@
 ﻿// Copyright © 2022-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
+using System.Linq;
 
 namespace A2v10.Data;
 
@@ -75,6 +76,57 @@ internal class DynamicGroupItem
 		result = calc(values);
 		_data.Set(propName, result);
 	}
+
+    public void CalculateCross(CrossMapper crossMap)
+    {
+        if (crossMap.Count == 0)
+            return;
+        foreach (var (k, ch) in _children)
+            ch.CalculateCross(crossMap);
+        foreach (var (_, val) in crossMap)
+        {
+            var targetList = _data.Get<List<ExpandoObject>>(val.TargetProp);
+            if (targetList == null)
+            {
+                targetList = new();
+                foreach (var key in val.Keys)
+                    targetList.Add(new ExpandoObject() { { val.KeyName, key }});
+                _data.Set(val.TargetProp, targetList);
+            }
+            foreach (var (k, ch) in _children)
+            {
+                var srcList = ch._data.Get<List<ExpandoObject>>(val.TargetProp);
+                if (srcList == null)
+                    continue;
+				foreach (var key in val.Keys)
+					AddAggregate(targetList, srcList, key, val.KeyName);
+			}
+		}
+    }
+
+    void AddAggregate(List<ExpandoObject> target, List<ExpandoObject> source, String key, String keyName)
+    {
+        var srcObject = source.FirstOrDefault(itm => itm.Get<String>(keyName) == key);
+		var trgObject = target.FirstOrDefault(itm => itm.Get<String>(keyName) == key);
+        if (trgObject == null || srcObject == null)
+            return;
+        var srcDict = (srcObject as IDictionary<String, Object?>)!;
+		var trgDict = (trgObject as IDictionary<String, Object?>)!;
+		foreach (var srcKey in srcDict.Keys)
+        {
+            if (srcKey == keyName)
+                continue;
+            if (trgDict.TryGetValue(srcKey, out var trgValue))
+            {
+                if (trgValue is Double dblVal)
+                    trgDict[srcKey] = dblVal + (Double) srcDict[srcKey];
+            } 
+            else
+            {
+                trgDict.Add(srcKey, srcDict[srcKey]);
+			}
+		}
+    }
 
 	public void Calculate<T>(String propName, Func<T?[], T> calc)
     {
@@ -201,7 +253,7 @@ internal class DynamicDataGrouping
     }
 
     static void ProcessRecordset(RecordsetDescriptor descr, IDataMetadata itemMeta, GroupMetadata groupMeta,
-        DynamicGroupItem dynaroot, List<ExpandoObject> items)
+        DynamicGroupItem dynaroot, List<ExpandoObject> items, CrossMapper crossMapper)
     {
         for (var i = 0; i < descr.Groups.Count; i++)
         {
@@ -262,9 +314,14 @@ internal class DynamicDataGrouping
                     break;
             }
         }
+
+        if (crossMapper.Count > 0)
+        {
+            dynaroot.CalculateCross(crossMapper);
+        }
 	}
 
-    public void Process()
+    public void Process(CrossMapper crossMapper)
     {
         var rootMd = _metadata["TRoot"];
         foreach (var pd in _recordsets)
@@ -278,7 +335,7 @@ internal class DynamicDataGrouping
             if (list == null)
                 continue;
             var dr = new DynamicGroupItem();
-            ProcessRecordset(pd.Value, itemMeta, gm, dr, list);
+            ProcessRecordset(pd.Value, itemMeta, gm, dr, list, crossMapper);
             var result = dr.ToExpando(itemMeta.Items);
             _root.Set(pd.Key, result);
             itemMeta.IsGroup = true;

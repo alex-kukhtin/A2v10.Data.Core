@@ -45,7 +45,19 @@ public class DynamicGrouping
         dt = new DataTester(dm, "Trans.Items[0].Items[0].Cross1[1]");
         dt.AreValueEqual(20.0, "Value");
         dt.AreValueEqual("K2", "Key");
-    }
+		dt = new DataTester(dm, "Trans.Items[0].Cross1[0]");
+		dt.AreValueEqual("K1", "Key");
+		dt.AreValueEqual(10.0, "Value");
+		dt = new DataTester(dm, "Trans.Items[0].Cross1[1]");
+		dt.AreValueEqual("K2", "Key");
+		dt.AreValueEqual(20.0, "Value");
+		dt = new DataTester(dm, "Trans.Cross1[0]");
+		dt.AreValueEqual("K1", "Key");
+		dt.AreValueEqual(40.0, "Value");
+		dt = new DataTester(dm, "Trans.Cross1[1]");
+		dt.AreValueEqual("K2", "Key");
+		dt.AreValueEqual(60.0, "Value");
+	}
 
 	[TestMethod]
 	public async Task DynamicGroupsDate()

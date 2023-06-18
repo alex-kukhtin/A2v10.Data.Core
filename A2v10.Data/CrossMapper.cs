@@ -13,6 +13,8 @@ internal class CrossItem
 
 	public String KeyName { get; }
 
+	public IEnumerable<String> Keys => _keys.Keys;
+
 	public CrossItem(String targetProp, Boolean isArray, String crossType, String keyName)
 	{
 		TargetProp = targetProp;
