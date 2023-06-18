@@ -193,6 +193,8 @@ internal class DynamicDataGrouping
 				break;
             case "None":
                 break;
+            case "Cross":
+                break;
 			default:
                 throw new InvalidOperationException($"Invalid Function for grouping: {funcName}");
         }
