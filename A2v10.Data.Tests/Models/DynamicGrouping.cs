@@ -23,6 +23,9 @@ public class DynamicGrouping
     public async Task LoadDynamicGroups()
     {
         var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping.Index]");
+
+        //var json = JsonConvert.SerializeObject(dm.Root);
+
         Assert.IsNotNull(dm);
         var md = new MetadataTester(dm);
         md.HasAllProperties("TRoot", "Trans");

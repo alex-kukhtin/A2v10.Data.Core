@@ -81,7 +81,7 @@ internal class DynamicGroupItem
     {
         if (crossMap.Count == 0)
             return;
-        foreach (var (k, ch) in _children)
+        foreach (var (_, ch) in _children)
             ch.CalculateCross(crossMap);
         foreach (var (_, val) in crossMap)
         {
@@ -104,7 +104,7 @@ internal class DynamicGroupItem
 		}
     }
 
-    void AddAggregate(List<ExpandoObject> target, List<ExpandoObject> source, String key, String keyName)
+    static void AddAggregate(List<ExpandoObject> target, List<ExpandoObject> source, String key, String keyName)
     {
         var srcObject = source.FirstOrDefault(itm => itm.Get<String>(keyName) == key);
 		var trgObject = target.FirstOrDefault(itm => itm.Get<String>(keyName) == key);
@@ -117,16 +117,24 @@ internal class DynamicGroupItem
             if (srcKey == keyName)
                 continue;
             if (trgDict.TryGetValue(srcKey, out var trgValue))
-            {
-                if (trgValue is Double dblVal)
-                    trgDict[srcKey] = dblVal + (Double) srcDict[srcKey];
-            } 
+                trgDict[srcKey] = AddTyped(trgValue, srcDict[srcKey]);
             else
-            {
                 trgDict.Add(srcKey, srcDict[srcKey]);
-			}
 		}
     }
+
+    private static Object? AddTyped(Object? v1, Object? v2)
+    {
+        if (v1 == null || v2 == null)
+            return null;
+        if (v1 is Double dblVal1 && v2 is Double dblVal2)
+            return dblVal1 + dblVal2;
+		else if (v1 is Decimal decVal1 && v2 is Decimal decVal2)
+			return decVal1 + decVal2;
+		else if (v1 is Int32 intVal1 && v2 is Int32 intVal2)
+			return intVal1 + intVal2;
+		return null;
+	}
 
 	public void Calculate<T>(String propName, Func<T?[], T> calc)
     {
