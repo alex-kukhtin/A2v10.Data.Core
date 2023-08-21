@@ -746,18 +746,20 @@ public class SqlDbContext : IDbContext
 
 	SqlParameter? SetParametersWithList<T>(SqlCommand cmd, Object? prms, IEnumerable<T> list) where T : class
 	{
-		if (prms == null)
-			return null;
 		SqlParameter? retParam = null;
 		Type listType = typeof(T);
-		Type prmsType = prms.GetType();
+		Type? prmsType = prms?.GetType();
 		var props = listType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 		var propsD = new Dictionary<String, PropertyInfo>();
 		DataTable dt = new();
 		foreach (var p in props)
 		{
-			var column = new DataColumn(p.Name, p.PropertyType);
-			if (p.PropertyType == typeof(String))
+			Type propType = p.PropertyType;
+			if (propType.IsNullableType())
+				propType = Nullable.GetUnderlyingType(propType) ??
+					throw new InvalidOperationException("GetUnderlyingType() is null");
+			var column = new DataColumn(p.Name, propType);
+			if (propType == typeof(String))
 				column.MaxLength = 32767;
 			dt.Columns.Add(column);
 			propsD.Add(p.Name, p);

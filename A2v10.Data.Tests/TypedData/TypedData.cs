@@ -1,8 +1,7 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.IO;
 using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
 
 using A2v10.Data.Tests.Configuration;
@@ -62,5 +61,55 @@ public class TypedDataTests
 		{
 			Assert.AreEqual(bytes[i], output.Stream![i]);
 		}
+    }
+
+
+    public record ScheduledCommand
+    {
+        public ScheduledCommand()
+        {
+            Command = String.Empty;
+        }
+        public ScheduledCommand(String command, String? data = null, DateTime? utcRunAt = null)
+        {
+            Command = command;
+            Data = data;
+            UtcRunAt = utcRunAt;
+        }
+        public String Command { get; init; }
+        public String? Data { get; init; }
+        public DateTime? UtcRunAt { get; init; }
+    }
+
+    [TestMethod]
+    public async Task SaveListAsync()
+    {
+        var dt = DateTime.Today;
+        var sc = new List<ScheduledCommand>()
+        {
+            new ScheduledCommand("Test1", "Data"),
+            new ScheduledCommand("Test2"),
+            new ScheduledCommand("Test3", "Sample data", dt)
+        };
+        await _dbContext.SaveListAsync<ScheduledCommand>("", "a2test.[List.Save]", null, sc);
+        var list = await _dbContext.LoadListAsync<ScheduledCommand>(null, "a2test.[List.Load]", null);
+        Assert.IsNotNull(list);
+        Assert.AreEqual(3, list.Count);
+
+        var c0 = list[0];
+        var c1 = list[1];
+        var c2 = list[2];
+
+        Assert.AreEqual("Test1", c0.Command);
+        Assert.AreEqual("Data", c0.Data);
+        Assert.IsNull(c0.UtcRunAt);
+
+        Assert.AreEqual("Test2", c1.Command);
+        Assert.IsNull(c1.Data);
+        Assert.IsNull(c1.UtcRunAt);
+
+        Assert.AreEqual("Test3", c2.Command);
+        Assert.AreEqual("Sample data", c2.Data);
+        Assert.AreEqual(dt, c2.UtcRunAt);
     }
 }

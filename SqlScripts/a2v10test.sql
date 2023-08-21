@@ -23,6 +23,15 @@ if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2tes
 	);
 go
 -----------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2test' and TABLE_NAME=N'ScheduledCommands')
+	create table a2test.ScheduledCommands
+	(
+		[Command] nvarchar(255),
+		[Data] nvarchar(2500),
+		UtcRunAt datetime null
+	);
+go
+-----------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2test' and TABLE_NAME=N'Rows')
 	create table a2test.[Rows]
 	(
@@ -2001,5 +2010,42 @@ begin
 	select [Trans!$Grouping!] = null, [Property] = N'Sum', Func = N'Sum'
 	union all
 	select [Trans!$Grouping!] = null, [Property] = N'Price', Func = N'Avg'
+end
+go
+------------------------------------------------
+drop procedure if exists a2test.[List.Save];
+drop type if exists a2test.[ScheduledCommand.TableType];
+go
+------------------------------------------------
+create type a2test.[ScheduledCommand.TableType] as table
+(
+	Command nvarchar(64),
+    [Data] nvarchar(1500),
+	UtcRunAt datetime
+)
+go
+------------------------------------------------
+create or alter procedure a2test.[List.Save]
+@Commands a2test.[ScheduledCommand.TableType] readonly
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	delete from a2test.ScheduledCommands;
+	insert a2test.ScheduledCommands (Command, [Data], UtcRunAt)
+	select Command, [Data], UtcRunAt
+	from @Commands;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[List.Load]
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select Command, [Data], UtcRunAt
+	from a2test.ScheduledCommands;
 end
 go
