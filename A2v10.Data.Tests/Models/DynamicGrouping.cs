@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using A2v10.Data.Tests.Configuration;
 using A2v10.Data.Tests;
 using Newtonsoft.Json;
+using System.Dynamic;
 
 namespace A2v10.Data.Models;
 
@@ -79,5 +80,86 @@ public class DynamicGrouping
 		dt.AreArrayValueEqual(7.0, 0, "Price");
 		dt = new DataTester(dm, "Trans.Items[0]");
 		dt.AreValueEqual(new DateTime(2023, 01, 01), "Date");
+	}
+
+	[TestMethod]
+	public async Task DynamicGroups2_Full()
+	{
+		var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping2.Index]", new ExpandoObject()
+		{
+			{ "Group", "All" }
+		});
+		Assert.IsNotNull(dm);
+		//var json = JsonConvert.SerializeObject(dm.Root);
+
+		Assert.AreEqual(603M, dm.Root.Eval<Decimal>("Trans.Items[0].Items[0].Items[0].Cross1[0].Sum"));
+		Assert.AreEqual(603M, dm.Root.Eval<Decimal>("Trans.Items[0].Items[0].Items[0].Sum"));
+		Assert.AreEqual(12.2, dm.Root.Eval<Double>("Trans.Items[0].Items[0].Items[0].Cross1[0].Qty"));
+
+		Assert.AreEqual(252M, dm.Root.Eval<Decimal>("Trans.Items[0].Items[0].Items[1].Cross1[0].Sum"));
+		Assert.AreEqual(252M, dm.Root.Eval<Decimal>("Trans.Items[0].Items[0].Items[1].Sum"));
+		Assert.AreEqual(14.5, dm.Root.Eval<Double>("Trans.Items[0].Items[0].Items[1].Cross1[0].Qty"));
+
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Items[0].Cross1[0].Sum"));
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Cross1[0].Sum"));
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Sum"));
+		Assert.AreEqual(41.7, dm.Root.Eval<Double>("Trans.Cross1[0].Qty"));
+
+		var dt = new DataTester(dm, "Trans.Items[0].Cross1[0]");
+		dt.AreValueEqual(2355M, "Sum");
+		dt = new DataTester(dm, "Trans.Items[0].Items[0].Cross1[0]");
+		dt.AreValueEqual(2355M, "Sum");
+
+	}
+
+	[TestMethod]
+	public async Task DynamicGroups2_Item()
+	{
+		var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping2.Index]", new ExpandoObject()
+		{
+			{ "Group", "Item" }
+		});
+		Assert.IsNotNull(dm);
+
+		// var json = JsonConvert.SerializeObject(dm.Root);
+
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Cross1[0].Sum"));
+		Assert.AreEqual(41.7, dm.Root.Eval<Double>("Trans.Cross1[0].Qty"));
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Sum"));
+		Assert.AreEqual(603M, dm.Root.Eval<Decimal>("Trans.Items[0].Cross1[0].Sum"));
+		Assert.AreEqual(12.2, dm.Root.Eval<Double>("Trans.Items[0].Cross1[0].Qty"));
+
+	}
+
+	[TestMethod]
+	public async Task DynamicGroups2_Company()
+	{
+		var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping2.Index]", new ExpandoObject()
+		{
+			{ "Group", "Company" }
+		});
+		Assert.IsNotNull(dm);
+
+		// var json = JsonConvert.SerializeObject(dm.Root);
+
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Cross1[0].Sum"));
+		Assert.AreEqual(41.7, dm.Root.Eval<Double>("Trans.Cross1[0].Qty"));
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Sum"));
+	}
+
+	[TestMethod]
+	public async Task DynamicGroups2_None()
+	{
+		var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping2.Index]", new ExpandoObject()
+		{
+			{ "Group", "None" }
+		});
+		Assert.IsNotNull(dm);
+
+		//var json = JsonConvert.SerializeObject(dm.Root);
+
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Cross1[0].Sum"));
+		Assert.AreEqual(41.7, dm.Root.Eval<Double>("Trans.Cross1[0].Qty"));
+		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Sum"));
 	}
 }
