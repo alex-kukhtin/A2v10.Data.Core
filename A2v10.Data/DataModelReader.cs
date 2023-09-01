@@ -197,12 +197,27 @@ internal class DataModelReader
 						filter = DataHelpers.DateTime2StringWrap(filter);
 					else if (filter is String strFilter)
 						filter = _localizer.Localize(strFilter);
-					for (Int32 ii = 1; ii < xs.Length; ii++)
+					var lastFilterKey = xs[^1];
+					if (lastFilterKey == "RefId")
 					{
-						if (ii == xs.Length - 1)
-							fmi.Set(xs[ii], filter);
-						else
-							fmi = fmi.GetOrCreate<ExpandoObject>(xs[ii]);
+						if (xs.Length < 4)
+                            throw new DataLoaderException($"Invalid Filter for RefId modifier {fi.TypeName}");
+						var mapKey = xs[^2];
+						var propName = xs[^3];
+                        var key = Tuple.Create<String, Object?>(mapKey, filter);
+						if (!_idMap.TryGetValue(key, out ExpandoObject? filterValue))
+                            throw new DataLoaderException($"Property '{propName}'. Object {mapKey} (Id={filter}) not found");
+						fmi.Set(propName, filterValue);
+                    }
+                    else
+					{
+						for (Int32 ii = 1; ii < xs.Length; ii++)
+						{
+							if (ii == xs.Length - 1)
+								fmi.Set(xs[ii], filter);
+							else
+								fmi = fmi.GetOrCreate<ExpandoObject>(xs[ii]);
+						}
 					}
 					break;
 				case SpecType.ReadOnly:

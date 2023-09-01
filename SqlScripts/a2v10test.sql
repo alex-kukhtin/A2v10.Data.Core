@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2023 Oleksandr Kukhtin
 
-/* 20230826-7336 */
+/* 20230901-7337 */
 
 use a2v10test;
 go
@@ -45,11 +45,7 @@ if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2tes
 	);
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'SimpleModel.Load')
-	drop procedure a2test.[SimpleModel.Load]
-go
-------------------------------------------------
-create procedure a2test.[SimpleModel.Load]
+create or alter procedure a2test.[SimpleModel.Load]
 	@TenantId int = null,
 	@UserId bigint = null,
 	@Id bigint = null
@@ -60,11 +56,7 @@ begin
 end
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'ArrayModel')
-	drop procedure a2test.ArrayModel
-go
-------------------------------------------------
-create procedure a2test.ArrayModel
+create or alter procedure a2test.ArrayModel
 	@TenantId int = null,
 	@UserId bigint = null
 as
@@ -74,11 +66,7 @@ begin
 end
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'ComplexModel')
-	drop procedure a2test.ComplexModel
-go
-------------------------------------------------
-create procedure a2test.ComplexModel
+create or alter procedure a2test.ComplexModel
 	@TenantId int = null,
 	@UserId bigint = null
 as
@@ -230,11 +218,7 @@ begin
 end
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'GroupModel')
-	drop procedure a2test.GroupModel
-go
-------------------------------------------------
-create procedure a2test.GroupModel
+create or alter procedure a2test.GroupModel
 	@TenantId int = null,
 	@UserId bigint = null
 as
@@ -261,13 +245,8 @@ begin
 	order by grouping(Company) desc, grouping(Agent) desc, Company, Agent;
 end
 go
-
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'MapRoot')
-	drop procedure a2test.MapRoot
-go
-------------------------------------------------
-create procedure a2test.MapRoot
+create or alter procedure a2test.MapRoot
 @UserId bigint = 0
 as
 begin
@@ -278,11 +257,7 @@ begin
 end
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'EmptyArray')
-	drop procedure a2test.EmptyArray
-go
-------------------------------------------------
-create procedure a2test.EmptyArray
+create or alter procedure a2test.EmptyArray
 	@TenantId int = null,
 	@UserId bigint = 0
 as
@@ -2162,5 +2137,28 @@ begin
 
 	select Command, [Data], UtcRunAt
 	from a2test.ScheduledCommands;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Filters.Load]
+@TenantId int = null,
+@UserId bigint = null,
+@Date date
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [TDocuments!TDocument!Array] = null, [Id!!Id] = Id, [Date], [Company!TCompany!RefId] = 127
+	from a2test.Documents;
+
+	select [!TCompany!Map] = null, [Id!!Id] = 127, [Name] = N'Company 127';
+
+	select [!$System!] = null, [!Documents!Offset] = 0, [!Documents!PageSize] = 20, 
+		[!Documents!SortOrder] = N'name', [!Documents!SortDir] = N'asc',
+		[!Documents.Period.From!Filter] = @Date, [!Documents.Period.To!Filter] = dateadd(day, 1, @Date),
+		[!Documents.Agent.Id!Filter] = 15, [!Documents.Agent.Name!Filter] = N'AgentName',
+		[!Documents.Fragment!Filter] = N'FRAGMENT',
+		[!Documents.Company.TCompany.RefId!Filter] = 127;	
 end
 go
