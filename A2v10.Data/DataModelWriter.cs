@@ -1,8 +1,9 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
+
+using Microsoft.Data.SqlClient;
 
 using Newtonsoft.Json;
 

@@ -1,15 +1,14 @@
 ﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
-using A2v10.Data.Tests.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Dynamic;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+using Microsoft.Data.SqlClient;
+
+using A2v10.Data.Tests.Configuration;
 
 namespace A2v10.Data.Tests
 {

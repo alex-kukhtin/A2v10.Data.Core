@@ -1,6 +1,6 @@
 ﻿// Copyright © 2022-2023 Oleksandr Kukhtin. All rights reserved.
 
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
 public class MetadataCache

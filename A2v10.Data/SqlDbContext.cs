@@ -1,15 +1,15 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Data;
-using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using Microsoft.Data.SqlClient;
+
+using Newtonsoft.Json;
 
 namespace A2v10.Data;
 
@@ -336,7 +336,29 @@ public class SqlDbContext : IDbContext
 		return modelReader.DataModel;
 	}
 
-	public async Task<IDataModel> LoadModelAsync(String? source, String command, Object? prms = null)
+    public IDataModel LoadModelSql(String? source, String sqlString, System.Object? prms = null)
+    {
+        var modelReader = new DataModelReader(_localizer, _tokenProvider);
+        source = ResolveSource(source, prms);
+        using var token = _profiler.Start("SQL text");
+        ReadDataSql(source, sqlString,
+            (prm) =>
+            {
+                prm.SetParameters(prms);
+            },
+            (no, rdr) =>
+            {
+                modelReader.ProcessOneRecord(rdr);
+            },
+            (no, rdr) =>
+            {
+                modelReader.ProcessOneMetadata(rdr);
+            });
+        modelReader.PostProcess();
+        return modelReader.DataModel;
+    }
+
+    public async Task<IDataModel> LoadModelAsync(String? source, String command, Object? prms = null)
 	{
 		var modelReader = new DataModelReader(_localizer, _tokenProvider);
 		source = ResolveSource(source, prms);
@@ -358,7 +380,29 @@ public class SqlDbContext : IDbContext
 		return modelReader.DataModel;
 	}
 
-	public void SaveList<T>(String? source, String command, System.Object? prms, IEnumerable<T> list) where T : class
+    public async Task<IDataModel> LoadModelSqlAsync(String? source, String sqlString, Object? prms = null)
+    {
+        var modelReader = new DataModelReader(_localizer, _tokenProvider);
+        source = ResolveSource(source, prms);
+        using var token = _profiler.Start("SQL text");
+        await ReadDataSqlAsync(source, sqlString,
+            (prm) =>
+            {
+                prm.SetParameters(prms);
+            },
+            (no, rdr) =>
+            {
+                modelReader.ProcessOneRecord(rdr);
+            },
+            (no, rdr) =>
+            {
+                modelReader.ProcessOneMetadata(rdr);
+            });
+        modelReader.PostProcess();
+        return modelReader.DataModel;
+    }
+
+    public void SaveList<T>(String? source, String command, System.Object? prms, IEnumerable<T> list) where T : class
 	{
 		using var token = _profiler.Start(command);
 		using var cnn = GetConnection(source);
@@ -722,7 +766,29 @@ public class SqlDbContext : IDbContext
 		} while (await rdr.NextResultAsync());
 	}
 
-	void ReadData(String? source, String command,
+    async Task ReadDataSqlAsync(String? source, String sqlString,
+        Action<SqlParameterCollection> setParams,
+        Action<Int32, IDataReader>? onRead,
+        Action<Int32, IDataReader>? onMetadata)
+    {
+        Int32 rdrNo = 0;
+        using var cnn = await GetConnectionAsync(source);
+        using var cmd = cnn.CreateCommandText(sqlString, CommandTimeout);
+        setParams?.Invoke(cmd.Parameters);
+
+        using var rdr = await cmd.ExecuteReaderAsync();
+        do
+        {
+            onMetadata?.Invoke(rdrNo, rdr);
+            while (await rdr.ReadAsync())
+            {
+                onRead?.Invoke(rdrNo, rdr);
+            }
+            rdrNo += 1;
+        } while (await rdr.NextResultAsync());
+    }
+
+    void ReadData(String? source, String command,
 		Action<SqlParameterCollection> setParams,
 		Action<Int32, IDataReader>? onRead,
 		Action<Int32, IDataReader>? onMetadata)
@@ -744,7 +810,29 @@ public class SqlDbContext : IDbContext
 		} while (rdr.NextResult());
 	}
 
-	SqlParameter? SetParametersWithList<T>(SqlCommand cmd, Object? prms, IEnumerable<T> list) where T : class
+    void ReadDataSql(String? source, String sqlString,
+        Action<SqlParameterCollection> setParams,
+        Action<Int32, IDataReader>? onRead,
+        Action<Int32, IDataReader>? onMetadata)
+    {
+        using var cnn = GetConnection(source);
+        using var cmd = cnn.CreateCommandText(sqlString, CommandTimeout);
+
+        Int32 rdrNo = 0;
+        setParams?.Invoke(cmd.Parameters);
+        using var rdr = cmd.ExecuteReader();
+        do
+        {
+            onMetadata?.Invoke(rdrNo, rdr);
+            while (rdr.Read())
+            {
+                onRead?.Invoke(rdrNo, rdr);
+            }
+            rdrNo += 1;
+        } while (rdr.NextResult());
+    }
+
+    SqlParameter? SetParametersWithList<T>(SqlCommand cmd, Object? prms, IEnumerable<T> list) where T : class
 	{
 		SqlParameter? retParam = null;
 		Type listType = typeof(T);
@@ -809,17 +897,18 @@ public class SqlDbContext : IDbContext
 	}
 
 
-	Task SetTenantIdAsync(String? source, SqlConnection cnn)
+	async Task SetTenantIdAsync(String? source, SqlConnection cnn)
 	{
 		if (_tenantManager == null)
-			return Task.CompletedTask;
+			return;
 		var ti = _tenantManager.GetTenantInfo(source);
 		if (ti == null)
-			return Task.CompletedTask;
+			return;
 		using var cmd = cnn.CreateCommandSP(ti.Procedure, CommandTimeout);
 		foreach (var tp in ti.Params)
 			cmd.Parameters.AddWithValue(tp.ParamName, tp.Value);
-		return cmd.ExecuteNonQueryAsync();
+		// Do not return TASK here!!!
+		await cmd.ExecuteNonQueryAsync();
 	}
 
 	void SetTenantId(String? source, SqlConnection cnn)

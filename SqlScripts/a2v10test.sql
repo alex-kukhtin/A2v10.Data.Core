@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2023 Oleksandr Kukhtin
 
-/* 20230901-7337 */
+/* 20230903-7338 */
 
 use a2v10test;
 go
@@ -2159,6 +2159,7 @@ begin
 		[!Documents.Period.From!Filter] = @Date, [!Documents.Period.To!Filter] = dateadd(day, 1, @Date),
 		[!Documents.Agent.Id!Filter] = 15, [!Documents.Agent.Name!Filter] = N'AgentName',
 		[!Documents.Fragment!Filter] = N'FRAGMENT',
-		[!Documents.Company.TCompany.RefId!Filter] = 127;	
+		[!Documents.Company.TCompany.RefId!Filter] = 127,
+		[!Documents.Warehouse.TWarehouse.RefId!Filter] = null;
 end
 go

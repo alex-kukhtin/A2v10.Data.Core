@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Threading.Tasks;
@@ -14,7 +14,10 @@ public interface IDbContext
 	IDataModel LoadModel(String? source, String command, Object? prms = null);
 	Task<IDataModel> LoadModelAsync(String? source, String command, Object? prms = null);
 
-	IDataModel SaveModel(String? source, String command, ExpandoObject data, Object? prms = null, Int32 commandTimeout = 0);
+    IDataModel LoadModelSql(String? source, String sqlString, Object? prms = null);
+    Task<IDataModel> LoadModelSqlAsync(String? source, String sqlString, Object? prms = null);
+
+    IDataModel SaveModel(String? source, String command, ExpandoObject data, Object? prms = null, Int32 commandTimeout = 0);
 	Task<IDataModel> SaveModelAsync(String? source, String command, ExpandoObject data, Object? prms = null, Func<ITableDescription, ExpandoObject>? onSetData = null, Int32 commandTimeout = 0);
 	Task<IDataModel> SaveModelBatchAsync(String? source, String command, ExpandoObject data, Object? prms = null, IEnumerable<BatchProcedure>? batches = null, Int32 commandTimeout = 0);
 

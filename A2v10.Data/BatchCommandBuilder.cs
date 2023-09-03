@@ -1,9 +1,10 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Olekdandr Kukhtin. All rights reserved.
 
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+
+using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
 internal record ParameterDef(String ParamName, String ValueName);

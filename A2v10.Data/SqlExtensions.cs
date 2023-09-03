@@ -1,10 +1,11 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+
+using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
 public static class SqlExtensions
@@ -19,7 +20,17 @@ public static class SqlExtensions
 		return cmd;
 	}
 
-	public static Type ToType(this SqlDbType sqlType)
+    public static SqlCommand CreateCommandText(this SqlConnection cnn, String sqlString, Int32 commandTimeout)
+    {
+        var cmd = cnn.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = sqlString;
+        if (commandTimeout != 0)
+            cmd.CommandTimeout = commandTimeout;
+        return cmd;
+    }
+
+    public static Type ToType(this SqlDbType sqlType)
 	{
 		return sqlType switch
 		{

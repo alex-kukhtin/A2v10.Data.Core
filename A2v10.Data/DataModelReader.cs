@@ -205,9 +205,16 @@ internal class DataModelReader
 						var mapKey = xs[^2];
 						var propName = xs[^3];
                         var key = Tuple.Create<String, Object?>(mapKey, filter);
-						if (!_idMap.TryGetValue(key, out ExpandoObject? filterValue))
-                            throw new DataLoaderException($"Property '{propName}'. Object {mapKey} (Id={filter}) not found");
-						fmi.Set(propName, filterValue);
+						if (_idMap.TryGetValue(key, out ExpandoObject? filterValue))
+							fmi.Set(propName, filterValue);
+						else
+						{
+							fmi.Set(propName, new ExpandoObject()
+							{
+								{ "Id", null },
+                                { "Name", null },
+                            });
+						}
                     }
                     else
 					{

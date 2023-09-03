@@ -41,7 +41,7 @@ public class CollectionFilters
         dt.AreValueEqual("asc", "SortDir");
 
         var ft = new DataTester(dm, "$ModelInfo.Documents.Filter");
-        ft.AllProperties("Period,Agent,Company,Fragment");
+        ft.AllProperties("Period,Agent,Company,Fragment,Warehouse");
 		ft.AreValueEqual("FRAGMENT", "Fragment");
 
 		var fromDate = dm.Eval<String>("$ModelInfo.Documents.Filter.Period.From")
@@ -60,5 +60,10 @@ public class CollectionFilters
 
 		Assert.AreEqual(127, company.Get<Int32>("Id"));
         Assert.AreEqual("Company 127", company.Get<String>("Name"));
-	}
+
+        var wh = dm.Eval<ExpandoObject>("$ModelInfo.Documents.Filter.Warehouse")
+            ?? throw new InvalidOperationException("Warehouse is null");
+		Assert.IsNull(wh.Get<Object>("Id"));
+        Assert.IsNull(wh.Get<Object>("Name"));
+    }
 }

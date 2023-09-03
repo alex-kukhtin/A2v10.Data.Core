@@ -1,6 +1,6 @@
 ﻿
 // Copyright © Microsoft Corporation.  All rights reserved.
-// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2023 Oleksandr  Kukhtin. All rights reserved.
 
 using System.Linq.Expressions;
 

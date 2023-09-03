@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Linq;
 using System.Text;

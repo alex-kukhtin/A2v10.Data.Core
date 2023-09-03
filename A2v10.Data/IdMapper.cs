@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2017 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2023 Oleksandr  Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
