@@ -1,20 +1,15 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Globalization;
 using System.IO;
 using System.Text;
 
 namespace A2v10.Data.Providers.Dbf;
-public class DbfWriter : IExternalDataWriter
+public class DbfWriter(DataFile file) : IExternalDataWriter
 {
-	private readonly DataFile _file;
+	private readonly DataFile _file = file;
 
-	public DbfWriter(DataFile file)
-	{
-		_file = file;
-	}
-
-	public void Write(Stream stream)
+    public void Write(Stream stream)
 	{
 		using var bw = new BinaryWriter(stream);
 		Write(bw);

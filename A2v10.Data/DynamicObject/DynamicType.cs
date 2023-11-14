@@ -16,18 +16,12 @@ public abstract class DynamicClass
 	}
 }
 
-public class DynamicProperty
+public class DynamicProperty(String name, Type type)
 {
-	public String Name { get; }
-	public Type Type { get; }
+    public String Name { get; } = name ?? throw new ArgumentNullException(nameof(name));
+    public Type Type { get; } = type ?? throw new ArgumentNullException(nameof(type));
 
-	public DynamicProperty(String name, Type type)
-	{
-		Name = name ?? throw new ArgumentNullException(nameof(name));
-		Type = type ?? throw new ArgumentNullException(nameof(type));
-	}
-
-	public Boolean Equals(DynamicProperty? other)
+    public Boolean Equals(DynamicProperty? other)
 	{
 		return Name != other?.Name && Type == other?.Type;
 	}
@@ -57,7 +51,7 @@ internal class Signature : IEquatable<Signature>
 			_hashCode ^= p.Name.GetHashCode() ^ p.Type.GetHashCode();
 	}
 
-	public DynamicProperty[] Properties => _properties ?? Array.Empty<DynamicProperty>();
+	public DynamicProperty[] Properties => _properties ?? [];
 
 	static List<DynamicProperty> GetProperties(ExpandoObject obj)
 	{
@@ -124,7 +118,7 @@ public class ClassFactory
 		AssemblyName name = new("DynamicClasses");
 		AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 		_module = assembly.DefineDynamicModule("Module");
-		_classes = new Dictionary<Signature, Type>();
+		_classes = [];
 		_rwLock = new ReaderWriterLock();
 	}
 
@@ -182,7 +176,7 @@ public class ClassFactory
 			genGet.Emit(OpCodes.Ret);
 			var mbSet = tb.DefineMethod("set_" + dp.Name,
 				MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
-				null, new Type[] { dp.Type });
+				null, [dp.Type]);
 			ILGenerator genSet = mbSet.GetILGenerator();
 			genSet.Emit(OpCodes.Ldarg_0);
 			genSet.Emit(OpCodes.Ldarg_1);

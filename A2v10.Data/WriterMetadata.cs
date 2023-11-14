@@ -6,8 +6,8 @@ namespace A2v10.Data;
 
 internal class WriterMetadata
 {
-	private readonly IDictionary<String, DataTablePatternTuple> _tables = new Dictionary<String, DataTablePatternTuple>();
-	private readonly IDictionary<String, String> _jsonParams = new Dictionary<String, String>();
+	private readonly Dictionary<String, DataTablePatternTuple> _tables = [];
+	private readonly Dictionary<String, String> _jsonParams = [];
 
 	internal IDictionary<String, DataTablePatternTuple> Tables => _tables;
 	internal IDictionary<String, String> JsonParams => _jsonParams;

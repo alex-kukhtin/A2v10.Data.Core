@@ -86,8 +86,8 @@ internal class ExpressionParser
 	public ExpressionParser(ParameterExpression[]? parameters, String expression)
 	{
 		text = expression ?? throw new ArgumentNullException(nameof(expression));
-		symbols = new Dictionary<String, Object>();
-		literals = new Dictionary<Expression, String>();
+		symbols = [];
+		literals = [];
 		if (parameters != null)
 			ProcessParameters(parameters);
 		textLen = text.Length;
@@ -142,12 +142,12 @@ internal class ExpressionParser
 		return expr;
 	}
 
-	static Expression UnaryPlus(Expression expr)
+	static MethodCallExpression UnaryPlus(Expression expr)
 	{
 		return Expression.Call(typeof(DynamicRuntimeHelper), "UnaryPlus", null, expr);
 	}
 
-	static Expression UnaryMinus(Expression expr)
+	static MethodCallExpression UnaryMinus(Expression expr)
 	{
 		return Expression.Call(typeof(DynamicRuntimeHelper), "UnaryMinus", null, expr);
 	}
@@ -313,7 +313,7 @@ internal class ExpressionParser
 		};
 	}
 
-	Expression ParseStringLiteral()
+	ConstantExpression ParseStringLiteral()
 	{
 		ValidateToken(TokenId.StringLiteral);
 		Char quote = token.text[0];
@@ -331,7 +331,7 @@ internal class ExpressionParser
 		return CreateLiteral(s, s);
 	}
 
-	Expression ParseNumberLiteral()
+	ConstantExpression ParseNumberLiteral()
 	{
 		ValidateToken(TokenId.NumberLiteral);
 		String text = token.text;
@@ -344,7 +344,7 @@ internal class ExpressionParser
 		return CreateLiteral(value, text);
 	}
 
-	Expression CreateLiteral(Object value, String text)
+	ConstantExpression CreateLiteral(Object value, String text)
 	{
 		ConstantExpression expr = Expression.Constant(value, typeof(Object));
 		literals.Add(expr, text);
@@ -397,14 +397,14 @@ internal class ExpressionParser
 		throw ParseError(Res.UnknownIdentifier, token.text);
 	}
 
-	static Expression GenerateConditional(Expression test, Expression expr1, Expression expr2)
+	static ConditionalExpression GenerateConditional(Expression test, Expression expr1, Expression expr2)
 	{
 		test = PromoteLogical(test);
 		return Expression.Condition(test, expr1, expr2);
 	}
 
 
-	Expression ParseMemberAccess(Expression instance)
+	MethodCallExpression ParseMemberAccess(Expression instance)
 	{
 		//Int32 errorPos = token.pos;
 		String id = GetIdentifier();
@@ -415,17 +415,17 @@ internal class ExpressionParser
 
 	Expression[] ParseArguments()
 	{
-		List<Expression> argList = new();
+		List<Expression> argList = [];
 		while (true)
 		{
 			argList.Add(ParseExpression());
 			if (token.id != TokenId.Comma) break;
 			NextToken();
 		}
-		return argList.ToArray();
+		return [.. argList];
 	}
 
-	Expression ParseElementAccess(Expression expr)
+	MethodCallExpression ParseElementAccess(Expression expr)
 	{
 		Int32 errorPos = token.pos;
 		ValidateToken(TokenId.OpenBracket, Res.OpenParenExpected);
@@ -672,12 +672,12 @@ internal class ExpressionParser
 			throw ParseError(Res.SyntaxError);
 	}
 
-	Exception ParseError(String format, params Object[] args)
+    ParseException ParseError(String format, params Object[] args)
 	{
 		return ParseError(token.pos, format, args);
 	}
 
-	static Exception ParseError(Int32 pos, String format, params Object[] args)
+	static ParseException ParseError(Int32 pos, String format, params Object[] args)
 	{
 		return new ParseException(String.Format(System.Globalization.CultureInfo.CurrentCulture, format, args), pos);
 	}

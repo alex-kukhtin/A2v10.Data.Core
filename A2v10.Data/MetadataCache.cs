@@ -3,16 +3,11 @@
 using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
-public class MetadataCache
+public class MetadataCache(IDataConfiguration configuration)
 {
-    private readonly Dictionary<String, WriterMetadata> _cache = new();
-    private readonly Dictionary<String , List<SqlParameter>> _params = new();
-    private readonly Boolean _cacheEnabled;
-
-    public MetadataCache(IDataConfiguration configuration)
-    {
-        _cacheEnabled = configuration.IsWriteMetadataCacheEnabled;
-    }
+    private readonly Dictionary<String, WriterMetadata> _cache = [];
+    private readonly Dictionary<String , List<SqlParameter>> _params = [];
+    private readonly Boolean _cacheEnabled = configuration.IsWriteMetadataCacheEnabled;
 
     internal WriterMetadata? GetWriterMetadata(String command)
     {

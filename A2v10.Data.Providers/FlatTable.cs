@@ -1,4 +1,4 @@
-﻿// Copyright © 2020-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2020-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 
@@ -11,7 +11,7 @@ internal class FlatTable : ITableDescription
 
 	public FlatTable()
 	{
-		_list = new List<Object>();
+		_list = [];
 	}
 
 	public ExpandoObject NewRow()

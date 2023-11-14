@@ -1,20 +1,15 @@
 ﻿
-// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.IO;
 using System.Text;
 
 namespace A2v10.Data.Providers.Csv;
-public class CsvWriter : IExternalDataWriter
+public class CsvWriter(DataFile file) : IExternalDataWriter
 {
-	private readonly DataFile _file;
+	private readonly DataFile _file = file;
 
-	public CsvWriter(DataFile file)
-	{
-		_file = file;
-	}
-
-	public void Write(Stream stream)
+    public void Write(Stream stream)
 	{
 		using var sw = new StreamWriter(stream);
 		Write(sw);
@@ -59,7 +54,7 @@ public class CsvWriter : IExternalDataWriter
 	{
 		if (str == null)
 			return null;
-		if (str.IndexOfAny(new Char[] { _file.Delimiter, '"', '\n', '\r' }) != -1)
+		if (str.IndexOfAny([_file.Delimiter, '"', '\n', '\r']) != -1)
 		{
 			return $"\"{str.Replace("\"", "\"\"")}\"";
 		}

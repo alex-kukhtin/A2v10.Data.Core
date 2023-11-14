@@ -185,8 +185,7 @@ public static class DynamicRuntimeHelper
 
 	public static Object? ElementAccess(Object elem, Object arg)
 	{
-		if (arg == null)
-			throw new ArgumentNullException(nameof(arg));
+        ArgumentNullException.ThrowIfNull(arg, nameof(arg));
 		if (elem is List<Object> list)
 		{
 			Int32 index = Convert.ToInt32(arg);

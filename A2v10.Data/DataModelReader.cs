@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace A2v10.Data;
 
-internal class DataModelReader
+internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenProvider = null)
 {
 
 	const String ROOT = "TRoot";
@@ -14,31 +14,24 @@ internal class DataModelReader
 	const String ALIASES_TYPE = "$Aliases";
     const String GROUPING_TYPE = "$Grouping";
 
-    private readonly IDataLocalizer _localizer;
-	private readonly ITokenProvider? _tokenProvider;
+    private readonly IDataLocalizer _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+	private readonly ITokenProvider? _tokenProvider = tokenProvider;
 
 	private IDataModel? _dataModel;
 
-	private readonly IdMapper _idMap = new();
-	private readonly RefMapper _refMap = new();
-	private readonly CrossMapper _crossMap = new();
-	private readonly ExpandoObject _root = new();
+	private readonly IdMapper _idMap = [];
+	private readonly RefMapper _refMap = [];
+	private readonly CrossMapper _crossMap = [];
+	private readonly ExpandoObject _root = [];
 	private readonly IDictionary<String, Object> _sys = new ExpandoObject() as IDictionary<String, Object>;
 
 	private FieldInfo? mainElement;
     private DynamicDataGrouping? _dynamicGrouping = null;
-
-    public DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenProvider = null)
-	{
-		_localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-		_tokenProvider = tokenProvider;
-	}
-
-	Dictionary<String, String>? _aliases = null;
+    Dictionary<String, String>? _aliases = null;
 
 	void AddAliasesFromReader(IDataReader rdr)
 	{
-		_aliases = new Dictionary<String, String>();
+		_aliases = [];
 		// 1-based
 		for (Int32 i = 1; i < rdr.FieldCount; i++)
 			_aliases.Add(rdr.GetName(i), String.Empty);
@@ -273,7 +266,7 @@ internal class DataModelReader
 			return;
 		}
 		rootFI.CheckValid();
-		ExpandoObject currentRecord = new();
+		ExpandoObject currentRecord = [];
 		Boolean bAdded = false;
 		Boolean bAddMap = false;
 		Object? id = null;
@@ -293,7 +286,7 @@ internal class DataModelReader
 			var fi = new FieldInfo(fn);
 			if (fi.IsGroupMarker)
 			{
-				groupKeys ??= new List<Boolean>();
+				groupKeys ??= [];
 				Boolean bVal = (dataVal != null) && (dataVal.ToString() == "1");
 				groupKeys.Add(bVal);
 				continue;
@@ -542,8 +535,8 @@ internal class DataModelReader
 			_root.AddChecked($"{objectDef.PropertyName}.$RowCount", 0);
 	}
 
-	IDictionary<String, GroupMetadata>? _groupMetadata;
-	private readonly IDictionary<String, IDataMetadata> _metadata = new Dictionary<String, IDataMetadata>();
+	Dictionary<String, GroupMetadata>? _groupMetadata;
+	private readonly Dictionary<String, IDataMetadata> _metadata = [];
 
 
 	ElementMetadata? GetMetadata(String typeName)
@@ -568,7 +561,7 @@ internal class DataModelReader
 
 	internal GroupMetadata GetOrCreateGroupMetadata(String typeName)
 	{
-		_groupMetadata ??= new Dictionary<String, GroupMetadata>();
+		_groupMetadata ??= [];
 		if (_groupMetadata.TryGetValue(typeName, out GroupMetadata? groupMeta))
 			return groupMeta;
 		groupMeta = new GroupMetadata();
@@ -686,7 +679,7 @@ internal class DataModelReader
 		var innerObject = mapObj.Get<ExpandoObject>(pxa[1]);
 		if (innerObject == null)
 		{
-			innerObject = new ExpandoObject();
+			innerObject = [];
 			mapObj.Set(pxa[1], innerObject);
 		}
 		innerObject.Set(key.ToString()!, currentRecord);

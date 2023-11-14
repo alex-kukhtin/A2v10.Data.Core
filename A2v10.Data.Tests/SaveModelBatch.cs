@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -52,19 +52,19 @@ namespace A2v10.Data.Tests
 
 			var batches = new List<BatchProcedure>
 			{
-				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+				new("a2test.[Batch.Proc1]", new ExpandoObject()
 				{
 					{"Id", 55 },
 					{ "Delta", 5.0}
 				}),
 
-				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+				new("a2test.[Batch.Proc1]", new ExpandoObject()
 				{
 					{"Id", "66" },
 					{"Delta", 12.0}
 				}),
 
-				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+				new("a2test.[Batch.Proc1]", new ExpandoObject()
 				{
 					{"Id", (Double) 77 },
 					{"Delta", 12.0}
@@ -131,12 +131,12 @@ namespace A2v10.Data.Tests
 
 			var batches = new List<BatchProcedure>
 			{
-				new BatchProcedure("a2test.[Batch.Proc1]", new ExpandoObject()
+				new("a2test.[Batch.Proc1]", new ExpandoObject()
 				{
 					{"Id", 55 },
 					{ "Delta", 5.0}
 				}),
-				new BatchProcedure("a2test.[Batch.Throw]", new ExpandoObject()
+				new("a2test.[Batch.Throw]", new ExpandoObject()
 				{
 					{"Id", 5511223 }
 				})

@@ -8,26 +8,19 @@ using System.Runtime.Serialization;
 namespace A2v10.Data;
 
 [DataContract]
-public class DynamicDataModel : IDataModel
+public class DynamicDataModel(IDictionary<String, IDataMetadata> metadata, ExpandoObject root, ExpandoObject? system) : IDataModel
 {
 
-	#region IDataModel
-	public ExpandoObject Root { get; }
-	public ExpandoObject? System { get; set; }
-	public IDictionary<String, IDataMetadata> Metadata { get; }
-	public DataElementInfo MainElement { get; set; }
+    #region IDataModel
+    public ExpandoObject Root { get; } = root;
+    public ExpandoObject? System { get; set; } = system;
+    public IDictionary<String, IDataMetadata> Metadata { get; } = metadata;
+    public DataElementInfo MainElement { get; set; }
 	#endregion
 
-	private IDictionary<String, Delegate>? _lambdas;
+	private Dictionary<String, Delegate>? _lambdas;
 
-	public DynamicDataModel(IDictionary<String, IDataMetadata> metadata, ExpandoObject root, ExpandoObject? system)
-	{
-		Root = root;
-		System = system;
-		Metadata = metadata;
-	}
-
-	public T? Eval<T>(String expression)
+    public T? Eval<T>(String expression)
 	{
 		T? fallback = default;
 		return (this.Root).Eval<T>(expression, fallback);
@@ -54,7 +47,7 @@ public class DynamicDataModel : IDataModel
 		}
 		else
 		{
-			_lambdas ??= new Dictionary<String, Delegate>();
+			_lambdas ??= [];
 			var prms = new ParameterExpression[] {
 				Expression.Parameter(typeof(ExpandoObject), "Root")
 			};
@@ -75,8 +68,7 @@ public class DynamicDataModel : IDataModel
 
 	public String CreateScript(IDataScripter scripter)
 	{
-		if (scripter == null)
-			throw new ArgumentNullException(nameof(scripter));
+        ArgumentNullException.ThrowIfNull(scripter);	
 		var sys = System as IDictionary<String, Object?>;
 		var meta = Metadata as IDictionary<String, IDataMetadata>;
 		return scripter.CreateScript(DataHelper, sys, meta);
@@ -93,7 +85,7 @@ public class DynamicDataModel : IDataModel
 
 	public void SetReadOnly()
 	{
-		System ??= new ExpandoObject();
+		System ??= [];
 		System.Set("ReadOnly", true);
 		System.Set("StateReadOnly", true);
 	}
@@ -164,7 +156,7 @@ public class DynamicDataModel : IDataModel
 		}
 		if (src.System is IDictionary<String, Object> srcSystem)
 		{
-			trgSystem ??= new ExpandoObject();
+			trgSystem ??= [];
 			foreach (var (k, v) in srcSystem)
 				trgSystem.AddChecked(k, v);
 		}
@@ -186,7 +178,7 @@ public class DynamicDataModel : IDataModel
 			IDataMetadata md = m.Value;
 			if (md.HasCross)
 			{
-				rt ??= new ExpandoObject();
+				rt ??= [];
 				var cross = new ExpandoObject();
 				rt.Add("$cross", cross);
 				var xo = new ExpandoObject();

@@ -9,18 +9,15 @@ using Microsoft.Data.SqlClient;
 namespace A2v10.Data;
 internal record ParameterDef(String ParamName, String ValueName);
 
-internal class BatchCommandBuilder
+internal class BatchCommandBuilder(Boolean allowEmptyStrings)
 {
 	private readonly StringBuilder _sb = new();
 
-	private readonly List<SqlParameter> _values = new();
-	private readonly HashSet<String> _globalParams = new();
-	private readonly Boolean _allowEmptyStrings;
-	public BatchCommandBuilder(Boolean allowEmptyStrings)
-	{
-		_allowEmptyStrings = allowEmptyStrings;
-	}
-	public String CommandText => BuildText();
+	private readonly List<SqlParameter> _values = [];
+	private readonly HashSet<String> _globalParams = [];
+	private readonly Boolean _allowEmptyStrings = allowEmptyStrings;
+
+    public String CommandText => BuildText();
 
 
 	public void AddMainCommand(SqlCommand cmd)

@@ -9,18 +9,12 @@ using Newtonsoft.Json;
 
 namespace A2v10.Data;
 
-internal class DataModelWriter
+internal class DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmptyStrings)
 {
-	private readonly WriterMetadata _writerMetadata;
-	private readonly Boolean _allowEmptyStrings;
+	private readonly WriterMetadata _writerMetadata = writerMetadata;
+	private readonly Boolean _allowEmptyStrings = allowEmptyStrings;
 
-	public DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmptyStrings)
-    {
-		_writerMetadata = writerMetadata;
-		_allowEmptyStrings	= allowEmptyStrings;
-	}
-
-	internal void SetTableParameters(SqlCommand cmd, ExpandoObject data, Object? prms)
+    internal void SetTableParameters(SqlCommand cmd, ExpandoObject data, Object? prms)
 	{
 		IDictionary<String, Object?>? scalarParams = SqlExtensions.GetParametersDictionary(prms);
 		for (Int32 i = 0; i < cmd.Parameters.Count; i++)
@@ -117,9 +111,7 @@ internal class DataModelWriter
 		table.Rows.Add(row);
 	}
 
-#pragma warning disable CA1822 // Mark members as static
-	Boolean GetComplexValue(ExpandoObject data, String expr, out Object? rowVal)
-#pragma warning restore CA1822 // Mark members as static
+	static Boolean GetComplexValue(ExpandoObject data, String expr, out Object? rowVal)
 	{
 		rowVal = null;
 		var ev = data.Eval<Object>(expr);
@@ -131,7 +123,7 @@ internal class DataModelWriter
 		return false;
 	}
 
-	IEnumerable<ExpandoObject> GetDataForSave(ExpandoObject data, String path, Int32? parentIndex = null, Object? parentKey = null, Guid? parentGuid = null)
+	static IEnumerable<ExpandoObject> GetDataForSave(ExpandoObject data, String path, Int32? parentIndex = null, Object? parentKey = null, Guid? parentGuid = null)
 	{
 		if (String.IsNullOrEmpty(path))
 			yield return data;
@@ -146,7 +138,7 @@ internal class DataModelWriter
 			String prop = x[i];
 			// RowNumber is 1-based!
 			Boolean isMap = false;
-			if (prop.EndsWith("*"))
+			if (prop.EndsWith('*'))
 			{
 				prop = prop[0..^1];
 				isMap = true;

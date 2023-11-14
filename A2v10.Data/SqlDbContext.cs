@@ -13,29 +13,18 @@ using Newtonsoft.Json;
 
 namespace A2v10.Data;
 
-public class SqlDbContext : IDbContext
+public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDataLocalizer localizer, MetadataCache metadataCache, ITenantManager? tenantManager = null, ITokenProvider? tokenProvider = null) : IDbContext
 {
 	const String RET_PARAM_NAME = "@RetId";
 
-	private readonly IDataProfiler _profiler;
-	private readonly IDataConfiguration _config;
-	private readonly IDataLocalizer _localizer;
-	private readonly ITenantManager? _tenantManager;
-	private readonly ITokenProvider? _tokenProvider;
-	private readonly MetadataCache _metadataCache;
+	private readonly IDataProfiler _profiler = profiler ?? throw new ArgumentNullException(nameof(profiler));
+	private readonly IDataConfiguration _config = config ?? throw new ArgumentNullException(nameof(config));
+	private readonly IDataLocalizer _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+	private readonly ITenantManager? _tenantManager = tenantManager;
+	private readonly ITokenProvider? _tokenProvider = tokenProvider;
+	private readonly MetadataCache _metadataCache = metadataCache;
 
-	public SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDataLocalizer localizer, MetadataCache metadataCache, ITenantManager? tenantManager = null, ITokenProvider? tokenProvider = null)
-	{
-		_profiler = profiler ?? throw new ArgumentNullException(nameof(profiler));
-		_config = config ?? throw new ArgumentNullException(nameof(config));
-		_localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-		_tenantManager = tenantManager;
-		_tokenProvider = tokenProvider;
-		_metadataCache = metadataCache;
-
-	}
-
-	Int32 CommandTimeout => (Int32)_config.CommandTimeout.TotalSeconds;
+    Int32 CommandTimeout => (Int32)_config.CommandTimeout.TotalSeconds;
 
 	#region IDbContext
 	public String? ConnectionString(String? source)
@@ -653,7 +642,7 @@ public class SqlDbContext : IDbContext
 		return retParam;
 	}
 
-	static Object? GetTableExpandoParams(Object? sqlVal)
+	static DataTable? GetTableExpandoParams(Object? sqlVal)
 	{
 		if (sqlVal is not List<Object> list)
 			return null;

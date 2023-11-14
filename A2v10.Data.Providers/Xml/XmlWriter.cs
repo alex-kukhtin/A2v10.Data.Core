@@ -1,25 +1,18 @@
 ﻿
-// Copyright © 2015-2018 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.IO;
 using System.Xml;
 
 namespace A2v10.Data.Providers.Csv;
-public class XmlWriter
+public class XmlWriter(DataFile file, String root, String row)
 {
-	private readonly DataFile _file;
+	private readonly DataFile _file = file;
 
-	public String RootElement { get; }
-	public String RowElement { get; }
+    public String RootElement { get; } = root;
+    public String RowElement { get; } = row;
 
-	public XmlWriter(DataFile file, String root, String row)
-	{
-		_file = file;
-		RootElement = root;
-		RowElement = row;
-	}
-
-	public void Write(Stream stream)
+    public void Write(Stream stream)
 	{
 		using var sw = System.Xml.XmlWriter.Create(stream, new XmlWriterSettings() { Encoding = _file.Encoding, Indent = true, IndentChars = "\t" });
 		sw.WriteStartDocument();

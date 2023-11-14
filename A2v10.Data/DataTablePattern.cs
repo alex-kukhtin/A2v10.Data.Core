@@ -1,4 +1,4 @@
-﻿// Copyright © 2022 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2022-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 
@@ -24,7 +24,7 @@ internal record DataColumnPattern
 }
 internal class DataTablePattern
 {
-    private readonly Dictionary<String, DataColumnPattern> _columns = new();
+    private readonly Dictionary<String, DataColumnPattern> _columns = [];
 
     public void AddColumn(DataColumnPattern column)
     {

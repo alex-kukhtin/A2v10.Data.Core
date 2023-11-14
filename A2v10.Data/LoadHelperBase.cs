@@ -15,7 +15,7 @@ public abstract class LoadHelperBase<T> where T : class
 	{
 		_type = typeof(T);
 		_props = _type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-		_keyMap = new Dictionary<String, Int32>();
+		_keyMap = [];
 	}
 
 	public void ProcessMetadata(IDataReader rdr)

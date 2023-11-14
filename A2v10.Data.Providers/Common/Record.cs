@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data.Providers;
 
@@ -9,7 +9,7 @@ public class Record : IExternalDataRecord
 
 	public Record(IDictionary<String, Int32> fields)
 	{
-		DataFields = new List<FieldData>();
+		DataFields = [];
 		_fieldMap = fields ?? throw new ArgumentNullException(nameof(fields));
 	}
 

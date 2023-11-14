@@ -19,19 +19,12 @@ public class DataConfigurationOptions
 	public Boolean AllowEmptyStrings { get; set; } = false;
 }
 
-public class DataConfiguration : IDataConfiguration
+public class DataConfiguration(IConfiguration config, IOptions<DataConfigurationOptions> options) : IDataConfiguration
 {
-	private readonly IConfiguration _config;
-	private readonly DataConfigurationOptions _options;
+	private readonly IConfiguration _config = config;
+	private readonly DataConfigurationOptions _options = options.Value;
 
-
-	public DataConfiguration(IConfiguration config, IOptions<DataConfigurationOptions> options)
-	{
-		_config = config;
-		_options = options.Value;
-	}
-
-	public String ConnectionStringName => _options.ConnectionStringName;
+    public String ConnectionStringName => _options.ConnectionStringName;
 
 	#region IDataConfiguration
 

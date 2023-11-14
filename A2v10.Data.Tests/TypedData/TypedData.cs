@@ -87,9 +87,9 @@ public class TypedDataTests
         var dt = DateTime.Today;
         var sc = new List<ScheduledCommand>()
         {
-            new ScheduledCommand("Test1", "Data"),
-            new ScheduledCommand("Test2"),
-            new ScheduledCommand("Test3", "Sample data", dt)
+            new("Test1", "Data"),
+            new("Test2"),
+            new("Test3", "Sample data", dt)
         };
         await _dbContext.SaveListAsync<ScheduledCommand>("", "a2test.[List.Save]", null, sc);
         var list = await _dbContext.LoadListAsync<ScheduledCommand>(null, "a2test.[List.Load]", null);

@@ -51,12 +51,12 @@ public static class SqlExtensions
 		};
 	}
 
-	static readonly String[] dateFormats = new String[]
-	{
-		"yyyyMMdd",
+	static readonly String[] dateFormats =
+    [
+        "yyyyMMdd",
 		"yyyy-MM-dd",
 		"yyyy-MM-ddTHH:mm"
-	};
+	];
 
 	public static Object ParseString(String str, Type to)
     {

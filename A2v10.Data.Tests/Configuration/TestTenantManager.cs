@@ -1,4 +1,4 @@
-﻿// Copyright © 2021-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2021-2023 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data.Tests.Configuration;
 
@@ -8,7 +8,7 @@ public record TenantInfo : ITenantInfo
 
 	public IEnumerable<TenantInfoParam> Params =>
 		new List<TenantInfoParam>() {
-			new TenantInfoParam("@TenantId", 123)
+			new("@TenantId", 123)
 		};
 }
 

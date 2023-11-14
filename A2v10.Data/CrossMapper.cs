@@ -1,34 +1,25 @@
-﻿// Copyright © 2019-2022 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2019-2023 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data;
 
-internal class CrossItem
+internal class CrossItem(String targetProp, Boolean isArray, String crossType, String keyName)
 {
-	readonly Dictionary<Object, ExpandoObject> _items = new();
-	readonly Dictionary<String, Int32> _keys = new();
+	readonly Dictionary<Object, ExpandoObject> _items = [];
+	readonly Dictionary<String, Int32> _keys = [];
 
-	public String TargetProp { get; }
-	public Boolean IsArray { get; }
-	public String CrossType { get; }
+    public String TargetProp { get; } = targetProp;
+    public Boolean IsArray { get; } = isArray;
+    public String CrossType { get; } = crossType;
 
-	public String KeyName { get; }
+    public String KeyName { get; } = keyName;
 
-	public IEnumerable<String> Keys => _keys.Keys;
+    public IEnumerable<String> Keys => _keys.Keys;
 
-	public CrossItem(String targetProp, Boolean isArray, String crossType, String keyName)
-	{
-		TargetProp = targetProp;
-		IsArray = isArray;
-		CrossType = crossType;
-		KeyName = keyName;
-	}
-
-	public void Add(String propName, ExpandoObject target)
+    public void Add(String propName, ExpandoObject target)
 	{
 		var id = target.Get<Object>("Id") 
 			?? throw new DataLoaderException("Cross.Add. Id not found");
-        if (!_items.ContainsKey(id))
-			_items.Add(id, target);
+		_items.TryAdd(id, target);
 		if (!_keys.ContainsKey(propName))
 		{
 			_keys.Add(propName, _keys.Count);
@@ -99,14 +90,14 @@ internal class CrossItem
 
 internal class CrossMapper : Dictionary<String, CrossItem>
 {
-	private readonly IDictionary<Tuple<String, String>, List<ExpandoObject?>> _parentRecords = new Dictionary<Tuple<String, String>, List<ExpandoObject?>>();
+	private readonly Dictionary<Tuple<String, String>, List<ExpandoObject?>> _parentRecords = [];
 	public void AddParentRecord(String typeName, String propName, ExpandoObject record)
 	{
 		var key = Tuple.Create<String, String>(typeName, propName);
 		if (_parentRecords.TryGetValue(key, out List<ExpandoObject?>? list))
 			list.Add(record);
 		else
-			_parentRecords.Add(key, new List<ExpandoObject?>() { record });
+			_parentRecords.Add(key, [record]);
 	}
 
 	public void Add(String key, String targetProp, ExpandoObject target, String propName, String keyName, FieldInfo rootFI)

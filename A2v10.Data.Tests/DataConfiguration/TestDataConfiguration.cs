@@ -1,4 +1,4 @@
-﻿// Copyright © 2021-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2021-2023 Oleksandr Kukhtin. All rights reserved.
 
 
 using System;
@@ -11,7 +11,7 @@ namespace A2v10.Data.Tests;
 [TestCategory("Data Configuration")]
 public class TestDataConfiguration
 {
-	static IServiceProvider GetServiceProvider(IConfiguration configuration, Action<IServiceCollection>? action = null)
+	static ServiceProvider GetServiceProvider(IConfiguration configuration, Action<IServiceCollection>? action = null)
 	{
 		var sc = new ServiceCollection();
 		sc.AddSingleton<IConfiguration>(configuration);

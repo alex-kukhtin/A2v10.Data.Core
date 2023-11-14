@@ -5,7 +5,7 @@ namespace A2v10.Data;
 
 public class ElementMetadata : IDataMetadata
 {
-	private readonly IDictionary<String, IDataFieldMetadata> _fields = new Dictionary<String, IDataFieldMetadata>();
+	private readonly Dictionary<String, IDataFieldMetadata> _fields = [];
 
 	public IDictionary<String, IList<String?>?>? _cross = null;
 

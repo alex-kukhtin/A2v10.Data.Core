@@ -3,35 +3,19 @@
 
 namespace A2v10.Data;
 
-public sealed class DataLoaderException : Exception
+public sealed class DataLoaderException(String message) : Exception(message)
 {
-	public DataLoaderException(String message)
-		: base(message)
-	{
-	}
 }
 
-public sealed class DataWriterException : Exception
+public sealed class DataWriterException(String message) : Exception(message)
 {
-	public DataWriterException(String message)
-		: base(message)
-	{
-	}
 }
 
-public sealed class DataDynamicException : Exception
+public sealed class DataDynamicException(String message) : Exception(message)
 {
-	public DataDynamicException(String message)
-		: base(message)
-	{
-	}
 }
 
-public sealed class DataValidationException : Exception
+public sealed class DataValidationException(String message) : Exception(message)
 {
-	public DataValidationException(String message)
-		: base(message)
-	{
-	}
 }
 

@@ -6,9 +6,9 @@ using System.Text;
 namespace A2v10.Data;
 public class GroupMetadata
 {
-	IList<String>? _fields = null;
+	List<String>? _fields = null;
 
-	IDictionary<String, ExpandoObject>? _cache = null;
+	Dictionary<String, ExpandoObject>? _cache = null;
 
 	internal static String RootKey { get { return "[ROOT]\b"; } }
 
@@ -26,7 +26,7 @@ public class GroupMetadata
 
 	public void AddMarkerMetadata(String fieldName)
 	{
-		_fields ??= new List<String>();
+		_fields ??= [];
 		_fields.Add(fieldName);
 	}
 
@@ -50,7 +50,7 @@ public class GroupMetadata
 
 	public void CacheElement(String key, ExpandoObject record)
 	{
-		_cache ??= new Dictionary<String, ExpandoObject>();
+		_cache ??= [];
 		if (_cache.ContainsKey(key))
 			throw new DataLoaderException($"Group.Cache. Element with the key '{key}' already has been added.");
 		_cache.Add(key, record);

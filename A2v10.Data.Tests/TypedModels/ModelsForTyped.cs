@@ -25,7 +25,7 @@ public record Row
     public Decimal Price { get; set; }
     public Decimal Sum { get; set; }
     public Product? Product { get; set; }
-    public List<Series> Series1 { get; init; } = new();
+    public List<Series> Series1 { get; init; } = [];
 }
 
 public record Agent
@@ -42,22 +42,22 @@ public record Document
 	public DateTime Date { get; set; }
 	public Agent? Agent { get; set; }
 	public Agent? Company { get; set; }
-	public List<Row> Rows1 { get; init; } = new();
-    public List<Row> Rows2 { get; init; } = new();
+	public List<Row> Rows1 { get; init; } = [];
+    public List<Row> Rows2 { get; init; } = [];
 }
 
 public record LoadedDocument
 {
 	public Document? Document { get; set; }
-	public List<Agent> Agents { get; init; } = new();
-	public List<Product> Products { get; init; } = new();
+	public List<Agent> Agents { get; init; } = [];
+	public List<Product> Products { get; init; } = [];
 }
 
 public record LoadedDocuments
 {
-    public List<Document> Documents { get; set; } = new();
-    public List<Agent> Agents { get; init; } = new();
-    public List<Product> Products { get; init; } = new();
+    public List<Document> Documents { get; set; } = [];
+    public List<Agent> Agents { get; init; } = [];
+    public List<Product> Products { get; init; } = [];
 }
 
 public record RMethodData
@@ -68,20 +68,20 @@ public record RMethodData
 }
 public record RMethod
 {
-	public List<RMethodData> Data { get; set; } = new();
+	public List<RMethodData> Data { get; set; } = [];
     public Int32 Id { get; set; }
     public String? Name { get; set; }
 }
 public record RRow
 {
     public Int32? Id { get; set; }
-	public Dictionary<String, RMethod> Methods { get; set; } = new();
+	public Dictionary<String, RMethod> Methods { get; set; } = [];
 }
 public record RDocument
 {
 	public Int32 Id { get; set; }
 	public String? Name { get; set; }
-	public List<RRow> Rows { get; init; } = new();
+	public List<RRow> Rows { get; init; } = [];
 }
 public record RowsMethods
 {

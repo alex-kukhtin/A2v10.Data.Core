@@ -118,7 +118,7 @@ public static class DataHelpers
 		List<ExpandoObject>? arr;
 		if (!d.TryGetValue(key, out Object? objArr))
 		{
-			arr = new List<ExpandoObject>();
+			arr = [];
 			d.Add(key, arr);
 		}
 		else
@@ -154,12 +154,10 @@ public static class DataHelpers
 	public static void AddToCross(this ExpandoObject eo, String key, ExpandoObject value, String keyProp)
 	{
 		var d = eo as IDictionary<String, Object?>;
-#pragma warning disable IDE0019 // Use pattern matching
 		ExpandoObject? val = d[key] as ExpandoObject;
-#pragma warning restore IDE0019 // Use pattern matching
 		if (val == null)
 		{
-			val = new ExpandoObject();
+			val = [];
 			eo.Set(key, val);
 		}
 		val.Set(keyProp, value);

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Text;
@@ -12,11 +12,10 @@ public enum DataFileFormat
 
 public class DataFile : IExternalDataFile
 {
-	readonly IList<Field> _fields = new List<Field>();
-	readonly IList<Record> _records = new List<Record>();
+	readonly List<Field> _fields = [];
+	readonly List<Record> _records = [];
 
-	private readonly Byte[] byteCodes1251 = new Byte[] 
-		{ 0x81, 0x83, 0x92, 0x93, 0x94, 0xA0, 0xA1, 0xA2, 0xA5, 0xA8, 0xAA, 0xAF, 0xB2, 0xB3, 0xB4, 0xB9, 0xBA, 0xBF, 0xBB, 0xAB };
+	private readonly Byte[] byteCodes1251 = [0x81, 0x83, 0x92, 0x93, 0x94, 0xA0, 0xA1, 0xA2, 0xA5, 0xA8, 0xAA, 0xAF, 0xB2, 0xB3, 0xB4, 0xB9, 0xBA, 0xBF, 0xBB, 0xAB];
 
 	public DateTime LastModifedDate { get; set; }
 
@@ -179,11 +178,11 @@ public class DataFile : IExternalDataFile
 
 	public IEnumerable<Field> Fields => _fields;
 
-	private IDictionary<String, Int32> _fieldMap = new Dictionary<String, Int32>();
+	private Dictionary<String, Int32> _fieldMap = [];
 
 	internal void MapFields()
 	{
-		_fieldMap = new Dictionary<String, Int32>();
+		_fieldMap = [];
 		for (Int32 f = 0; f < _fields.Count; f++)
 		{
 			var name = _fields[f].Name;

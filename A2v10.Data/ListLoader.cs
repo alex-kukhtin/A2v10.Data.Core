@@ -11,7 +11,7 @@ public class ListLoader<T> : LoadHelperBase<T> where T : class
 	public ListLoader()
 		: base()
 	{
-		Result = new List<T>();
+		Result = [];
 	}
 
 	public void ProcessData(IDataReader rdr)

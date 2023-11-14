@@ -1,20 +1,15 @@
-﻿// Copyright © 2018-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2018-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.IO;
 using System.Xml;
 
 namespace A2v10.Data.Providers.Xml;
-public class XmlReader : IExternalDataReader
+public class XmlReader(DataFile file) : IExternalDataReader
 {
-	private readonly DataFile _file;
+	private readonly DataFile _file = file;
 
-	public XmlReader(DataFile file)
-	{
-		_file = file;
-	}
-
-	public IExternalDataFile Read(Stream stream)
+    public IExternalDataFile Read(Stream stream)
 	{
 		Int32 level = 0;
 		Record? currentRow = null;

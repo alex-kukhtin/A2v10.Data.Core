@@ -13,7 +13,7 @@ namespace A2v10.Data.Tests
 	[TestCategory("Data SimpleDbContext")]
 	public class TestSimpleDbContext
 	{
-		static IServiceProvider GetServiceProvider(Action<IServiceCollection>? action = null)
+		static ServiceProvider GetServiceProvider(Action<IServiceCollection>? action = null)
 		{
 			var configuration = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")

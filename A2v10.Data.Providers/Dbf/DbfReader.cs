@@ -6,18 +6,13 @@ using System.IO;
 using System.Text;
 
 namespace A2v10.Data.Providers.Dbf;
-public class DbfReader : IExternalDataReader
+public class DbfReader(DataFile file) : IExternalDataReader
 {
-	private readonly DataFile _file;
+	private readonly DataFile _file = file;
 
 	const String ErrorIncorrectFormat = "DbfReader. Incorrect file format";
 
-	public DbfReader(DataFile file)
-	{
-		_file = file;
-	}
-
-	public IExternalDataFile Read(Stream stream)
+    public IExternalDataFile Read(Stream stream)
 	{
 		using (var rdr = new BinaryReader(stream))
 		{

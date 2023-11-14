@@ -1,15 +1,9 @@
-﻿// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data.Providers;
 
-public sealed class ExternalDataException : Exception
+public sealed class ExternalDataException(String message) : Exception(message)
 {
-	public ExternalDataException(String message)
-		: base(message)
-	{
-
-	}
-
 }
 

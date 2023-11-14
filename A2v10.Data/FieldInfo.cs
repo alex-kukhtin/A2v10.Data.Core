@@ -1,6 +1,5 @@
 ﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
 
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace A2v10.Data;
@@ -45,7 +44,7 @@ public struct FieldInfo
 		if (x.Length == 4)
 		{
 			FieldType = FieldType.MapObject;
-			MapFields = x[3].Split(':').ToList();
+			MapFields = [.. x[3].Split(':')];
 		}
 		IsComplexField = PropertyName.Contains('.');
 		CheckReservedWords();
@@ -63,9 +62,9 @@ public struct FieldInfo
 		IsComplexField = false;
 	}
 
-	static readonly HashSet<String> _reservedWords = new()
-	{
-		"Parent",
+	static readonly HashSet<String> _reservedWords =
+    [
+        "Parent",
 		"Root",
 		"Context",
 		"ParentId",
@@ -73,9 +72,9 @@ public struct FieldInfo
 		"ParentRowNumber",
 		"ParentKey",
 		"ParentGUID"
-	};
+	];
 
-	void CheckReservedWords()
+    readonly void CheckReservedWords()
 	{
 		if (_reservedWords.Contains(PropertyName))
 		{
@@ -85,7 +84,7 @@ public struct FieldInfo
 
 	static readonly Regex _ider = new(@"^[a-z_\$][a-z0-9_\$]*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
-	public void CheckTypeName()
+	public readonly void CheckTypeName()
 	{
 		if (String.IsNullOrEmpty(TypeName))
 			return;
@@ -94,7 +93,7 @@ public struct FieldInfo
 	}
 
 
-	public void CheckValid()
+	public readonly void CheckValid()
 	{
 		if (!String.IsNullOrEmpty(PropertyName))
 		{
@@ -119,34 +118,34 @@ public struct FieldInfo
 	}
 
 
-	public Boolean IsVisible { get { return !String.IsNullOrEmpty(PropertyName); } }
+	public readonly Boolean IsVisible { get { return !String.IsNullOrEmpty(PropertyName); } }
 
-	public Boolean IsArray => FieldType == FieldType.Array;
-	public Boolean IsObject => FieldType == FieldType.Object;
-	public Boolean IsMap => FieldType == FieldType.Map;
-	public Boolean IsMapObject => FieldType == FieldType.MapObject;
-	public Boolean IsTree => FieldType == FieldType.Tree;
-	public Boolean IsGroup => FieldType == FieldType.Group;
-	public Boolean IsCrossArray => FieldType == FieldType.CrossArray;
-	public Boolean IsCrossObject => FieldType == FieldType.CrossObject;
-	public Boolean IsCross => IsCrossArray || IsCrossObject;
-	public Boolean IsLookup => FieldType == FieldType.Lookup;
+	public readonly Boolean IsArray => FieldType == FieldType.Array;
+	public readonly Boolean IsObject => FieldType == FieldType.Object;
+	public readonly Boolean IsMap => FieldType == FieldType.Map;
+	public readonly Boolean IsMapObject => FieldType == FieldType.MapObject;
+	public readonly Boolean IsTree => FieldType == FieldType.Tree;
+	public readonly Boolean IsGroup => FieldType == FieldType.Group;
+	public readonly Boolean IsCrossArray => FieldType == FieldType.CrossArray;
+	public readonly Boolean IsCrossObject => FieldType == FieldType.CrossObject;
+	public readonly Boolean IsCross => IsCrossArray || IsCrossObject;
+	public readonly Boolean IsLookup => FieldType == FieldType.Lookup;
 
-	public Boolean IsObjectLike => IsArray || IsObject || IsTree || IsGroup || IsMap || IsMapObject || IsCrossArray || IsCrossObject || IsLookup;
-	public Boolean IsNestedType => IsRefId || IsArray || IsCrossArray || IsCrossObject || IsTree;
-	public Boolean IsRefId => SpecType == SpecType.RefId;
-	public Boolean IsParentId => SpecType == SpecType.ParentId;
-	public Boolean IsId => SpecType == SpecType.Id;
-	public Boolean IsKey => SpecType == SpecType.Key;
-	public Boolean IsToken => SpecType == SpecType.Token;
-	public Boolean IsRowCount => SpecType == SpecType.RowCount;
-	public Boolean IsItems => SpecType == SpecType.Items;
-	public Boolean IsGroupMarker => SpecType == SpecType.GroupMarker;
-	public Boolean IsJson => SpecType == SpecType.Json;
-	public Boolean IsPermissions => SpecType == SpecType.Permissions;
-	public Boolean IsUtc => SpecType == SpecType.Utc;
+	public readonly Boolean IsObjectLike => IsArray || IsObject || IsTree || IsGroup || IsMap || IsMapObject || IsCrossArray || IsCrossObject || IsLookup;
+	public readonly Boolean IsNestedType => IsRefId || IsArray || IsCrossArray || IsCrossObject || IsTree;
+	public readonly Boolean IsRefId => SpecType == SpecType.RefId;
+	public readonly Boolean IsParentId => SpecType == SpecType.ParentId;
+	public readonly Boolean IsId => SpecType == SpecType.Id;
+	public readonly Boolean IsKey => SpecType == SpecType.Key;
+	public readonly Boolean IsToken => SpecType == SpecType.Token;
+	public readonly Boolean IsRowCount => SpecType == SpecType.RowCount;
+	public readonly Boolean IsItems => SpecType == SpecType.Items;
+	public readonly Boolean IsGroupMarker => SpecType == SpecType.GroupMarker;
+	public readonly Boolean IsJson => SpecType == SpecType.Json;
+	public readonly Boolean IsPermissions => SpecType == SpecType.Permissions;
+	public readonly Boolean IsUtc => SpecType == SpecType.Utc;
 
-	public Boolean IsParentIdSelf(FieldInfo root)
+	public readonly Boolean IsParentIdSelf(FieldInfo root)
 	{
 		return IsParentId && TypeName.StartsWith(root.TypeName);
 	}

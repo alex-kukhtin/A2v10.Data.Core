@@ -10,12 +10,12 @@ public struct NaN
 		return test is NaN;
 	}
 
-	public override Boolean Equals(Object? obj)
+	public readonly override Boolean Equals(Object? obj)
 	{
 		return obj is NaN;
 	}
 
-	public override Int32 GetHashCode() => -1;
+	public override readonly Int32 GetHashCode() => -1;
 
 	public static Boolean operator ==(NaN left, NaN right) => true;
 	public static Boolean operator !=(NaN left, NaN right) => false;
@@ -29,12 +29,12 @@ public struct Undefined
 		return test is Undefined;
 	}
 
-	public override Boolean Equals(Object? obj)
+	public override readonly Boolean Equals(Object? obj)
 	{
 		return obj is Undefined;
 	}
 
-	public override Int32 GetHashCode() => -1;
+	public override readonly Int32 GetHashCode() => -1;
 
 	public static Boolean operator ==(Undefined left, Undefined right) => true;
 	public static Boolean operator !=(Undefined left, Undefined right) => false;
@@ -48,12 +48,12 @@ public struct Infinity
 		return test is Infinity;
 	}
 
-	public override Boolean Equals(Object? obj)
+	public override readonly Boolean Equals(Object? obj)
 	{
 		return obj is Infinity;
 	}
 
-	public override Int32 GetHashCode() => -1;
+	public override readonly Int32 GetHashCode() => -1;
 
 	public static Boolean operator ==(Infinity left, Infinity right) => true;
 	public static Boolean operator !=(Infinity left, Infinity right) => false;

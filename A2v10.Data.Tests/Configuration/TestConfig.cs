@@ -4,18 +4,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace A2v10.Data.Tests.Configuration;
 
-public class TestConfig : IDataConfiguration
+public class TestConfig(IConfiguration config) : IDataConfiguration
 {
 
-	private readonly IConfiguration _config;
+	private readonly IConfiguration _config = config;
 
-	public TestConfig(IConfiguration config)
-	{
-		_config = config;
-	}
-
-	#region IDataConfiguration
-	public String? ConnectionString(String? source)
+    #region IDataConfiguration
+    public String? ConnectionString(String? source)
 	{
 		if (String.IsNullOrEmpty(source))
 			source = "Default";

@@ -31,8 +31,8 @@ internal class KeyComparer : IEqualityComparer<Object>
 internal class DynamicGroupItem
 {
 	private readonly Dictionary<Object, DynamicGroupItem> _children = new(new KeyComparer());
-	private ExpandoObject _data = new();
-	private readonly List<ExpandoObject> _leafs = new();
+	private ExpandoObject _data = [];
+	private readonly List<ExpandoObject> _leafs = [];
 	public DynamicGroupItem(Object? key = null, String? elem = null)
 	{
 		if (elem == null) return;
@@ -61,7 +61,7 @@ internal class DynamicGroupItem
 
 	public void SetData(ExpandoObject data, String? groupProp)
 	{
-		_data = new ExpandoObject();
+		_data = [];
 		if (groupProp != null)
 			_data.Set(groupProp, data.Get<Object>(groupProp));	
 		_leafs.Add(data);
@@ -113,7 +113,7 @@ internal class DynamicGroupItem
 			var targetCross = _data.Get<List<ExpandoObject>>(crossItem.TargetProp);
 			if (targetCross == null)
 			{
-				targetCross = new();
+				targetCross = [];
 				foreach (var key in crossItem.Keys)
 				{
 					var elem = new ExpandoObject() { { crossItem.KeyName, key } };
@@ -239,8 +239,8 @@ record AggregateDescriptor(String Property, AggregateType Type);
 
 internal class RecordsetDescriptor
 {
-	public List<String> Groups = new();
-	public List<AggregateDescriptor> Aggregates = new();
+	public List<String> Groups = [];
+	public List<AggregateDescriptor> Aggregates = [];
 	public void AddGroup(String prop)
 	{
 		Groups.Add(prop);
@@ -251,21 +251,15 @@ internal class RecordsetDescriptor
 	}
 }
 
-internal class DynamicDataGrouping
+internal class DynamicDataGrouping(ExpandoObject root, IDictionary<String, IDataMetadata> metadata, DataModelReader modelReader)
 {
-	private readonly ExpandoObject _root;
+	private readonly ExpandoObject _root = root;
 
-	private readonly IDictionary<String, IDataMetadata> _metadata;
-	private readonly Dictionary<String, RecordsetDescriptor> _recordsets = new();
-	private readonly DataModelReader _modelReader;
-	public DynamicDataGrouping(ExpandoObject root, IDictionary<String, IDataMetadata> metadata, DataModelReader modelReader)
-	{
-		_root = root;
-		_metadata = metadata;
-		_modelReader = modelReader;
-	}
+	private readonly IDictionary<String, IDataMetadata> _metadata = metadata;
+	private readonly Dictionary<String, RecordsetDescriptor> _recordsets = [];
+	private readonly DataModelReader _modelReader = modelReader;
 
-	private RecordsetDescriptor GetOrCreateRSDescriptor(String name)
+    private RecordsetDescriptor GetOrCreateRSDescriptor(String name)
 	{
 		if (_recordsets.TryGetValue(name, out var descr))
 			return descr;

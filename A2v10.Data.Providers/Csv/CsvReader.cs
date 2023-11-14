@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2021 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.IO;
@@ -6,20 +6,15 @@ using System.Linq;
 using System.Text;
 
 namespace A2v10.Data.Providers.Csv;
-public class CsvReader : IExternalDataReader
+public class CsvReader(DataFile file) : IExternalDataReader
 {
-	private readonly DataFile _file;
+	private readonly DataFile _file = file;
 
 	const Char QUOTE = '"';
 
 	Char _backwardChar = '\0';
 
-	public CsvReader(DataFile file)
-	{
-		_file = file;
-	}
-
-	public IExternalDataFile Read(Stream stream)
+    public IExternalDataFile Read(Stream stream)
 	{
 		// FindEncoding & delimiter
 		FindEncoding(stream);
@@ -160,7 +155,7 @@ public class CsvReader : IExternalDataReader
 		_file.MapFields();
 	}
 
-	IList<String> ParseLine(String line)
+	List<String> ParseLine(String line)
 	{
 		// very simple tokenizer
 		Int32 ix = 0;

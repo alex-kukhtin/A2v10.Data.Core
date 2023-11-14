@@ -3,21 +3,14 @@
 using System.Globalization;
 
 namespace A2v10.Data;
-internal class TableDescription : ITableDescription
+internal class TableDescription(DataTablePattern table) : ITableDescription
 {
-
 	public IFormatProvider? FormatProvider { get; set; }
 
-	private readonly DataTablePattern _table;
-	private readonly List<Object> _list;
+	private readonly DataTablePattern _table = table;
+	private readonly List<Object> _list = [];
 
-	public TableDescription(DataTablePattern table)
-	{
-		_table = table;
-		_list = new List<Object>();
-	}
-
-	public ExpandoObject NewRow()
+    public ExpandoObject NewRow()
 	{
 		var eo = new ExpandoObject();
 		_list.Add(eo);
