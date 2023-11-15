@@ -109,7 +109,7 @@ public static class DynamicExtensions
 	private static Object? EvalExpression(this ExpandoObject root, String expression, Boolean throwIfError = false)
 	{
 		Object currentContext = root;
-		var arrRegEx = new Regex(@"(\w+)\[(\d+)\]{1}");
+		var arrRegEx = @"(\w+)\[(\d+)\]{1}";
 		foreach (var exp in expression.Split('.'))
 		{
 			if (currentContext == null)
@@ -118,11 +118,11 @@ public static class DynamicExtensions
 			var d = currentContext as IDictionary<String, Object>;
 			if (prop.Contains('['))
 			{
-				var match = arrRegEx.Match(prop);
+				var match = Regex.Match(prop, arrRegEx);
 				prop = match.Groups[1].Value;
-				if ((d != null) && d.ContainsKey(prop))
+				if ((d != null) && d.TryGetValue(prop, out var value))
 				{
-					if (d[prop] is IList<ExpandoObject> dList)
+					if (value is IList<ExpandoObject> dList)
 						currentContext = dList[Int32.Parse(match.Groups[2].Value)];
 				}
 				else
@@ -134,8 +134,8 @@ public static class DynamicExtensions
 			}
 			else
 			{
-				if ((d != null) && d.ContainsKey(prop))
-					currentContext = d[prop];
+				if (d != null && d.TryGetValue(prop, out var value))
+					currentContext = value;
 				else
 				{
 					if (throwIfError)

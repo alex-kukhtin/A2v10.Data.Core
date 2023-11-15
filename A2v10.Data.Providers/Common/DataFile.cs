@@ -215,14 +215,13 @@ public class DataFile : IExternalDataFile
 
 	public void FillModel(IDataModel model)
 	{
-		if (model.Metadata == null || !model.Metadata.ContainsKey("TRoot"))
+		if (model.Metadata == null || !model.Metadata.TryGetValue("TRoot",  out var root))
 			throw new ExternalDataException("External data. Empty model");
-		var r = model.Metadata["TRoot"];
-		if (r?.Fields?.Count != 1)
+		if (root?.Fields?.Count != 1)
 			throw new ExternalDataException("External data. The model must contain one array");
-		foreach (var prop in r.Fields.Keys)
+		foreach (var prop in root.Fields.Keys)
 		{
-			var f = r.Fields[prop];
+			var f = root.Fields[prop];
 			CreateStructure(model.Metadata[f.RefObject]);
 			var array = model.Eval<IList<ExpandoObject>>(prop) 
 				?? throw new ExternalDataException($"External data. '{prop}' field must be an array");

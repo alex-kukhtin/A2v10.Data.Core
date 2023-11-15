@@ -29,8 +29,8 @@ public class JsonValidator
 
 	public IDataModelValidator CreateValidator(String name)
 	{
-		if (!_models.ContainsKey(name))
+		if (!_models.TryGetValue(name, out var validator))
 			throw new DataValidationException($"Model {name} not found");
-		return _models[name];
+		return validator;
 	}
 }

@@ -70,7 +70,7 @@ internal class DynamicGroupItem
 	{
 		if (_leafs.Count == 0)
 			return;
-		if (_children.Any())
+		if (_children.Count > 0)
 			return;
 		T? result;
 		T?[] values = new T[_leafs.Count];
