@@ -2,10 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
-		<LangVersion>12.0</LangVersion>
+		<LangVersion>Latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>10.1.7340</Version>
-		<AssemblyVersion>10.1.7340</AssemblyVersion>
+		<Version>10.1.7342</Version>
+		<AssemblyVersion>10.1.7342</AssemblyVersion>
 		<Product>A2v10</Product>
 		<Authors>Oleksandr Kukthin</Authors>
 		<Copyright>Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.</Copyright>
@@ -31,7 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>

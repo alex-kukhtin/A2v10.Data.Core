@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2019 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2019 Oleksandr Kukhtin. All rights reserved.
 
 using A2v10.Data.Tests.Configuration;
 using System.Threading.Tasks;

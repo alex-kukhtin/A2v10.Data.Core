@@ -1,4 +1,4 @@
-﻿// Copyright © 2019-2020 Alex Kukhtin. All rights reserved.
+﻿// Copyright © 2019-2020 Oleksandr Kukhtin. All rights reserved.
 
 using System.IO;
 
