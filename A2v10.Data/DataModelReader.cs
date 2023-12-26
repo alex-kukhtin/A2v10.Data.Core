@@ -1,7 +1,7 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
+using System.ComponentModel.Design;
 using System.Data;
-
 using Newtonsoft.Json;
 
 namespace A2v10.Data;
@@ -221,10 +221,10 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 					}
 					break;
 				case SpecType.ReadOnly:
-					_sys.Add("ReadOnly", DataHelpers.SqlToBoolean(dataVal));
+					_sys.Add("ReadOnly", InternalHelpers.SqlToBoolean(dataVal));
 					break;
 				case SpecType.Copy:
-					_sys.Add("Copy", DataHelpers.SqlToBoolean(dataVal));
+					_sys.Add("Copy", InternalHelpers.SqlToBoolean(dataVal));
 					break;
 				case SpecType.Permissions:
 					if (String.IsNullOrEmpty(fi.TypeName))
@@ -269,9 +269,16 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		ExpandoObject currentRecord = [];
 		Boolean bAdded = false;
 		Boolean bAddMap = false;
+		Boolean bAddRow = false;
+		Boolean bAddColumn = false;
+		Boolean bAddCell = false;
 		Object? id = null;
 		Object? key = null;
 		String? keyName = null;
+		Object? index = null;
+		String? indexName = null;
+		Object? column = null;
+		String? columnName = null;
 		Int32 rowCount = 0;
 		Boolean bHasRowCount = false;
 		List<Boolean>? groupKeys = null;
@@ -343,6 +350,16 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 				keyName = fi.PropertyName;
 				key = dataVal;
 			}
+			else if (fi.IsIndex)
+			{
+				indexName = fi.PropertyName;
+				index = dataVal;
+			}
+			else if (fi.IsColumnId)
+			{
+				columnName = fi.TypeName;
+				column = dataVal;
+			}
 			if (fi.IsParentId)
 			{
 				if (rootFI.IsArray)
@@ -375,7 +392,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 						}
 					}
 				}
-				else if (rootFI.IsObject)
+				else if (rootFI.IsObject || rootFI.IsSheet)
 				{
 					// nested object
 					if (dataVal == null)
@@ -395,11 +412,45 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 						id = dataVal;
 					}
 				}
+				else if (rootFI.IsRows)
+				{
+					if (!rootFI.IsVisible)
+					{
+						bAdded = true;
+						mapPropName = fi.TypeName;
+						bAddRow = true;
+						id = dataVal;
+					}
+				}
+				else if (rootFI.IsColumns)
+				{
+					if (!rootFI.IsVisible)
+					{
+						bAdded = true;
+						mapPropName = fi.TypeName;
+						bAddColumn = true;
+						id = dataVal;
+					}
+				}
+				else if (rootFI.IsCells)
+				{
+					if (!rootFI.IsVisible)
+					{
+						bAdded = true;
+						mapPropName = fi.TypeName;
+						bAddCell = true;	
+						id = dataVal;
+					}
+				}
 				else if (rootFI.IsCrossArray || rootFI.IsCrossObject)
 				{
 					if (dataVal == null || key == null || keyName == null)
 						throw new DataLoaderException("CrossArray or CrossObject: dataVal, keyName or key are null");
 					AddRecordToCross(fi.TypeName, dataVal, currentRecord, key, keyName, rootFI);
+				}
+				else if (rootFI.IsCells)
+				{
+					// Add row to cells
 				}
 			}
 		}
@@ -408,6 +459,36 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			if (key == null)
 				throw new InvalidProgramException("AddToMap: key is null");
 			AddMapToRecord(mapPropName, id, key, currentRecord);
+		}
+		else if (bAddRow)
+		{
+			if (index == null)
+				throw new InvalidProgramException("AddSheetRow: index is null");
+			if (id == null)
+				throw new InvalidProgramException("AddSheetRow: ParentId is null");
+			if (indexName == null)
+				throw new InvalidProgramException("AddSheetRow: IndexName is null");
+			AddRecordToRows(mapPropName, id, currentRecord, index, indexName);
+		}
+		else if (bAddColumn)
+		{
+			if (id == null)
+				throw new InvalidProgramException("AddSheetColumn: ParentId is null");
+			if (key == null)
+				throw new InvalidProgramException("AddSheetColumn: Key is null");
+			if (keyName == null)
+				throw new InvalidProgramException("AddSheetColumn: KeyName is null");
+			AddRecordToColumns(mapPropName, id, currentRecord, key.ToString()!, keyName);
+		}
+		else if (bAddCell)
+		{
+			if (id == null)
+				throw new InvalidProgramException("AddSheetCell: ParentId is null");
+			if (column == null)
+				throw new InvalidProgramException("AddSheetCell: Column is null");
+			if (columnName == null)
+				throw new InvalidProgramException("AddSheetCell: ColumnName is null");
+			AddRecordToCells(mapPropName, id, currentRecord, column, columnName);
 		}
 		if (!bAdded)
 		{
@@ -465,7 +546,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			mainElement = objectDef;
 			rootMetadata.MainObject = objectDef.PropertyName;
 		}
-		if (objectDef.IsArray || objectDef.IsTree || objectDef.IsMap || objectDef.IsLookup)
+		if (objectDef.IsArray || objectDef.IsTree || objectDef.IsMap || objectDef.IsLookup || objectDef.IsRows || objectDef.IsColumns)
 			typeMetadata.IsArrayType = true;
 		if (objectDef.IsGroup)
 			typeMetadata.IsGroup = true;
@@ -637,7 +718,6 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		_crossMap.Add(propName, pxa[1], mapObj, keyProp.ToString()!, keyName, rootFI);
 	}
 
-
 	void AddRecordToArray(String propName, Object id, ExpandoObject currentRecord, String? rootTypeName = null)
 	{
 		var pxa = propName.Split('.'); // <Type>.PropName
@@ -663,6 +743,52 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			throw new DataLoaderException($"Invalid field name '{propName}' for array. 'TypeName.PropertyName' expected");
 		else
 			mapObj.AddToArray(pxa[1], currentRecord);
+	}
+
+	void AddRecordToRows(String propName, Object? id, ExpandoObject currentRecord, Object index, String indexName)
+	{
+		var pxa = propName.Split('.'); // <Type>.PropName
+		if (pxa.Length != 2)
+			throw new DataLoaderException($"Invalid field name '{propName}' for array. 'TypeName.PropertyName' expected");
+		var int32Index = Convert.ToInt32(index);
+		if (int32Index < 0)
+			throw new DataLoaderException($"Invalid index value ({int32Index}). Must be > 0");
+		var srcKey = Tuple.Create(pxa[0], id);
+		if (!_idMap.TryGetValue(srcKey, out ExpandoObject? mapObj))
+			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
+		mapObj.AddToArrayIndex(pxa[1], currentRecord, int32Index - 1, indexName);
+	}
+
+	void AddRecordToColumns(String propName, Object? id, ExpandoObject currentRecord, String key, String keyName)
+	{
+		var pxa = propName.Split('.'); // <Type>.PropName
+		if (pxa.Length != 2)
+			throw new DataLoaderException($"Invalid field name '{propName}' for array. 'TypeName.PropertyName' expected");
+		var srcKey = Tuple.Create(pxa[0], id);
+		if (!_idMap.TryGetValue(srcKey, out ExpandoObject? sheetObj))
+			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
+		sheetObj.AddToArrayIndexKey(pxa[1], currentRecord, key, keyName);
+	}
+
+	void AddRecordToCells(String propName, Object? id, ExpandoObject currentRecord, Object? column, String columnName)
+	{
+		var pxa = propName.Split('.'); // <Type>.PropName
+		if (pxa.Length != 2)
+			throw new DataLoaderException($"Invalid field name '{propName}' for array. 'TypeName.PropertyName' expected");
+		var srcKey = Tuple.Create(pxa[0], id);
+		if (!_idMap.TryGetValue(srcKey, out ExpandoObject? rowObj))
+			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
+		// row was found
+		var cxa = columnName.Split(".");
+		if (cxa.Length != 2)
+			throw new DataLoaderException($"Invalid Column name '{column}' for sheet. 'TypeName.PropertyName' expected");
+		var colKey = Tuple.Create(cxa[0], column);
+		if (!_idMap.TryGetValue(colKey, out ExpandoObject? colObj))
+			throw new DataLoaderException($"Property '{columnName}'. Object {cxa[0]} (Id={column}) not found");
+		// column was found
+		var columnKey = colObj.Get<String>(cxa[1]) 
+			?? throw new DataLoaderException("Column Key is null");
+		rowObj.AddToArrayIndexCell(pxa[1], currentRecord, columnKey);
 	}
 
 	void AddMapToRecord(String propName, Object? id, Object key, ExpandoObject currentRecord)

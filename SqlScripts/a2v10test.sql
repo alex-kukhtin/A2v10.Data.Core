@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2023 Oleksandr Kukhtin
 
-/* 20230903-7338 */
+/* 20231226-7343 */
 
 use a2v10test;
 go
@@ -2161,5 +2161,59 @@ begin
 		[!Documents.Fragment!Filter] = N'FRAGMENT',
 		[!Documents.Company.TCompany.RefId!Filter] = 127,
 		[!Documents.Warehouse.TWarehouse.RefId!Filter] = null;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Sheet.Model.Load]
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	declare @rows table(Id bigint, [Index] int);
+	declare @columns table(Id bigint, [Key] nvarchar(3), [Name] nvarchar(255));
+
+	declare @cells table(Id bigint, [RowId] bigint, ColumnId bigint, [Value] nvarchar(255));
+
+
+	insert into @rows(Id, [Index]) values
+	(100, 1),
+	(101, 3),
+	(102, 5),
+	(103, 7);
+
+	insert into @columns(Id, [Key], [Name]) values
+	(200, N'A', N'Column 1'),
+	(201, N'C', N'Column 3'),
+	(202, N'D', N'Column 4'),
+	(204, N'F', N'Column 6');
+
+	insert into @cells(Id, RowId, ColumnId, [Value]) values
+	(500, 100, 200, N'A1'),
+	(501, 100, 201, N'C1'),
+	(502, 101, 201, N'C3');
+
+	select [Model!TModel!Object] = null, [Id!!Id] = 1,
+		[Sheet!TSheet!Sheet] = null;
+
+	select [!TSheet!Sheet] = null, [Id!!Id] = 7, 
+		[Rows!TRow!Array] = null, [Columns!TColumn!Array] = null,
+		[!TModel.Sheet!ParentId] = 1;
+
+	/*Index name is required */
+	select [!TRow!Rows] = null, [Id!!Id] = Id, [Index!!Index] = [Index], [!TSheet.Rows!ParentId] = 7,
+		[Cells!TCell!Array] = null
+	from @rows
+	order by [Index];
+
+	/*Key name is reqired*/
+	select [!TColumn!Columns] = null, [Id!!Id] = Id, [Key!!Key] = [Key], [Name!!Name] = [Name], [!TSheet.Columns!ParentId] = 7
+	from @columns
+	order by Id;
+
+	select [!TCell!Cells] = null, [Id!!Id] = Id, [!TRow.Cells!ParentId] = RowId, 
+			[!TColumn.Key!ColumnId] = ColumnId,  /* HACK: "Key" part is using for calculate column index (!) */
+		[Value]
+	from @cells;
 end
 go

@@ -5,82 +5,6 @@ using Newtonsoft.Json;
 namespace A2v10.Data;
 public static class DataHelpers
 {
-	public static DataType TypeName2DataType(this String s)
-	{
-		return s switch
-		{
-			"DateTime" => DataType.Date,
-			"TimeSpan" => DataType.Date,
-			"String" => DataType.String,
-			"Int64" or "Int32" or "Int16" or "Double" or "Decimal" => DataType.Number,
-			"Boolean" => DataType.Boolean,
-			"Guid" => DataType.String,
-			"Byte" => DataType.Number,
-			"Byte[]" => DataType.Blob,
-			_ => throw new DataLoaderException($"Invalid data type {s}"),
-		};
-	}
-	public static Object SqlDataTypeDefault(this SqlDataType s)
-	{
-		return s switch
-		{
-			SqlDataType.Decimal => (Decimal)0,
-			SqlDataType.Currency => (Decimal)0,
-			SqlDataType.Float => (Double)0,
-			SqlDataType.Bigint => (Int64)0,
-			SqlDataType.Int => (Int32)0,
-			_ => throw new DataLoaderException($"SqlDataType not supported 's'")
-		}; 
-	}
-
-	public static SqlDataType SqlTypeName2SqlDataType(this String s)
-	{
-		return s switch
-		{
-			"datetime" or "datetime2" or "smalldatetime" or "datetimeoffset" => SqlDataType.DateTime,
-			"date" => SqlDataType.Date,
-			"time" => SqlDataType.Time,
-			"nvarchar" or "varchar" or "nchar" or "char" or "text" or "ntext" => SqlDataType.String,
-			"bit" => SqlDataType.Bit,
-			"int" or "smallint" or "tinyint" => SqlDataType.Int,
-			"bigint" => SqlDataType.Bigint,
-			"float" or "real" => SqlDataType.Float,
-			"numeric" => SqlDataType.Numeric,
-			"decimal" => SqlDataType.Decimal,
-			"money" or "smallmoney" => SqlDataType.Currency,
-			"binary" or "varbinary" or "image" => SqlDataType.Binary,
-			"uniqueidentifier" => SqlDataType.Guid,
-			_ => SqlDataType.Unknown,
-		};
-	}
-
-	public static FieldType TypeName2FieldType(this String s)
-	{
-		return s switch
-		{
-			"Object" or "LazyObject" or "MainObject" => FieldType.Object,
-			"MapObject" => FieldType.MapObject,
-			"Array" or "LazyArray" => FieldType.Array,
-			"Map" => FieldType.Map,
-			"Tree" => FieldType.Tree,
-			// for tree element
-			"Items" => FieldType.Array,
-			"Group" => FieldType.Group,
-			"CrossArray" => FieldType.CrossArray,
-			"CrossObject" => FieldType.CrossObject,
-			"Json" => FieldType.Json,
-			"Lookup" => FieldType.Lookup,
-			_ => FieldType.Scalar,
-		};
-	}
-
-	public static SpecType TypeName2SpecType(this String s)
-	{
-		if (Enum.TryParse<SpecType>(s, out SpecType st))
-			return st;
-		return SpecType.Unknown;
-	}
-
 	public static Boolean IsIdIsNull(Object? id)
 	{
 		if (id == null)
@@ -112,56 +36,6 @@ public static class DataHelpers
 		return true;
 	}
 
-	public static void AddToArray(this ExpandoObject eo, String key, ExpandoObject? value)
-	{
-		var d = eo as IDictionary<String, Object?>;
-		List<ExpandoObject>? arr;
-		if (!d.TryGetValue(key, out Object? objArr))
-		{
-			arr = [];
-			d.Add(key, arr);
-		}
-		else
-		{
-			if (objArr is not List<ExpandoObject> eobjArr)
-				throw new InvalidProgramException("AddToArray. Invalid element type");
-			arr = eobjArr;
-		}
-		if (value != null)
-			arr?.Add(value);
-	}
-
-	public static ExpandoObject CreateOrAddObject(this ExpandoObject eo, String key)
-	{
-		var d = eo as IDictionary<String, Object>;
-		if (d.TryGetValue(key, out Object? value))
-			return (ExpandoObject)value;
-		var neweo = new ExpandoObject();
-		d.Add(key, neweo);
-		return neweo;
-	}
-
-	public static void AddToMap(this ExpandoObject eo, String key, ExpandoObject value, String keyProp)
-	{
-		var d = eo as IDictionary<String, Object?>;
-		if (!d.TryGetValue(key, out _))
-			d.Add(key, new ExpandoObject());
-		if (d[key] is ExpandoObject expVal)
-			expVal.Set(keyProp, value);
-	}
-
-
-	public static void AddToCross(this ExpandoObject eo, String key, ExpandoObject value, String keyProp)
-	{
-		var d = eo as IDictionary<String, Object?>;
-		ExpandoObject? val = d[key] as ExpandoObject;
-		if (val == null)
-		{
-			val = [];
-			eo.Set(key, val);
-		}
-		val.Set(keyProp, value);
-	}
 
 	public static void CopyFrom(this ExpandoObject target, ExpandoObject? source)
 	{
@@ -189,7 +63,6 @@ public static class DataHelpers
 		}
 	}
 
-
 	public static IDictionary<String, Object?> GetOrCreate(this IDictionary<String, Object?> dict, String key)
 	{
 		if (dict.TryGetValue(key, out Object? obj))
@@ -197,21 +70,6 @@ public static class DataHelpers
 		obj = new ExpandoObject();
 		dict.Add(key, obj);
 		return (obj as IDictionary<String, Object?>)!;
-	}
-
-	public static Boolean SqlToBoolean(Object dataVal)
-	{
-		if (dataVal == null)
-			return false;
-		if (dataVal == DBNull.Value)
-			return false;
-		return dataVal switch
-		{
-			Boolean boolVal => boolVal,
-			Int32 int32val => int32val != 0,
-			Int16 int16val => int16val != 0,
-			_ => throw new DataLoaderException($"Could not convert {dataVal.GetType()} to Boolean"),
-		};
 	}
 
 	private static readonly JsonSerializerSettings JsonIsoDateSettings =

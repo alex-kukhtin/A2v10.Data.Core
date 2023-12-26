@@ -118,7 +118,7 @@ internal class DynamicGroupItem
 				{
 					var elem = new ExpandoObject() { { crossItem.KeyName, key } };
 					foreach (var f in md.Fields.Where(f => f.Key != crossItem.KeyName))
-						elem.Add(f.Key, DataHelpers.SqlDataTypeDefault(f.Value.SqlDataType));
+						elem.Add(f.Key, InternalHelpers.SqlDataTypeDefault(f.Value.SqlDataType));
 					targetCross.Add(elem);
 				}
 				_data.Set(crossItem.TargetProp, targetCross);

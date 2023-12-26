@@ -19,12 +19,16 @@ public enum FieldType
 	Array,
 	Map,
 	Tree,
+	Sheet,
 	Group,
 	MapObject,
 	Json,
 	CrossArray,
 	CrossObject,
-	Lookup
+	Lookup,
+	Rows,
+	Columns,
+	Cells
 }
 
 public enum SpecType
@@ -54,7 +58,9 @@ public enum SpecType
 	HasRows,
 	Json,
 	Utc,
-	Token
+	Token,
+	Index,
+	ColumnId
 }
 
 public class FieldMetadata : IDataFieldMetadata
@@ -71,17 +77,14 @@ public class FieldMetadata : IDataFieldMetadata
 
 	public Boolean IsRefId { get; private set; }
 
-    public Boolean IsArrayLike
-	{
-		get
-		{
-			return
+    public Boolean IsArrayLike =>
 				ItemType == FieldType.Object ||
 				ItemType == FieldType.Array ||
 				ItemType == FieldType.Map ||
+				ItemType == FieldType.Sheet ||
+				ItemType == FieldType.Rows ||
+				ItemType == FieldType.Columns ||
 				ItemType == FieldType.Lookup;
-		}
-	}
 
 	public FieldMetadata(Int32 index, FieldInfo fi, DataType type, SqlDataType sqlDataType, Int32 length)
 	{
@@ -118,6 +121,7 @@ public class FieldMetadata : IDataFieldMetadata
 			case FieldType.Object:
 			case FieldType.CrossObject:
 			case FieldType.Group:
+			case FieldType.Sheet:
 				return RefObject;
 			case FieldType.MapObject:
 			case FieldType.Lookup:

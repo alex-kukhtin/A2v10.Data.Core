@@ -35,9 +35,9 @@ public struct FieldInfo
 		}
 		if (x.Length > 2)
 		{
-			FieldType = DataHelpers.TypeName2FieldType(x[2]);
+			FieldType = InternalHelpers.TypeName2FieldType(x[2]);
 			if (FieldType == FieldType.Scalar || FieldType == FieldType.Array || FieldType == FieldType.Json)
-				SpecType = DataHelpers.TypeName2SpecType(x[2]);
+				SpecType = InternalHelpers.TypeName2SpecType(x[2]);
 			IsLazy = x[2].Contains("Lazy");
 			IsMain = x[2].Contains("Main");
 		}
@@ -124,7 +124,11 @@ public struct FieldInfo
 	public readonly Boolean IsObject => FieldType == FieldType.Object;
 	public readonly Boolean IsMap => FieldType == FieldType.Map;
 	public readonly Boolean IsMapObject => FieldType == FieldType.MapObject;
+	public readonly Boolean IsSheet => FieldType == FieldType.Sheet;
 	public readonly Boolean IsTree => FieldType == FieldType.Tree;
+	public readonly Boolean IsRows => FieldType == FieldType.Rows;
+	public readonly Boolean IsColumns => FieldType == FieldType.Columns;
+	public readonly Boolean IsCells => FieldType == FieldType.Cells;
 	public readonly Boolean IsGroup => FieldType == FieldType.Group;
 	public readonly Boolean IsCrossArray => FieldType == FieldType.CrossArray;
 	public readonly Boolean IsCrossObject => FieldType == FieldType.CrossObject;
@@ -135,8 +139,10 @@ public struct FieldInfo
 	public readonly Boolean IsNestedType => IsRefId || IsArray || IsCrossArray || IsCrossObject || IsTree;
 	public readonly Boolean IsRefId => SpecType == SpecType.RefId;
 	public readonly Boolean IsParentId => SpecType == SpecType.ParentId;
+	public readonly Boolean IsColumnId => SpecType == SpecType.ColumnId;
 	public readonly Boolean IsId => SpecType == SpecType.Id;
 	public readonly Boolean IsKey => SpecType == SpecType.Key;
+	public readonly Boolean IsIndex => SpecType == SpecType.Index;
 	public readonly Boolean IsToken => SpecType == SpecType.Token;
 	public readonly Boolean IsRowCount => SpecType == SpecType.RowCount;
 	public readonly Boolean IsItems => SpecType == SpecType.Items;
