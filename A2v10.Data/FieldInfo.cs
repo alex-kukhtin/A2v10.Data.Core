@@ -134,8 +134,7 @@ public struct FieldInfo
 	public readonly Boolean IsCrossObject => FieldType == FieldType.CrossObject;
 	public readonly Boolean IsCross => IsCrossArray || IsCrossObject;
 	public readonly Boolean IsLookup => FieldType == FieldType.Lookup;
-
-	public readonly Boolean IsObjectLike => IsArray || IsObject || IsTree || IsGroup || IsMap || IsMapObject || IsCrossArray || IsCrossObject || IsLookup;
+	public readonly Boolean IsObjectLike => IsArray || IsObject || IsTree || IsGroup || IsMap || IsMapObject || IsCrossArray || IsCrossObject || IsLookup || IsSheet;
 	public readonly Boolean IsNestedType => IsRefId || IsArray || IsCrossArray || IsCrossObject || IsTree;
 	public readonly Boolean IsRefId => SpecType == SpecType.RefId;
 	public readonly Boolean IsParentId => SpecType == SpecType.ParentId;

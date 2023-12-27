@@ -541,7 +541,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			mainElement = objectDef;
 			rootMetadata.MainObject = objectDef.PropertyName;
 		}
-		if (objectDef.IsArray || objectDef.IsTree || objectDef.IsMap || objectDef.IsLookup || objectDef.IsRows || objectDef.IsColumns)
+		if (objectDef.IsArray || objectDef.IsTree || objectDef.IsMap || objectDef.IsLookup || objectDef.IsRows || objectDef.IsColumns || objectDef.IsCells)
 			typeMetadata.IsArrayType = true;
 		if (objectDef.IsGroup)
 			typeMetadata.IsGroup = true;

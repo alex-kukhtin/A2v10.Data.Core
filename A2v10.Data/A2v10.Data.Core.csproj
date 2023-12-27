@@ -4,7 +4,7 @@
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<LangVersion>Latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>10.1.7344</Version>
+		<Version>10.1.7345</Version>
 		<AssemblyVersion>10.1.7344</AssemblyVersion>
 		<Product>A2v10</Product>
 		<Authors>Oleksandr Kukthin</Authors>

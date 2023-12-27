@@ -81,9 +81,9 @@ public class FieldMetadata : IDataFieldMetadata
 				ItemType == FieldType.Object ||
 				ItemType == FieldType.Array ||
 				ItemType == FieldType.Map ||
-				ItemType == FieldType.Sheet ||
 				ItemType == FieldType.Rows ||
 				ItemType == FieldType.Columns ||
+				ItemType == FieldType.Cells ||
 				ItemType == FieldType.Lookup;
 
 	public FieldMetadata(Int32 index, FieldInfo fi, DataType type, SqlDataType sqlDataType, Int32 length)
@@ -94,9 +94,9 @@ public class FieldMetadata : IDataFieldMetadata
 		Length = length;
 		IsLazy = fi.IsLazy;
 		ItemType = FieldType.Scalar;
-            RefObject = String.Empty;
+        RefObject = String.Empty;
 
-            if (fi.IsObjectLike)
+        if (fi.IsObjectLike)
 		{
 			ItemType = fi.FieldType;
 			RefObject = fi.TypeName;
@@ -117,6 +117,9 @@ public class FieldMetadata : IDataFieldMetadata
 			case FieldType.Tree:
 			case FieldType.Map:
 			case FieldType.CrossArray:
+			case FieldType.Rows:
+			case FieldType.Columns:
+			case FieldType.Cells:	
 				return RefObject + "Array";
 			case FieldType.Object:
 			case FieldType.CrossObject:
@@ -153,7 +156,7 @@ public class FieldMetadata : IDataFieldMetadata
 			FieldType.Map or
 			FieldType.MapObject or
 			FieldType.Lookup => RefObject + "[]",
-			FieldType.Object or
+			FieldType.Object or FieldType.Sheet or	
 			FieldType.Group => RefObject,
 			_ => DataType.ToString(),
 		};
