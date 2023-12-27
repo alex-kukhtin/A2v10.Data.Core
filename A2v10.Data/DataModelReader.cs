@@ -1,6 +1,5 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-using System.ComponentModel.Design;
 using System.Data;
 using Newtonsoft.Json;
 
@@ -448,10 +447,6 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 						throw new DataLoaderException("CrossArray or CrossObject: dataVal, keyName or key are null");
 					AddRecordToCross(fi.TypeName, dataVal, currentRecord, key, keyName, rootFI);
 				}
-				else if (rootFI.IsCells)
-				{
-					// Add row to cells
-				}
 			}
 		}
 		if (bAddMap)
@@ -833,7 +828,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		}
 		else if (field.IsTree)
 			_root.AddToArray(field.PropertyName, currentRecord);
-		else if (field.IsObject)
+		else if (field.IsObject || field.IsSheet)
 			_root.Add(field.PropertyName, currentRecord);
 		else if (field.IsLookup)
 		{

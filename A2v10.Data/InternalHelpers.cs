@@ -158,7 +158,7 @@ internal static class InternalHelpers
 			return;
 		var int32Index = columnKey.ColumnKey2Index() - 1;
 		while ((arr.Count - 1) < int32Index)
-			arr.Add(new ExpandoObject());
+			arr.Add([]);
 		arr[int32Index] = value;
 	}
 
