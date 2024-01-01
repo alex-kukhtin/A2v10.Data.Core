@@ -1,10 +1,10 @@
-﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Text.RegularExpressions;
 
 namespace A2v10.Data;
 
-public struct FieldInfo
+public partial struct FieldInfo
 {
 	public String PropertyName { get; private set; }
 	public String TypeName { get; }
@@ -82,13 +82,20 @@ public struct FieldInfo
 		}
 	}
 
-	static readonly Regex _ider = new(@"^[a-z_\$][a-z0-9_\$]*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+	const String PATTERN = @"^[a-z_\$][a-z0-9_\$]*$";
+#if NET7_0_OR_GREATER
+	[GeneratedRegex(PATTERN, RegexOptions.Singleline | RegexOptions.IgnoreCase, "en-US")]
+	private static partial Regex IderRegex();
+#else
+	private static Regex IDERREGEX => new(PATTERN, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase );
+	private static Regex IderRegex() => IDERREGEX;
+#endif
 
 	public readonly void CheckTypeName()
 	{
 		if (String.IsNullOrEmpty(TypeName))
 			return;
-		if (!_ider.IsMatch(TypeName))
+		if (!IderRegex().IsMatch(TypeName))
 			throw new DataLoaderException($"TypeName '{TypeName}' must be an identifier");
 	}
 
