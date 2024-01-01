@@ -1,14 +1,19 @@
-﻿// Copyright © 2015-2023 Oleksandr  Kukhtin. All rights reserved.
-
-using A2v10.Data.DynamicExpression;
+﻿// Copyright © 2015-2024 Oleksandr  Kukhtin. All rights reserved.
 
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
+using System.Text;
+using System.Linq;
+
+using Newtonsoft.Json;
+
+using A2v10.Data.DynamicExpression;
 
 namespace A2v10.Data;
 
 [DataContract]
-public class DynamicDataModel(IDictionary<String, IDataMetadata> metadata, ExpandoObject root, ExpandoObject? system) : IDataModel
+public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadata, ExpandoObject root, ExpandoObject? system) : IDataModel
 {
 
     #region IDataModel
@@ -64,6 +69,44 @@ public class DynamicDataModel(IDictionary<String, IDataMetadata> metadata, Expan
 		if (tp.IsNullableType())
 			tp = Nullable.GetUnderlyingType(tp);
 		return (T)Convert.ChangeType(result, tp!);
+	}
+
+	const String RESOLVE_PATTERN = "\\{\\{(.+?)\\}\\}";
+#if NET7_0_OR_GREATER
+	[GeneratedRegex(RESOLVE_PATTERN, RegexOptions.None, "en-US")]
+	private static partial Regex ResolveRegex();
+#else
+	private static Regex RESOLVEREGEX => new(RESOLVE_PATTERN, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase );
+	private static Regex ResolveRegex() => RESOLVEREGEX;
+#endif
+
+	public String? Resolve(String? source)
+	{
+		if (source == null)
+			return source;
+		if (String.IsNullOrEmpty(source))
+			return source;
+		if (!source.Contains("{{"))
+			return source;
+		var ms = ResolveRegex().Matches(source);
+		if (ms.Count == 0)
+			return source;
+		var sb = new StringBuilder(source);
+		foreach (Match m in ms.Cast<Match>())
+		{
+			String key = m.Groups[1].Value;
+			var valObj = Eval<Object>(key);
+			if (ms.Count == 1 && m.Groups[0].Value == source)
+				return valObj?.ToString() ?? String.Empty; // single element
+			if (valObj is String valStr)
+				sb.Replace(m.Value, valStr);
+			else if (valObj is ExpandoObject valEo)
+				sb.Replace(m.Value, JsonConvert.SerializeObject(valEo));
+			else
+				sb.Replace(m.Value, valObj?.ToString());
+
+		}
+		return sb.ToString();
 	}
 
 	public String CreateScript(IDataScripter scripter)

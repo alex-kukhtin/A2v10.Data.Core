@@ -1,9 +1,9 @@
-﻿// Copyright © 2015-2023 Oleksandr  Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr  Kukhtin. All rights reserved.
 
 using System.Text.RegularExpressions;
 
 namespace A2v10.Data;
-public static class DynamicExtensions
+public static partial class DynamicExtensions
 {
 	public static T? Get<T>(this ExpandoObject obj, String name)
 	{
@@ -106,10 +106,20 @@ public static class DynamicExtensions
 		return fallback;
 	}
 
+
+	const String PATTERN = @"(\w+)\[(\d+)\]{1}";
+#if NET7_0_OR_GREATER
+	[GeneratedRegex(PATTERN, RegexOptions.None, "en-US")]
+	private static partial Regex EvalRegex();
+#else
+	private static Regex EVALREGEX => new(PATTERN, RegexOptions.Compiled);
+	private static Regex EvalRegex() => EVALREGEX;
+#endif
+
 	private static Object? EvalExpression(this ExpandoObject root, String expression, Boolean throwIfError = false)
 	{
 		Object currentContext = root;
-		var arrRegEx = @"(\w+)\[(\d+)\]{1}";
+
 		foreach (var exp in expression.Split('.'))
 		{
 			if (currentContext == null)
@@ -118,7 +128,7 @@ public static class DynamicExtensions
 			var d = currentContext as IDictionary<String, Object>;
 			if (prop.Contains('['))
 			{
-				var match = Regex.Match(prop, arrRegEx);
+				var match = EvalRegex().Match(prop);
 				prop = match.Groups[1].Value;
 				if ((d != null) && d.TryGetValue(prop, out var value))
 				{

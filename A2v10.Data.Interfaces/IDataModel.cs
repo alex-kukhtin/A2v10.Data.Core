@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2018 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data.Interfaces;
@@ -48,6 +48,7 @@ public interface IDataModel
 
 	T? CalcExpression<T>(String expression);
 	T? CalcExpression<T>(ExpandoObject root, String expression);
+	String? Resolve(String? source);
 
 	void Merge(IDataModel src);
 
