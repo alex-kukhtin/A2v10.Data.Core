@@ -11,7 +11,7 @@ public class ExternalDataContext : IExternalDataProvider
 {
 	#region IExternalDataProvider
 
-	public IExternalDataReader GetReader(String format, Encoding enc, String fileName)
+	public IExternalDataReader GetReader(String format, Encoding? enc, String? fileName)
 	{
 		if (format == null)
 			format = "auto";
@@ -19,6 +19,8 @@ public class ExternalDataContext : IExternalDataProvider
 			format = format.ToLowerInvariant();
 		if (format == "auto")
 		{
+			if (fileName == null)
+				throw new InvalidOperationException("For 'auto' format, the file name is required");
 			fileName = fileName.ToLowerInvariant();
 			if (fileName.EndsWith(".dbf"))
 				format = "dbf";

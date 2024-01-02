@@ -25,7 +25,7 @@ public class DataFile : IExternalDataFile
 		_encoding = null; // automatic
 	}
 
-	public DataFile(Encoding enc)
+	public DataFile(Encoding? enc)
     {
 		LastModifedDate = DateTime.Today;
 		_encoding = enc;
