@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
 using Newtonsoft.Json;
 
@@ -73,7 +73,7 @@ public static class DataHelpers
 	}
 
 	private static readonly JsonSerializerSettings JsonIsoDateSettings =
-		new() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateTimeZoneHandling = DateTimeZoneHandling.Utc };
+		new() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateTimeZoneHandling = DateTimeZoneHandling.Unspecified };
 	public static Object DateTime2StringWrap(Object val)
 	{
 		if (val is not DateTime)

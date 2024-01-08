@@ -46,7 +46,7 @@ public class CollectionFilters
 
 		var fromDate = dm.Eval<String>("$ModelInfo.Documents.Filter.Period.From")
 			?? throw new InvalidOperationException("Period from is null");	
-		var resDate = DateTime.Parse(fromDate.Replace("\"\\/\"", "")).ToUniversalTime();
+		var resDate = DateTime.Parse(fromDate.Replace("\"\\/\"", ""));
 		Assert.AreEqual(resDate, today);
 
         var agent = dm.Eval<ExpandoObject>("$ModelInfo.Documents.Filter.Agent")
