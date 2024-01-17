@@ -1,7 +1,5 @@
 ﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
 
-using System;
-
 namespace A2v10.Data;
 
 internal static class InternalHelpers
@@ -162,7 +160,7 @@ internal static class InternalHelpers
 		arr[int32Index] = value;
 	}
 
-	public static String Index2Col(Int32 index)
+    public static String Index2Col(Int32 index)
 	{
 		Int32 q = index / 26;
 

@@ -16,7 +16,7 @@ internal class IdMapper : Dictionary<Tuple<String, Object?>, ExpandoObject>
 	}
 }
 
-internal class RefMapperItem
+internal record RefMapperItem
 {
 	public IList<ExpandoObject>? List;
 	public ExpandoObject? Source;

@@ -63,9 +63,10 @@ public class SheetTest
 		dt = new DataTester(dm, "Model.Sheet.Rows[2].Cells[2]");
 		dt.AreValueEqual(502L, "Id");
 		dt.AreValueEqual("C3", "Value");
-	}
 
-	[TestMethod]
+    }
+
+    [TestMethod]
 	public async Task LoadSheetModel()
 	{
 		var dm = await _dbContext.LoadModelAsync("", "a2test.[Sheet.ModelRoot.Load]");
@@ -77,7 +78,7 @@ public class SheetTest
 		md.HasAllProperties("TSheet", "Rows,Columns,Id");
 		md.HasAllProperties("TRow", "Id,Index,Cells");
 
-		// var json = JsonConvert.SerializeObject(dm.Root);
+		var json = JsonConvert.SerializeObject(dm.Root);
 
 		var dt = new DataTester(dm, "Sheet.Rows");
 		dt.IsArray(7);
@@ -102,7 +103,7 @@ public class SheetTest
 		dt.AreArrayValueEqual("Column 6", 5, "Name");
 		dt.AreArrayValueEqual(204L, 5, "Id");
 
-		dt = new DataTester(dm, "Sheet.Rows[0].Cells[0]");
+        dt = new DataTester(dm, "Sheet.Rows[0].Cells[0]");
 		dt.AreValueEqual("A1", "Value");
 		dt.AreValueEqual(500L, "Id");
 
@@ -112,5 +113,5 @@ public class SheetTest
 		dt = new DataTester(dm, "Sheet.Rows[2].Cells[2]");
 		dt.AreValueEqual(502L, "Id");
 		dt.AreValueEqual("C3", "Value");
-	}
+    }
 }
