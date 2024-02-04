@@ -77,6 +77,16 @@ public static partial class DynamicExtensions
 	}
 
 
+	public static ExpandoObject EnsureObject(this ExpandoObject obj, String name)
+	{
+		var d = obj as IDictionary<String, Object>;
+		if (d.TryGetValue(name, out var res) && res is ExpandoObject eo)
+			return eo;
+		eo = [];
+		d[name] = eo;
+		return eo;
+	}
+
 	public static void Set(this ExpandoObject obj, String name, Object? value)
 	{
 		if (obj is not IDictionary<String, Object?> d)

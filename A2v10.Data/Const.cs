@@ -1,4 +1,4 @@
-﻿// Copyright © 2022-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2022-2024 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data;
 internal static class Const
@@ -12,7 +12,8 @@ internal static class Const
         internal const String ParentRowNumber = "ParentRowNumber";
 
         internal const String CurrentKey = "CurrentKey";
-        internal const String ParentId = "ParentId";
+		internal const String Prop = "Prop";
+		internal const String ParentId = "ParentId";
         internal const String ParentKey = "ParentKey";
     }
 }

@@ -1,6 +1,6 @@
-﻿-- Copyright © 2008-2023 Oleksandr Kukhtin
+﻿-- Copyright © 2008-2024 Oleksandr Kukhtin
 
-/* 20231226-7343 */
+/* 20240204-7352 */
 
 use a2v10test;
 go
@@ -2266,5 +2266,129 @@ begin
 			[!TColumn.Key!ColumnId] = ColumnId,  /* HACK: "Key" part is using for calculate column index (!) */
 		[Value]
 	from @cells;
+end
+go
+
+------------------------------------------------
+create or alter procedure a2test.[Spreadsheet.Model.Load]
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	--ZZZ999999
+	declare @rows table([Index] int);
+	declare @columns table([Ref] nvarchar(3), [Name] nvarchar(255));
+
+	declare @cells table([Ref] nvarchar(9), [Value] nvarchar(255));
+
+	insert into @rows([Index]) values
+	(1),
+	(3),
+	(5),
+	(7);
+
+	insert into @columns([Ref], [Name]) values
+	(N'A', N'Column 1'),
+	(N'C', N'Column 3'),
+	(N'D', N'Column 4'),
+	(N'F', N'Column 6');
+
+	insert into @cells([Ref], [Value]) values
+	(N'A1', N'A1 value'),
+	(N'C1', N'C1 value'),
+	(N'C3', N'C3 value');
+
+	select [Sheet!TSheet!Object] = null, [Id!!Id] = 7, 
+		[Rows!TRow!Object] = null, [Columns!TColumn!Object] = null, [Cells!TCell!Object] = null;
+
+	select [!TRow!Object] = null, [!!Prop] = [Index], [Index], [!TSheet.Rows!ParentId] = 7
+	from @rows
+	order by [Index];
+
+	select [!TColumn!Object] = null, [!!Prop] = [Ref], [Name!!Name] = [Name], [!TSheet.Columns!ParentId] = 7
+	from @columns
+	order by [Ref];
+
+	select [!TCell!Object] = null, [!!Prop] = Ref, [Value], [!TSheet.Cells!ParentId] = 7
+	from @cells;
+end
+go
+------------------------------------------------
+drop procedure if exists a2test.[Spreadsheet.Model.Metadata];
+drop procedure if exists a2test.[Spreadsheet.Model.Update];
+drop type if exists a2test.[Spreadsheet.Sheet.TableType];
+drop type if exists a2test.[Spreadsheet.Sheet.Row.TableType];
+drop type if exists a2test.[Spreadsheet.Sheet.Column.TableType];
+drop type if exists a2test.[Spreadsheet.Sheet.Cell.TableType];
+go
+------------------------------------------------
+create type a2test.[Spreadsheet.Sheet.TableType] as table 
+(
+	Id int
+);
+go
+------------------------------------------------
+create type a2test.[Spreadsheet.Sheet.Row.TableType] as table
+(
+	ParentId int,
+	[Prop] int,
+	[Index] int
+);
+go
+------------------------------------------------
+create type a2test.[Spreadsheet.Sheet.Column.TableType] as table
+(
+	ParentId int,
+	[Prop] nvarchar(9),
+	[Name] nvarchar(255)
+);
+go
+------------------------------------------------
+create type a2test.[Spreadsheet.Sheet.Cell.TableType] as table
+(
+	ParentId int,
+	[Prop] nvarchar(9),
+	[Value] nvarchar(255)
+);
+go
+------------------------------------------------
+create or alter procedure a2test.[Spreadsheet.Model.Metadata]
+as
+begin
+	set nocount on;
+	declare @Sheet a2test.[Spreadsheet.Sheet.TableType];
+	declare @Rows a2test.[Spreadsheet.Sheet.Row.TableType];
+	declare @Columns a2test.[Spreadsheet.Sheet.Column.TableType];
+	declare @Cells a2test.[Spreadsheet.Sheet.Cell.TableType];
+
+	select [Sheet!Sheet!Metadata] = null, * from @Sheet;
+	select [Rows!Sheet.Rows*!Metadata] = null, * from @Rows;
+	select [Columns!Sheet.Columns*!Metadata] = null, * from @Columns;
+	select [Cells!Sheet.Cells*!Metadata] = null, * from @Cells;
+end
+go
+
+------------------------------------------------
+create or alter procedure a2test.[Spreadsheet.Model.Update]
+@Sheet a2test.[Spreadsheet.Sheet.TableType] readonly,
+@Rows a2test.[Spreadsheet.Sheet.Row.TableType] readonly,
+@Columns a2test.[Spreadsheet.Sheet.Column.TableType] readonly,
+@Cells a2test.[Spreadsheet.Sheet.Cell.TableType] readonly
+as
+begin
+	set nocount on;
+	select [Sheet!TSheet!Object] = null, [Id!!Id] = Id,
+		[Rows!TRow!Object] = null, [Columns!TColumn!Object] = null, [Cells!TCell!Object] = null
+	from @Sheet;
+
+	select [!TRow!Object] = null, [!!Prop] = [Prop], [Index], [!TSheet.Rows!ParentId] = ParentId
+	from @Rows;
+
+	select [!TColumn!Object] = null, [!!Prop] = [Prop], [Name!!Name] = [Name], [!TSheet.Columns!ParentId] = ParentId
+	from @Columns;
+
+	select [!TCell!Object] = null, [!!Prop] = Prop, [Value], [!TSheet.Cells!ParentId] = ParentId
+	from @Cells;
 end
 go

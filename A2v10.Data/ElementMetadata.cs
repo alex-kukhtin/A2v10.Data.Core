@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
@@ -13,6 +13,7 @@ public class ElementMetadata : IDataMetadata
 	public Int32 IdIndex { get; private set; } = -1;
 	public Int32 ParentIdIndex { get; private set; } = -1;	
 	public String? Key { get; private set; }
+	public String? Prop { get; private set; }
 	public String? Name { get; private set; }
 	public String? RowNumber { get; private set; }
 	public String? HasChildren { get; private set; }
@@ -61,6 +62,9 @@ public class ElementMetadata : IDataMetadata
 				break;
 			case SpecType.Key:
 				Key = field.PropertyName;
+				break;
+			case SpecType.Prop:
+				Prop = field.PropertyName;
 				break;
 			case SpecType.Name:
 				Name = field.PropertyName;

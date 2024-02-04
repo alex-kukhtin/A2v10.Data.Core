@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using Newtonsoft.Json;
@@ -271,9 +271,11 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		Boolean bAddRow = false;
 		Boolean bAddColumn = false;
 		Boolean bAddCell = false;
+		Boolean bAddProp = false;
 		Object? id = null;
 		Object? key = null;
 		String? keyName = null;
+		Object? propVal = null;
 		Object? index = null;
 		String? indexName = null;
 		Object? column = null;
@@ -349,6 +351,11 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 				keyName = fi.PropertyName;
 				key = dataVal;
 			}
+			else if (fi.IsProp)
+			{
+				propVal = dataVal;
+				bAddProp = true;
+			}
 			else if (fi.IsIndex)
 			{
 				indexName = fi.PropertyName;
@@ -393,10 +400,22 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 				}
 				else if (rootFI.IsObject || rootFI.IsSheet)
 				{
-					// nested object
-					if (dataVal == null)
-						throw new DataLoaderException("NestedObject: dataVal is null");
-					AddObjectToRecord(fi.TypeName, dataVal, currentRecord);
+					if (bAddProp)
+					{
+						// nested object
+						if (dataVal == null)
+							throw new DataLoaderException("NestedObject: dataVal is null");
+						if (propVal == null)
+							throw new DataLoaderException("NestedObject: propVal is null");
+						AddObjectToRecordProperty(fi.TypeName, dataVal, propVal.ToString()!, currentRecord);
+					}
+					else
+					{
+						// nested object
+						if (dataVal == null)
+							throw new DataLoaderException("NestedObject: dataVal is null");
+						AddObjectToRecord(fi.TypeName, dataVal, currentRecord);
+					}
 					if (!rootFI.IsVisible)
 						bAdded = true;
 				}
@@ -817,6 +836,20 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
 		mapObj.Set(pxa[1], currentRecord);
 		_refMap.Correct(key);
+	}
+
+	void AddObjectToRecordProperty(String propName, Object id, String prop, ExpandoObject currentRecord)
+	{
+		var pxa = propName.Split('.'); // <Type>.PropName
+		if (pxa.Length != 2)
+			throw new DataLoaderException($"Invalid field name '{propName}' for array. 'TypeName.PropertyName' expected");
+		/*0-key, 1-Property*/
+		var key = Tuple.Create<String, Object?>(pxa[0], id);
+		if (!_idMap.TryGetValue(key, out ExpandoObject? mapObj))
+			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
+		// ensure object
+		var resObj = mapObj.EnsureObject(pxa[1]);
+		resObj.Set(prop, currentRecord);
 	}
 
 	void AddRecordToModel(ExpandoObject currentRecord, FieldInfo field, Object? id, Object? key)

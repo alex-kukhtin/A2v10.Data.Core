@@ -207,6 +207,8 @@ internal class DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmpty
 							{
 								var mapItem = (v as ExpandoObject)!;
 								mapItem.Set(Const.Fileds.CurrentKey, k);
+								mapItem.Set(Const.Fileds.Prop, k);
+								mapItem.SetNotNull(Const.Fileds.ParentId, currentId);
 								if (parentIndex != null)
 									mapItem.Set(Const.Fileds.ParentRowNumber, parentIndex.Value + 1);
 								mapItem.SetNotNull(Const.Fileds.ParentGuid, parentGuid);

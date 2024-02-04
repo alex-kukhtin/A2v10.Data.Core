@@ -148,6 +148,7 @@ public partial struct FieldInfo
 	public readonly Boolean IsColumnId => SpecType == SpecType.ColumnId;
 	public readonly Boolean IsId => SpecType == SpecType.Id;
 	public readonly Boolean IsKey => SpecType == SpecType.Key;
+	public readonly Boolean IsProp => SpecType == SpecType.Prop;
 	public readonly Boolean IsIndex => SpecType == SpecType.Index;
 	public readonly Boolean IsToken => SpecType == SpecType.Token;
 	public readonly Boolean IsRowCount => SpecType == SpecType.RowCount;
