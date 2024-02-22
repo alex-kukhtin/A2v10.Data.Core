@@ -78,7 +78,7 @@ public class SheetTest
 		md.HasAllProperties("TSheet", "Rows,Columns,Id");
 		md.HasAllProperties("TRow", "Id,Index,Cells");
 
-		var json = JsonConvert.SerializeObject(dm.Root);
+		//var json = JsonConvert.SerializeObject(dm.Root);
 
 		var dt = new DataTester(dm, "Sheet.Rows");
 		dt.IsArray(7);
