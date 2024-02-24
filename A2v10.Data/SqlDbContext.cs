@@ -1,6 +1,7 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
@@ -391,7 +392,25 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
         return modelReader.DataModel;
     }
 
-    public void SaveList<T>(String? source, String command, System.Object? prms, IEnumerable<T> list) where T : class
+	public async Task<IDataModel> LoadModelSqlAsync(String? source, String sqlString, Action<DbParameterCollection> onSetParams)
+	{
+		var modelReader = new DataModelReader(_localizer, _tokenProvider);
+		using var token = _profiler.Start("SQL text");
+		await ReadDataSqlAsync(source, sqlString,
+			onSetParams.Invoke,
+			(no, rdr) =>
+			{
+				modelReader.ProcessOneRecord(rdr);
+			},
+			(no, rdr) =>
+			{
+				modelReader.ProcessOneMetadata(rdr);
+			});
+		modelReader.PostProcess();
+		return modelReader.DataModel;
+	}
+
+	public void SaveList<T>(String? source, String command, System.Object? prms, IEnumerable<T> list) where T : class
 	{
 		using var token = _profiler.Start(command);
 		using var cnn = GetConnection(source);

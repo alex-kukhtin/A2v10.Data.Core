@@ -1,6 +1,7 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace A2v10.Data.Interfaces;
@@ -16,8 +17,9 @@ public interface IDbContext
 
     IDataModel LoadModelSql(String? source, String sqlString, Object? prms = null);
     Task<IDataModel> LoadModelSqlAsync(String? source, String sqlString, Object? prms = null);
+	Task<IDataModel> LoadModelSqlAsync(String? source, String sqlString, Action<DbParameterCollection> onSetParams);
 
-    IDataModel SaveModel(String? source, String command, ExpandoObject data, Object? prms = null, Int32 commandTimeout = 0);
+	IDataModel SaveModel(String? source, String command, ExpandoObject data, Object? prms = null, Int32 commandTimeout = 0);
 	Task<IDataModel> SaveModelAsync(String? source, String command, ExpandoObject data, Object? prms = null, Func<ITableDescription, ExpandoObject>? onSetData = null, Int32 commandTimeout = 0);
 	Task<IDataModel> SaveModelBatchAsync(String? source, String command, ExpandoObject data, Object? prms = null, IEnumerable<BatchProcedure>? batches = null, Int32 commandTimeout = 0);
 
