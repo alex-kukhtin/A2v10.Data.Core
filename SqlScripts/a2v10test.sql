@@ -1112,6 +1112,22 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2test.[CrossModel_Id.Load]
+	@TenantId int = null,
+	@UserId bigint = null
+as
+begin
+	set nocount on;
+	select [RepData!TData!Array] = null, [!!Id] = 10, [S1]=N'S1', N1 = 100, [Cross1!TCross!CrossArray] = null
+	union all
+	select null, 20, N'S2', 200, null;
+
+	select [!TCross!CrossArray] = null, [Key!!Key] = N'K1', Val = 11, [!TData.Cross1!ParentId] = 10
+	union all
+	select null, N'K2', 22, 20;
+end
+go
+------------------------------------------------
 if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'CrossModelMulti.Load')
 	drop procedure a2test.[CrossModelMulti.Load]
 go

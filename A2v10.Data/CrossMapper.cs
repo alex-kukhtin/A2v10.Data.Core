@@ -1,4 +1,4 @@
-﻿// Copyright © 2019-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2019-2024 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data;
 
@@ -15,15 +15,10 @@ internal class CrossItem(String targetProp, Boolean isArray, String crossType, S
 
     public IEnumerable<String> Keys => _keys.Keys;
 
-    public void Add(String propName, ExpandoObject target)
+    public void Add(String propName, ExpandoObject target, Object id)
 	{
-		var id = target.Get<Object>("Id") 
-			?? throw new DataLoaderException("Cross.Add. Id not found");
 		_items.TryAdd(id, target);
-		if (!_keys.ContainsKey(propName))
-		{
-			_keys.Add(propName, _keys.Count);
-		}
+		_keys.TryAdd(propName, _keys.Count);
 	}
 
 	public List<String?> GetCross()
@@ -100,7 +95,7 @@ internal class CrossMapper : Dictionary<String, CrossItem>
 			_parentRecords.Add(key, [record]);
 	}
 
-	public void Add(String key, String targetProp, ExpandoObject target, String propName, String keyName, FieldInfo rootFI)
+	public void Add(String key, String targetProp, ExpandoObject target, String propName, String keyName, FieldInfo rootFI, Object id)
 	{
 		if (!TryGetValue(key, out CrossItem? crossItem))
 		{
@@ -108,7 +103,7 @@ internal class CrossMapper : Dictionary<String, CrossItem>
 			Add(key, crossItem);
 		}
 		// all source elements
-		crossItem.Add(propName, target);
+		crossItem.Add(propName, target, id);
 	}
 
 	public void Transform()

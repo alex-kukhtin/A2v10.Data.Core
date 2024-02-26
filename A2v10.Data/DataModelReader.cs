@@ -729,7 +729,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		if (!_idMap.TryGetValue(key, out ExpandoObject? mapObj))
 			throw new DataLoaderException($"Property '{propName}'. Object {pxa[0]} (Id={id}) not found");
 		mapObj.AddToCross(pxa[1], currentRecord, keyProp.ToString()!);
-		_crossMap.Add(propName, pxa[1], mapObj, keyProp.ToString()!, keyName, rootFI);
+		_crossMap.Add(propName, pxa[1], mapObj, keyProp.ToString()!, keyName, rootFI, id);
 	}
 
 	void AddRecordToArray(String propName, Object id, ExpandoObject currentRecord, String? rootTypeName = null)

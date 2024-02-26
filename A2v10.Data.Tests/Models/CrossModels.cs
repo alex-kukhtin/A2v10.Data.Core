@@ -51,6 +51,37 @@ namespace A2v10.Data.Models
 		}
 
 		[TestMethod]
+		public async Task LoadCrossArray_Id()
+		{
+			var dm = await _dbContext.LoadModelAsync(null, "a2test.[CrossModel_Id.Load]");
+
+			var md = new MetadataTester(dm);
+			md.IsAllKeys("TRoot,TData,TCross");
+			md.HasAllProperties("TRoot", "RepData");
+			md.HasAllProperties("TData", "S1,N1,Cross1");
+			md.HasAllProperties("TCross", "Key,Val");
+			md.IsKey("TCross", "Key");
+			md.IsItemType("TData", "Cross1", FieldType.CrossArray);
+
+			var dt = new DataTester(dm, "RepData");
+			dt.IsArray(2);
+			dt.AreArrayValueEqual("S1", 0, "S1");
+			dt.AreArrayValueEqual("S2", 1, "S1");
+
+			dt = new DataTester(dm, "RepData[0].Cross1");
+			dt.IsArray(2);
+			dt = new DataTester(dm, "RepData[0].Cross1");
+			dt.IsArray(2);
+			dt.AreArrayValueEqual("K1", 0, "Key");
+			dt.AreArrayValueEqual(11, 0, "Val");
+
+			dt = new DataTester(dm, "RepData[1].Cross1");
+			dt.IsArray(2);
+			dt.AreArrayValueEqual("K2", 1, "Key");
+			dt.AreArrayValueEqual(22, 1, "Val");
+		}
+
+		[TestMethod]
 		public async Task LoadCrossArrayMulti()
 		{
 			var dm = await _dbContext.LoadModelAsync(null, "a2test.[CrossModelMulti.Load]");
