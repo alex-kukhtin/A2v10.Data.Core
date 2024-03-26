@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2023 Oleksandr  Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2024 Oleksandr  Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
@@ -18,16 +18,16 @@ internal class IdMapper : Dictionary<Tuple<String, Object?>, ExpandoObject>
 
 internal record RefMapperItem
 {
-	public IList<ExpandoObject>? List;
+	public List<ExpandoObject>? List;
 	public ExpandoObject? Source;
 
 	public RefMapperItem()
 	{
 	}
 
-	public IList<ExpandoObject> AddToList(ExpandoObject eo)
+	public List<ExpandoObject> AddToList(ExpandoObject eo)
 	{
-		List ??= new List<ExpandoObject>();
+		List ??= [];
 		List.Add(eo);
 		return List;
 	}
@@ -80,8 +80,6 @@ internal class RefMapper : Dictionary<Tuple<String, Object?>, RefMapperItem>
 		if (!TryGetValue(key, out RefMapperItem? item))
 			return;
 		if (item == null)
-			return;
-		if (item.List == null)
 			return;
 		if (item.List == null)
 			return;
