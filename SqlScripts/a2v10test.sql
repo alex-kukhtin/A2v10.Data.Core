@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2024 Oleksandr Kukhtin
 
-/* 20240204-7352 */
+/* 20240204-7358 */
 
 use a2v10test;
 go
@@ -2406,5 +2406,13 @@ begin
 
 	select [!TCell!Object] = null, [!!Prop] = Prop, [Value], [!TSheet.Cells!ParentId] = ParentId
 	from @Cells;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[BlobModel]
+as
+begin
+	set nocount on;
+	select [Company!TCompany!Object] = null, [Stream] = CRYPT_GEN_RANDOM(2048);
 end
 go

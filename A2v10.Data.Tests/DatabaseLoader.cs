@@ -14,7 +14,7 @@ public class LoadList
 	private readonly IDbContext _dbContext;
 
 	public LoadList()
-    {
+	{
 		_dbContext = Starter.Create();
 	}
 	[TestInitialize]
@@ -538,5 +538,18 @@ public class LoadList
 		dt.AreValueEqual("Element 45", "Name");
 		dt.AreValueEqual("Value 45", "Value");
 	}
+
+	[TestMethod]
+	public async Task LoadBlobModel()
+	{
+        IDataModel dm = await _dbContext.LoadModelAsync(null, "a2test.BlobModel");
+        var md = new MetadataTester(dm);
+        md.IsAllKeys("TRoot,TCompany");
+        md.HasAllProperties("TCompany", "Stream");
+
+		var res = dm.Root.Eval<Object>("Company.Stream");
+		Assert.IsTrue(res is Byte[]);
+		Assert.AreEqual(2048, (res as Byte[])!.Length);
+    }
 }
 
