@@ -84,4 +84,20 @@ public class SpreadSheetTest
 
 		AssertSheetModel(res);
 	}
+
+	[TestMethod]
+	public async Task LoadModelWithProps()
+	{
+        var dm = await _dbContext.LoadModelAsync(null, "a2test.[Object.Props.Load]");
+        Assert.IsNotNull(dm);
+        var md = new MetadataTester(dm);
+        //md.IsAllKeys("TRoot,TCard,TAttr");
+        md.HasAllProperties("TRoot", "Card");
+        md.HasAllProperties("TCard", "Id,Name,Attrs");
+        md.HasAllProperties("TAttr", "Value");
+
+        var json = JsonConvert.SerializeObject(dm.Root);
+        Assert.IsNotNull(json);
+
+    }
 }

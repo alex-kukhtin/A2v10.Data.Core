@@ -1,6 +1,8 @@
 ﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
 using Newtonsoft.Json;
+using System.Data;
+using System.Globalization;
 
 namespace A2v10.Data;
 public static class DataHelpers
@@ -61,6 +63,18 @@ public static class DataHelpers
 		{
 			dTarget[itm.Key] = itm.Value;
 		}
+	}
+
+	public static Object GetDateParameter(this ExpandoObject? eo, String name)
+	{
+		var val = eo?.Get<Object>(name);
+		if (val == null)
+			return DBNull.Value;
+		if (val is DateTime dt)
+			return dt;
+		else if (val is String strVal)
+			return DateTime.ParseExact(strVal, "yyyyMMdd", CultureInfo.InvariantCulture);
+		throw new InvalidExpressionException($"Invalid Date Parameter value: {val}");
 	}
 
 	public static IDictionary<String, Object?> GetOrCreate(this IDictionary<String, Object?> dict, String key)

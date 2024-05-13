@@ -2416,3 +2416,28 @@ begin
 	select [Company!TCompany!Object] = null, [Stream] = CRYPT_GEN_RANDOM(2048);
 end
 go
+
+------------------------------------------------
+create or alter procedure a2test.[Object.Props.Load]
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+
+	declare @attrs table([Prop] nvarchar(9), [Value] nvarchar(255));
+
+
+	insert into @attrs([Prop], [Value]) values
+	(N'A1', N'A1 value'),
+	(N'C1', N'C1 value'),
+	(N'C3', N'C3 value');
+
+	select [Card!TCard!Object] = null, [Id!!Id] = 7, [Name] = N'CardName',
+		[Attrs!TAttr!MapObject] = null;
+
+	select [!TAttr!MapObject] = null, [!!Key] = Prop, [Value], 
+		[!TCard.Attrs!ParentId] = 7
+	from @attrs;
+end
+go
