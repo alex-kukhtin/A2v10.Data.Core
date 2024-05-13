@@ -1,10 +1,10 @@
 ﻿// Copyright © 2015-2024 Oleksandr  Kukhtin. All rights reserved.
 
+using System.Text;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
-using System.Text;
-using System.Linq;
 
 using Newtonsoft.Json;
 
@@ -213,6 +213,21 @@ public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadat
 		}
 	}
 
+	private static ExpandoObject GetOrCreateCross(ExpandoObject val)
+	{
+		const String crossProp = "$cross";
+		var d = val as IDictionary<String, Object>;
+		if (d.ContainsKey(crossProp))
+		{
+			if (d[crossProp] is ExpandoObject rv)
+				return rv;
+			throw new InvalidOperationException("Cross is not an ExpandoObject");
+		}
+		var c = new ExpandoObject();
+		val.Add(crossProp, c);
+		return c;
+	}
+
 	public void AddRuntimeProperties()
 	{
 		ExpandoObject? rt = null;
@@ -222,8 +237,7 @@ public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadat
 			if (md.HasCross)
 			{
 				rt ??= [];
-				var cross = new ExpandoObject();
-				rt.Add("$cross", cross);
+				var cross = GetOrCreateCross(rt);
 				var xo = new ExpandoObject();
 				if (md.Cross != null)
 				{
