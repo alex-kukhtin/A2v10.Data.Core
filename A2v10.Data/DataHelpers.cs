@@ -1,27 +1,23 @@
 ﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
-using Newtonsoft.Json;
 using System.Data;
 using System.Globalization;
+
+using Newtonsoft.Json;
 
 namespace A2v10.Data;
 public static class DataHelpers
 {
-	public static Boolean IsIdIsNull(Object? id)
-	{
-		if (id == null)
-			return true;
-		var tp = id.GetType();
-		if (tp == typeof(Int64))
-			return (Int64)id == 0;
-		else if (tp == typeof(Int32))
-			return (Int32)id == 0;
-		else if (tp == typeof(Int16))
-			return (Int16)id == 0;
-		else if (tp == typeof(String))
-			return String.IsNullOrEmpty(id.ToString());
-		return false;
-	}
+	public static Boolean IsIdIsNull(Object? id) =>
+		id switch
+		{
+			null => true,
+			Int64 int64 => int64 == 0,
+			Int32 int32 => int32 == 0,
+			Int16 int16 => int16 == 0,
+			String strVal => String.IsNullOrEmpty(strVal),
+			_ => false
+		};
 
 	public static void Add(this ExpandoObject eo, String key, Object? value)
 	{
@@ -37,7 +33,6 @@ public static class DataHelpers
 		d.Add(key, value);
 		return true;
 	}
-
 
 	public static void CopyFrom(this ExpandoObject target, ExpandoObject? source)
 	{
@@ -94,13 +89,15 @@ public static class DataHelpers
 			return val;
 		return $"\"\\/{ JsonConvert.SerializeObject(val, JsonIsoDateSettings)}\\/\"";
 	}
-
-	public static ExpandoObject? DeserializeJson(String? data)
+	public static Object DateTime2StringWrap2(Object val)
 	{
-		if (data == null)
-			return null;
-		return JsonConvert.DeserializeObject<ExpandoObject>(data);
+		if (val is not DateTime)
+			return val;
+		return $"'\\/{JsonConvert.SerializeObject(val, JsonIsoDateSettings)}\\/'";
 	}
+
+	public static ExpandoObject? DeserializeJson(String? data) =>
+		data == null ? null : JsonConvert.DeserializeObject<ExpandoObject>(data);
 }
 
 public class DataHelper : IDataHelper

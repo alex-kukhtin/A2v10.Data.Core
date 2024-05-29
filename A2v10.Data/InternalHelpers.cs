@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data;
 
@@ -53,9 +53,8 @@ internal static class InternalHelpers
 		};
 	}
 
-	public static FieldType TypeName2FieldType(this String s)
-	{
-		return s switch
+	public static FieldType TypeName2FieldType(this String s) =>
+		s switch 
 		{
 			"Object" or "LazyObject" or "MainObject" => FieldType.Object,
 			"MapObject" => FieldType.MapObject,
@@ -75,7 +74,6 @@ internal static class InternalHelpers
 			"Lookup" => FieldType.Lookup,
 			_ => FieldType.Scalar,
 		};
-	}
 
 	public static Boolean SqlToBoolean(Object dataVal)
 	{

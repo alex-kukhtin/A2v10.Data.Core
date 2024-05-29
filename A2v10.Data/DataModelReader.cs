@@ -22,7 +22,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 	private readonly RefMapper _refMap = [];
 	private readonly CrossMapper _crossMap = [];
 	private readonly ExpandoObject _root = [];
-	private readonly IDictionary<String, Object> _sys = new ExpandoObject() as IDictionary<String, Object>;
+	private readonly IDictionary<String, Object?> _sys = new ExpandoObject(); 
 
 	private FieldInfo? mainElement;
     private DynamicDataGrouping? _dynamicGrouping = null;

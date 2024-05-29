@@ -217,9 +217,9 @@ public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadat
 	{
 		const String crossProp = "$cross";
 		var d = val as IDictionary<String, Object>;
-		if (d.ContainsKey(crossProp))
+		if (d.TryGetValue(crossProp, out Object? value))
 		{
-			if (d[crossProp] is ExpandoObject rv)
+			if (value is ExpandoObject rv)
 				return rv;
 			throw new InvalidOperationException("Cross is not an ExpandoObject");
 		}

@@ -16,10 +16,24 @@ public static partial class DynamicExtensions
 		return default;
 	}
 
+	public static IDictionary<String, Object?> Dict(this ExpandoObject eo) => eo;
+	public static T? GetConvert<T>(this ExpandoObject obj, String name)
+	{
+		if (obj.Dict().TryGetValue(name, out Object? result))
+		{
+			if (result == null)
+				return default;
+			if (result is T t)
+				return t;
+			return (T?) Convert.ChangeType(result, typeof(T));
+		}
+		return default;
+	}
+
 	public static T GetOrCreate<T>(this ExpandoObject obj, String name) where T : new()
 	{
 		IDictionary<String, Object?> d = obj;
-		if (d.TryGetValue(name, out Object? result))
+		if (obj.Dict().TryGetValue(name, out Object? result))
 		{
 			if (result is T t)
 				return t;
@@ -57,18 +71,12 @@ public static partial class DynamicExtensions
 
 	public static Boolean IsEmpty(this ExpandoObject obj)
 	{
-		IDictionary<String, Object?> d = obj;
-		if (d.Keys.Count == 0)
+		if (obj.Dict().Keys.Count == 0)
 			return true;
 		return false;
 	}
 
-	public static void RemoveKey(this ExpandoObject obj, String name)
-	{
-		IDictionary<String, Object?> d = obj;
-		if (d.ContainsKey(name))
-			d.Remove(name);
-	}
+	public static void RemoveKey(this ExpandoObject obj, String name) => obj.Dict().Remove(name);
 
 
 	public static ExpandoObject EnsureObject(this ExpandoObject obj, String name)
