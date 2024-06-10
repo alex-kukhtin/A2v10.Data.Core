@@ -19,7 +19,24 @@ internal static class InternalHelpers
 			_ => throw new DataLoaderException($"Invalid data type {s}"),
 		};
 	}
-	public static Object SqlDataTypeDefault(this SqlDataType s)
+
+	public static DataType ToDataType(this SqlDataType s)
+	{
+		return s switch
+		{
+			SqlDataType.Date or SqlDataType.DateTime or SqlDataType.Time => DataType.Date,
+			SqlDataType.String => DataType.String,
+			SqlDataType.Bit => DataType.Boolean,
+			SqlDataType.Int or SqlDataType.Bigint or SqlDataType.Float or SqlDataType.Decimal
+				or SqlDataType.Currency or SqlDataType.Numeric => DataType.Number,
+			SqlDataType.Unknown => DataType.Undefined,
+			SqlDataType.Binary => DataType.Blob,
+			SqlDataType.Guid => DataType.String,
+			_ => throw new DataLoaderException($"ToDataType. Invalid data type {s}"),
+		};
+	}
+
+		public static Object SqlDataTypeDefault(this SqlDataType s)
 	{
 		return s switch
 		{

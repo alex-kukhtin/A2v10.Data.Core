@@ -157,5 +157,43 @@ public class ElementMetadata : IDataMetadata
 		ParentIdTargetType = s[0];
 		ParentIdTargetProp = s[1];
 	}
+
+	// for dynamic
+	public ElementMetadata AddField(String name, String targetType)
+	{
+		var field = new FieldInfo(name, targetType);
+		var fm = new FieldMetadata(_fields.Count, field, DataType.Undefined, SqlDataType.Unknown, 0);
+		_fields.Add(field.PropertyName, fm);
+		return this;
+	}
+	public ElementMetadata AddField(String name, SqlDataType sqlType, Int32 fieldLen = 0)
+	{
+		var field = new FieldInfo(name);
+		var fm = new FieldMetadata(_fields.Count, field, sqlType.ToDataType(), sqlType, fieldLen);
+		_fields.Add(field.PropertyName, fm);
+		return this;
+	}
+
+	public ElementMetadata SetId(String name)
+	{
+		if (!_fields.ContainsKey(name))
+			throw new InvalidOperationException($"Field {name} not found");
+		Id = name;
+		return this;
+	}
+
+	public ElementMetadata SetName(String name)
+	{
+		if (!_fields.ContainsKey(name))
+			throw new InvalidOperationException($"Field {name} not found");
+		Name = name;
+		return this;
+	}
+	public void SetRowNumber(String name)
+	{
+		if (!_fields.ContainsKey(name))
+			throw new InvalidOperationException($"Field {name} not found");
+		RowNumber = name;
+	}
 }
 

@@ -113,7 +113,7 @@ public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadat
 	{
         ArgumentNullException.ThrowIfNull(scripter);	
 		var sys = System as IDictionary<String, Object?>;
-		var meta = Metadata as IDictionary<String, IDataMetadata>;
+		var meta = Metadata;
 		return scripter.CreateScript(DataHelper, sys, meta);
 	}
 
