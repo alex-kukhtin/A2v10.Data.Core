@@ -462,9 +462,10 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 				}
 				else if (rootFI.IsCrossArray || rootFI.IsCrossObject)
 				{
-					if (dataVal == null || key == null || keyName == null)
-						throw new DataLoaderException("CrossArray or CrossObject: dataVal, keyName or key are null");
-					AddRecordToCross(fi.TypeName, dataVal, currentRecord, key, keyName, rootFI);
+					if (key == null || keyName == null)
+						throw new DataLoaderException("CrossArray or CrossObject: keyName or key are null");
+					if (dataVal != null)
+						AddRecordToCross(fi.TypeName, dataVal, currentRecord, key, keyName, rootFI);
 				}
 			}
 		}
