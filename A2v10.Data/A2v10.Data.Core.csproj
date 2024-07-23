@@ -4,8 +4,8 @@
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<LangVersion>Latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>10.1.7368</Version>
-		<AssemblyVersion>10.1.7368</AssemblyVersion>
+		<Version>10.1.7370</Version>
+		<AssemblyVersion>10.1.7370</AssemblyVersion>
 		<Product>A2v10</Product>
 		<Authors>Oleksandr Kukthin</Authors>
 		<Copyright>Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.</Copyright>
@@ -38,11 +38,11 @@
 		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Microsoft.Identity.Client" Version="4.61.3" />
-		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="7.6.3" />
-		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.3" />
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.62.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="8.0.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.61.3" />
+		<PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.62.0" />
 		<PackageReference Include="System.Text.Json" Version="8.0.4" />
 		<PackageReference Include="System.Windows.Extensions" Version="8.0.0" />
 		<PackageReference Include="System.Memory" Version="4.5.5" />
