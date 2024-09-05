@@ -2441,3 +2441,21 @@ begin
 	from @attrs;
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[CsvEmptyFields.Load]
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	declare @table table(F1 nvarchar(255), F2 nvarchar(255), F3 int, F4 int);
+
+	insert into @table(F1, F2, F3, F4) values
+	(null, null, 1, 3),
+	(null, N'2', 4, 6),
+	(N'3', N'4', 7, 8);
+
+	select [Rows!TRow!Array] = null, F1, F2, F3, F4
+	from @table;
+end
+go
