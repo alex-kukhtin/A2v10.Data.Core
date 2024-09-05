@@ -1,14 +1,11 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-using A2v10.Data.Providers.Dbf;
-using A2v10.Data.Tests;
 using A2v10.Data.Tests.Configuration;
-using A2v10.Data.Tests.Providers;
 
 namespace A2v10.Data.Providers;
 
@@ -52,4 +49,26 @@ public class ExternalDbContext
             Assert.AreEqual("S1", row1.Eval<String>("S1"));
         }
     }
+
+
+	[TestMethod]
+	public async Task WriteCsvWithEmptyFields()
+	{
+		var ed = new ExternalDataContext();
+		var dm = await _dbContext.LoadModelAsync(null, "a2test.[CsvEmptyFields.Load]");
+		var writer = ed.GetWriter(dm, "csv", Encoding.GetEncoding(866));
+
+		using (var file = File.Open("testfiles/emptyfields.csv", FileMode.Create))
+		{
+			writer.Write(file);
+		}
+		using (var file = File.Open("testfiles/emptyfields.csv", FileMode.Open))
+		{
+			var rdr = ed.GetReader("auto", Encoding.GetEncoding(866), "testfiles/emptyfields.csv");
+			var eo = rdr.CreateDataModel(file);
+			var rows = eo.Eval<List<Object>>("Rows")
+				?? throw new InvalidCastException();
+			Assert.AreEqual(3, rows.Count);
+		}
+	}
 }

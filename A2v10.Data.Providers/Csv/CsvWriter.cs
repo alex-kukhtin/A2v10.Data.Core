@@ -46,10 +46,11 @@ public class CsvWriter(DataFile file) : IExternalDataWriter
 	String GetRecord(Record record)
 	{
 		var sb = new StringBuilder();
-		foreach (var df in record.DataFields)
+		for (int i = 0; i < record.DataFields.Count; i++)
 		{
-			if (sb.Length > 0)
+			if (i > 0)
 				sb.Append(_file.Delimiter);
+			var df = record.DataFields[i];
 			sb.Append(EscapeString(df?.StringValue));
 		}
 		return sb.ToString();
