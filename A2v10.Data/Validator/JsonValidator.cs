@@ -1,10 +1,9 @@
 ﻿// Copyright © 2015-2023 Oleksandr  Kukhtin. All rights reserved.
 
 using System.IO;
-
 using Newtonsoft.Json;
 
-namespace A2v10.Data.Validator;
+namespace A2v10.Data;
 
 public class JsonValidator
 {

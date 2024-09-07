@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using A2v10.Data.Tests.Configuration;
+using A2v10.Data.Providers;
 
-namespace A2v10.Data.Providers;
+namespace A2v10.Data.Tests.Providers;
 
 [TestClass]
 [TestCategory("Providers")]
