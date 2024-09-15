@@ -3,10 +3,10 @@
 using System.Data;
 using System.Linq;
 using System.Text;
-
 using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
+
 internal record ParameterDef(String ParamName, String ValueName);
 
 internal class BatchCommandBuilder(Boolean allowEmptyStrings)

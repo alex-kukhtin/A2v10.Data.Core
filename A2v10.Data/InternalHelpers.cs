@@ -3,7 +3,7 @@
 
 namespace A2v10.Data;
 
-using A2v10.Data.Extensions;
+using A2v10.Data.Core.Extensions.Dynamic;
 
 internal static class InternalHelpers
 {

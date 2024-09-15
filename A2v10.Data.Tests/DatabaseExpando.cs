@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-using A2v10.Data.Extensions;
-
-
 using A2v10.Data.Tests.Configuration;
 
 namespace A2v10.Data.Tests

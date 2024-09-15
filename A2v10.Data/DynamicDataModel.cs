@@ -11,8 +11,8 @@ using Newtonsoft.Json;
 
 namespace A2v10.Data;
 
-using A2v10.Data.Extensions;
 using A2v10.Data.Dynamic;
+using A2v10.Data.Core.Extensions.Dynamic;
 
 [DataContract]
 public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadata, ExpandoObject root, ExpandoObject? system) : IDataModel
