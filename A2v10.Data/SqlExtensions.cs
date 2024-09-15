@@ -8,6 +8,9 @@ using System.Reflection;
 using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Extensions;
+
 public static class SqlExtensions
 {
 	public static SqlCommand CreateCommandSP(this SqlConnection cnn, String command, Int32 commandTimeout)

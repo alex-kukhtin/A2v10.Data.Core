@@ -8,9 +8,11 @@ using System.Text.RegularExpressions;
 
 using Newtonsoft.Json;
 
-using A2v10.Data.DynamicExpression;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Extensions;
+using A2v10.Data.Dynamic;
 
 [DataContract]
 public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadata, ExpandoObject root, ExpandoObject? system) : IDataModel

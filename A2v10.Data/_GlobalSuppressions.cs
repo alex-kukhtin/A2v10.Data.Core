@@ -6,5 +6,6 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "<Pending>", Scope = "namespaceanddescendants", Target = "~N:A2v10.Data")]
+[assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "<Pending>", Scope = "namespaceanddescendants", Target = "~N:A2v10.Data.Dynamic")]
+[assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "<Pending>", Scope = "namespaceanddescendants", Target = "~N:A2v10.Data.Extensions")]
 [assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "<Pending>", Scope = "namespaceanddescendants", Target = "~N:Microsoft.Extensions")]
-[assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "<Pending>", Scope = "namespaceanddescendants", Target = "~N:A2v10.Data.DynamicExpression")]

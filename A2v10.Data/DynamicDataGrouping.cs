@@ -1,9 +1,12 @@
-﻿// Copyright © 2022-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2022-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Linq;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Extensions;
+
 
 internal class KeyComparer : IEqualityComparer<Object>
 {

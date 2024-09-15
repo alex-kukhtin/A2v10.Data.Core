@@ -1,9 +1,8 @@
 ﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
+using A2v10.Data.Dynamic;
 using System.Dynamic;
 using System.Linq.Expressions;
-
-using A2v10.Data.DynamicExpression;
 
 /*TODO:
  * test invalid cases

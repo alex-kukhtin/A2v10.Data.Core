@@ -5,6 +5,9 @@ using System.IO;
 using System.Reflection;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Extensions;
+
 public abstract class LoadHelperBase<T> where T : class
 {
 	private readonly Type _type;

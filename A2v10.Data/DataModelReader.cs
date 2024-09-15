@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 
 namespace A2v10.Data;
 
+using A2v10.Data.Extensions;
+
 internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenProvider = null)
 {
 

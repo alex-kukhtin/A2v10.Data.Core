@@ -2,7 +2,7 @@
 
 using System.Globalization;
 
-namespace A2v10.Data.DynamicExpression;
+namespace A2v10.Data.Dynamic;
 public static class DynamicRuntimeHelper
 {
 	public static Decimal Object2Number(Object elem)

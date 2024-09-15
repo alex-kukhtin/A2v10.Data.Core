@@ -1,15 +1,13 @@
 ﻿// Copyright © 2021 Oleksandr Kukhtin. All rights reserved.
 
-using System;
 using System.Dynamic;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-using A2v10.Data.Interfaces;
+using A2v10.Data.Extensions;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using A2v10.Data.Tests.Configuration;
 

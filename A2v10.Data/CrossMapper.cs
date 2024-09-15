@@ -1,6 +1,9 @@
 ﻿// Copyright © 2019-2024 Oleksandr Kukhtin. All rights reserved.
 
+
 namespace A2v10.Data;
+
+using A2v10.Data.Extensions;
 
 internal class CrossItem(String targetProp, Boolean isArray, String crossType, String keyName)
 {

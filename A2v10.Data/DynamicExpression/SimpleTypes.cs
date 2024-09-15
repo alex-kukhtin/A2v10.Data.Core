@@ -1,7 +1,7 @@
 ﻿// Copyright © 2015-2023 Oleksandr  Kukhtin. All rights reserved.
 
 
-namespace A2v10.Data.DynamicExpression;
+namespace A2v10.Data.Dynamic;
 public struct NaN
 {
 	public static NaN Value => new();

@@ -5,7 +5,7 @@ using System.Data;
 
 using Microsoft.Data.SqlClient;
 
-namespace A2v10.Data;
+namespace A2v10.Data.Core.Extensions;
 
 public static class DbParamsExtension
 {

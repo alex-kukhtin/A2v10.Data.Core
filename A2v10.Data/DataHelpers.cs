@@ -5,7 +5,7 @@ using System.Globalization;
 
 using Newtonsoft.Json;
 
-namespace A2v10.Data;
+namespace A2v10.Data.Extensions;
 public static class DataHelpers
 {
 	public static Boolean IsIdIsNull(Object? id) =>

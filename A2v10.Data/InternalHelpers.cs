@@ -1,6 +1,9 @@
 ﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
+
 namespace A2v10.Data;
+
+using A2v10.Data.Extensions;
 
 internal static class InternalHelpers
 {
