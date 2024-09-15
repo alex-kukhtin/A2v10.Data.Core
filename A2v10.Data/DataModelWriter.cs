@@ -2,12 +2,13 @@
 
 using System.Data;
 using System.Linq;
-
 using Microsoft.Data.SqlClient;
 
 using Newtonsoft.Json;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Core.Extensions.Dynamic;
 
 internal class DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmptyStrings)
 {

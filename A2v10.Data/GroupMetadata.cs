@@ -1,9 +1,12 @@
-﻿// Copyright © 2012-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Linq;
 using System.Text;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Core.Extensions.Dynamic;
+
 public class GroupMetadata
 {
 	List<String>? _fields = null;

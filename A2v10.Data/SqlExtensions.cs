@@ -4,10 +4,11 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-
 using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Core.Extensions.Dynamic;
 
 public static class SqlExtensions
 {

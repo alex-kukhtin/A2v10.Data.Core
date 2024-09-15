@@ -12,6 +12,7 @@ using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 
 namespace A2v10.Data;
+using A2v10.Data.Core.Extensions.Dynamic;
 
 public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDataLocalizer localizer, MetadataCache metadataCache, ITenantManager? tenantManager = null, ITokenProvider? tokenProvider = null) : IDbContext
 {

@@ -3,6 +3,9 @@
 using System.Globalization;
 
 namespace A2v10.Data.Dynamic;
+
+using A2v10.Data.Core.Extensions.Dynamic;
+
 public static class DynamicRuntimeHelper
 {
 	public static Decimal Object2Number(Object elem)

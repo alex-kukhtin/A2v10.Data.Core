@@ -2,7 +2,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace A2v10.Data;
+namespace A2v10.Data.Core.Extensions.Dynamic;
 public static partial class DynamicExtensions
 {
 	public static T? Get<T>(this ExpandoObject obj, String name)

@@ -7,6 +7,8 @@ using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
 
+using A2v10.Data.Core.Extensions.Dynamic;
+
 internal record ParameterDef(String ParamName, String ValueName);
 
 internal class BatchCommandBuilder(Boolean allowEmptyStrings)

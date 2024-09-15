@@ -1,8 +1,11 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Globalization;
 
 namespace A2v10.Data;
+
+using A2v10.Data.Core.Extensions.Dynamic;
+
 internal class TableDescription(DataTablePattern table) : ITableDescription
 {
 	public IFormatProvider? FormatProvider { get; set; }
