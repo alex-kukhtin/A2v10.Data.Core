@@ -1,8 +1,10 @@
-﻿// Copyright © 2015-2023 Oleksandr  Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr  Kukhtin. All rights reserved.
 
 using System.Globalization;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace A2v10.Data.Dynamic;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 using A2v10.Data.Core.Extensions.Dynamic;
 
