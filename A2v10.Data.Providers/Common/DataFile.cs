@@ -33,6 +33,7 @@ public class DataFile : IExternalDataFile
 
 	private Encoding? _encoding;
 
+	public Boolean NeedEncoding => _encoding == null;
 	public Encoding Encoding 
 	{ 
 		get => _encoding ?? throw new InvalidOperationException("Encoding not set");

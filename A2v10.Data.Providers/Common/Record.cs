@@ -28,6 +28,7 @@ public class Record : IExternalDataRecord
 		{
 			if (fieldNo >= 0 && fieldNo < DataFields.Count)
 				return DataFields[fieldNo].Value;
+			return null; // may be 
 		}
 		throw new ExternalDataException($"Invalid field name: '{xname}'");
 	}
@@ -36,7 +37,7 @@ public class Record : IExternalDataRecord
 	{
 		if (index >= 0 && index < DataFields.Count)
 			return DataFields[index].Value;
-		throw new ExternalDataException($"Invalid field index: {index}");
+		return null;
 	}
 
 	public String? StringFieldValueByIndex(Int32 index)
