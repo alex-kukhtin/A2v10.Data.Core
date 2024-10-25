@@ -9,6 +9,19 @@ for the A2v10 platform applications.
 * [A2v10.Data.Providers](https://www.nuget.org/packages/A2v10.Data.Providers)
 
 
+# appsettings.json configuration
+
+```json
+"A2v10": {
+    "Data": {
+        "CommandTimeout": "00:00:30",
+		"MetadataCache": true,
+        "CatalogAsDefault": false
+    }
+}
+```
+
+
 # Feedback
 
 A2v10.Data.Core is released as open source under the MIT license. 

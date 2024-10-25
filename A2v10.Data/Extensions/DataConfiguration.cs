@@ -1,4 +1,4 @@
-﻿// Copyright © 2020-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2020-2024 Oleksandr Kukhtin. All rights reserved.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -9,6 +9,7 @@ public class DataConfigurationSection
 {
 	public Boolean MetadataCache { get; set; } = true;
 	public TimeSpan CommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
+	public Boolean CatalogAsDefault { get; set; }
 }
 
 public class DataConfigurationOptions
@@ -17,6 +18,7 @@ public class DataConfigurationOptions
 	public TimeSpan DefaultCommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
 	public Boolean DisableWriteMetadataCaching { get; set; } = false;
 	public Boolean AllowEmptyStrings { get; set; } = false;
+    public Boolean CatalogAsDefault { get; set; } = false;
 }
 
 public class DataConfiguration(IConfiguration config, IOptions<DataConfigurationOptions> options) : IDataConfiguration
@@ -33,6 +35,8 @@ public class DataConfiguration(IConfiguration config, IOptions<DataConfiguration
 	public String? ConnectionString(String? source)
 	{
 		if (String.IsNullOrEmpty(source))
+			source = _options.ConnectionStringName;
+		if (_options.CatalogAsDefault && source == "Catalog")
 			source = _options.ConnectionStringName;
 		return _config.GetConnectionString(source);
 	}

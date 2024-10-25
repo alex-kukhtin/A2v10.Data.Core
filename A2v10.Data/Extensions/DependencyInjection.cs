@@ -27,6 +27,7 @@ public static class DataCoreDependencyInjection
 			options.ConnectionStringName = DefaultConnectioString;
 			options.DisableWriteMetadataCaching = !sect.MetadataCache;
 			options.DefaultCommandTimeout = sect.CommandTimeout;
+			options.CatalogAsDefault = sect.CatalogAsDefault;
 		});
 		return services;
 	}
