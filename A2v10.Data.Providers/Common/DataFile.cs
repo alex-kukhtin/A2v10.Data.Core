@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Text;
@@ -41,6 +41,8 @@ public class DataFile : IExternalDataFile
 	}
 
 	public Char Delimiter { get; set; }
+
+	public Boolean SkipHeader { get; set; }
 	public DataFileFormat Format { get; set; }
 
 	public static Boolean IsNormalString(String str)

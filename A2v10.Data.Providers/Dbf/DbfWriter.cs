@@ -15,7 +15,12 @@ public class DbfWriter(DataFile file) : IExternalDataWriter
 		_file.Delimiter = delimiter;
 	}
 
-	public void Write(Stream stream)
+    public void SetSkipHeader(Boolean skipHeader)
+	{
+        _file.SkipHeader = skipHeader;
+    }
+
+    public void Write(Stream stream)
 	{
 		using var bw = new BinaryWriter(stream);
 		Write(bw);

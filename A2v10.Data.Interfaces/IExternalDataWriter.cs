@@ -7,5 +7,6 @@ public interface IExternalDataWriter
 {
 	void Write(Stream stream);
 	void SetDelimiter(Char delimiter);
+	void SetSkipHeader(Boolean skipHeader);
 }
 

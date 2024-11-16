@@ -14,7 +14,12 @@ public class CsvWriter(DataFile file) : IExternalDataWriter
 		_file.Delimiter = delimiter;
 	}
 
-	public void Write(Stream stream)
+    public void SetSkipHeader(Boolean skipHeader)
+    {
+        _file.SkipHeader = skipHeader;
+    }
+
+    public void Write(Stream stream)
 	{
 		using var sw = new StreamWriter(stream);
 		Write(sw);
