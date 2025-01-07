@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.IO;
@@ -58,7 +58,7 @@ public class CsvReader(DataFile file) : IExternalDataReader
 	String ReadLine(StreamReader rdr)
 	{
 		StringBuilder sb = new();
-		if (_backwardChar != '\0')
+		if (_backwardChar != '\0' && _backwardChar != 0x200b)
 		{
 			sb.Append(_backwardChar);
 			_backwardChar = '\0';
@@ -69,7 +69,9 @@ public class CsvReader(DataFile file) : IExternalDataReader
 			while (!rdr.EndOfStream)
 			{
 				Char ch = (Char)rdr.Read();
-				if (ch == QUOTE)
+                if (ch == 0x200b)
+                    continue;
+                if (ch == QUOTE)
 				{
 					sb.Append(ch);
 					Char next = (Char)rdr.Read();
@@ -92,7 +94,9 @@ public class CsvReader(DataFile file) : IExternalDataReader
 
 		while (!rdr.EndOfStream)
 		{
-			Char ch = (Char)rdr.Read();
+			Char ch = (Char) rdr.Read();
+			if (ch == 0x200b)
+				continue;
 			if (ch == QUOTE)
 			{
 				sb.Append(ch);

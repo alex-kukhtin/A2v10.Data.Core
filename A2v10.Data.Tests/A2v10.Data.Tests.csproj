@@ -57,6 +57,9 @@
 		<None Update="TestFiles\simple.xml">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="TestFiles\zerospace.csv">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="TestFiles\_data.defs.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

@@ -1,5 +1,6 @@
 ﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
 
+using System.Dynamic;
 using System.IO;
 using A2v10.Data.Providers;
 using A2v10.Data.Providers.Csv;
@@ -102,4 +103,27 @@ public class CsvReaderTest
 		}
 		*/
 	}
+
+    [TestMethod]
+    public void CsvReadZeroSpaceFile()
+    {
+        var f = new DataFile();
+        var rdr = new CsvReader(f);
+
+		using (var file = File.Open("testfiles/zerospace.csv", FileMode.Open))
+		{
+			rdr.Read(file);
+			Assert.AreEqual(1, f.Records.Count());
+			Assert.AreEqual(13, f.FieldCount);
+
+			var r1 = f.GetRecord(0);
+			var v1 = r1.FieldValue(2)?.ToString();
+            Assert.AreEqual("UA9999999999999999", v1);
+			Assert.AreEqual(18, v1?.Length);
+
+            v1 = r1.FieldValue(0)?.ToString();
+			Assert.AreEqual("BO122222", v1);
+            Assert.AreEqual(8, v1?.Length);
+        }
+    }
 }
