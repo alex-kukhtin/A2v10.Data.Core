@@ -35,4 +35,17 @@ public static class DbParamsExtension
 		coll.Add(new SqlParameter(name, SqlDbType.Bit) { Value = value != null ? value : DBNull.Value });
 		return coll;
 	}
+    public static DbParameterCollection AddTyped(this DbParameterCollection coll, String name, SqlDbType dbType, Object? value)
+    {
+        coll.Add(new SqlParameter(name, dbType) { Value = value != null ? value : DBNull.Value });
+        return coll;
+    }
+    public static DbParameterCollection AddStructured(this DbParameterCollection coll, String name, String dbTypeName, DataTable dataTable)
+    {
+        coll.Add(new SqlParameter(name, SqlDbType.Structured) {
+            TypeName = dbTypeName,
+			Value = dataTable 
+		});
+        return coll;
+    }
 }
