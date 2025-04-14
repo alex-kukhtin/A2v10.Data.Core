@@ -82,7 +82,7 @@ public partial struct FieldInfo
 		}
 	}
 
-	const String PATTERN = @"^[a-z_\$][a-z0-9_\$]*$";
+	const String PATTERN = @"^[\p{L}_\$][\p{L}0-9_\$]*$";
 #if NET7_0_OR_GREATER
 	[GeneratedRegex(PATTERN, RegexOptions.Singleline | RegexOptions.IgnoreCase, "en-US")]
 	private static partial Regex IderRegex();
