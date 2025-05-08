@@ -83,7 +83,11 @@ public class GroupMetadata
 			if (value != null)
 				sbParent.Append($"[{value}]\b"); // prev tick
 			var fieldName = _fields.ElementAt(i);
-			value = currentRecord.GetObject(fieldName)?.ToString() ?? String.Empty;
+			var valObj = currentRecord.GetObject(fieldName);
+			if (valObj is ExpandoObject valExp && valExp is not null)
+				value = valExp.GetObject("Id")?.ToString() ?? String.Empty;
+            else
+				value = valObj?.ToString() ?? String.Empty;
 			sbKey.Append($"[{value}]\b");
 		}
 		return Tuple.Create(sbKey.ToString(), sbParent.ToString());

@@ -1,12 +1,11 @@
-﻿// Copyright © 2022-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2022-2025 Oleksandr Kukhtin. All rights reserved.
 
 using System.Threading.Tasks;
+using System.Dynamic;
 
 
 using A2v10.Data.Tests.Configuration;
 using A2v10.Data.Tests;
-using Newtonsoft.Json;
-using System.Dynamic;
 
 namespace A2v10.Data.Models;
 
@@ -162,4 +161,35 @@ public class DynamicGrouping
 		Assert.AreEqual(41.7, dm.Root.Eval<Double>("Trans.Cross1[0].Qty"));
 		Assert.AreEqual(2355M, dm.Root.Eval<Decimal>("Trans.Sum"));
 	}
+
+
+    [TestMethod]
+    public async Task DynamicGroupsReference()
+    {
+        var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping.Reference]");
+
+        //var json = JsonConvert.SerializeObject(dm.Root);
+
+        Assert.IsNotNull(dm);
+        var md = new MetadataTester(dm);
+        md.HasAllProperties("TRoot", "RepData");
+        var dt = new DataTester(dm, "RepData");
+        dt.AreValueEqual(8000M, "InSum");
+        dt.AreValueEqual(500M, "OutSum");
+        dt = new DataTester(dm, "RepData.Items");
+        dt.IsArray(2);
+        dt.AreArrayValueEqual(7000M, 0, "InSum");
+        dt.AreArrayValueEqual(100M, 0, "OutSum");
+        dt = new DataTester(dm, "RepData.Items[0].Store");
+        dt.AreValueEqual(1006L, "Id");
+        dt.AreValueEqual("Prod", "Name");
+        dt = new DataTester(dm, "RepData.Items[0].Items");
+        dt.IsArray(3);
+        dt = new DataTester(dm, "RepData.Items[0].Items[0].Item");
+        dt.AreValueEqual(1001L, "Id");
+        dt.AreValueEqual("T1", "Name");
+        dt = new DataTester(dm, "RepData.Items[0].Items[1].Item");
+        dt.AreValueEqual(1002L, "Id");
+        dt.AreValueEqual("T2", "Name");
+    }
 }
