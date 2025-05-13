@@ -2,10 +2,11 @@
 
 using System.Data.Common;
 using System.Data;
+using System.Globalization;
 
 using Microsoft.Data.SqlClient;
+
 using A2v10.Data.Core.Extensions.Dynamic;
-using System.Globalization;
 
 namespace A2v10.Data.Core.Extensions;
 
@@ -32,7 +33,14 @@ public static class DbParamsExtension
 		coll.Add(new SqlParameter(name, SqlDbType.Date) { Value = value != null ? value : DBNull.Value });
 		return coll;
 	}
-	public static DbParameterCollection AddBit(this DbParameterCollection coll, String name, Boolean? value)
+
+    public static DbParameterCollection AddDateTime(this DbParameterCollection coll, String name, DateTime? value)
+    {
+        coll.Add(new SqlParameter(name, SqlDbType.DateTime) { Value = value != null ? value : DBNull.Value });
+        return coll;
+    }
+
+    public static DbParameterCollection AddBit(this DbParameterCollection coll, String name, Boolean? value)
 	{
 		coll.Add(new SqlParameter(name, SqlDbType.Bit) { Value = value != null ? value : DBNull.Value });
 		return coll;

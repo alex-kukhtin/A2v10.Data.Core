@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Data.SqlClient;
 
-namespace A2v10.Data.Core;
+namespace A2v10.Data;
 
 public class StaticDbContext(IDataConfiguration _config) : IStaticDbContext
 {
