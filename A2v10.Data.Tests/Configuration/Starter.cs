@@ -1,7 +1,7 @@
 ﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
 using System.Text;
-
+using A2v10.Data.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -34,7 +34,9 @@ public static class Starter
 		.AddSingleton<IDbContext, SqlDbContext>()
 		.AddSingleton<MetadataCache>();
 
-		sc.Configure<DataConfigurationOptions>(opts =>
+		sc.AddSingleton<IStaticDbContext, StaticDbContext>();
+
+        sc.Configure<DataConfigurationOptions>(opts =>
 		{
 			opts.ConnectionStringName = "Default";
 			if (config != null)
@@ -53,7 +55,13 @@ public static class Starter
 		return svc.GetService<IDbContext>() ?? throw new InvalidProgramException("IDbContext not found");
 	}
 
-	public static IDbContext CreateWithTenants()
+    public static IStaticDbContext  CreateStatic(DataConfigurationOptions? options = null)
+    {
+        var svc = BuildServices(options);
+        return svc.GetService<IStaticDbContext>() ?? throw new InvalidProgramException("IStaticDbContext not found");
+    }
+
+    public static IDbContext CreateWithTenants()
 	{
 		var configuration = new ConfigurationBuilder()
 			.AddJsonFile("appsettings.json")

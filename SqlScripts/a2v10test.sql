@@ -2490,3 +2490,43 @@ begin
 	from @table;
 end
 go
+------------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.TABLES where [TABLE_SCHEMA] = N'a2test' and TABLE_NAME = N'STATIC')
+create table a2test.[STATIC]
+(
+	Id bigint,
+	[Text] nvarchar(max)
+)
+go
+------------------------------------------------
+create or alter procedure a2test.[StaticNonQuery]
+@Id bigint,
+@Text nvarchar(255)
+as
+begin
+	set nocount on;
+	set transaction isolation level read committed;
+	with TX as (
+		select [Id] = @Id, [Text] = @Text
+	)
+	merge a2test.[STATIC] as t
+	using TX as s 
+	on t.Id = s.Id
+	when matched then update set 
+		t.[Text] = s.[Text]
+	when not matched then insert
+		(Id, [Text]) values
+		(Id, [Text]);
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[StaticNonQuery.Load]
+@Id bigint
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [Text] from a2test.[STATIC] where Id = @Id;
+end
+go
