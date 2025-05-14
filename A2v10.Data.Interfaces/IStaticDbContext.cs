@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace A2v10.Data.Interfaces;
+
 public interface IStaticDbContext
 {
 	Task ExecuteNonQueryAsync(String? source, String procedure, Action<DbParameterCollection> onSetParams);
@@ -18,5 +19,7 @@ public interface IStaticDbContext
 
     Task ExecuteReaderSqlAsync(String? source, String sqlText, Action<DbParameterCollection> onSetParams, Action<Int32, IDataReader> onRead);
     void ExecuteReaderSql(String? source, String sqlText, Action<DbParameterCollection> onSetParams, Action<Int32, IDataReader> onRead);
+
+    IParameterBuilder ParameterBuilder(DbParameterCollection prms);
 }
 

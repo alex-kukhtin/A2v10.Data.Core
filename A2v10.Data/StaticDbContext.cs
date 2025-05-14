@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
 
+
 public class StaticDbContext(IDataConfiguration _config) : IStaticDbContext
 {
     public void ExecuteNonQuery(String? source, String procedure, Action<DbParameterCollection> onSetParams)
@@ -126,4 +127,5 @@ public class StaticDbContext(IDataConfiguration _config) : IStaticDbContext
         await cnn.OpenAsync();
         return cnn;
     }
+    public IParameterBuilder ParameterBuilder(DbParameterCollection prms) => new StaticParameterBuilder(prms);
 }

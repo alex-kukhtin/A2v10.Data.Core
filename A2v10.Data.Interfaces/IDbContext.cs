@@ -51,5 +51,7 @@ public interface IDbContext
 	// Raw loading
 	void LoadRaw(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);
 	Task LoadRawAsync(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);
+
+    IParameterBuilder ParameterBuilder(DbParameterCollection prms);
 }
 

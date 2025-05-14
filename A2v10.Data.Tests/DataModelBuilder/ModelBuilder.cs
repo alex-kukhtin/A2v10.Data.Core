@@ -142,6 +142,7 @@ public class ModelBuilder
         var ms = new TestDataScipter();
         var script = dm.CreateScript(ms);
 
-        int z = 55;
+        Assert.IsNotNull(script);
+        //int z = 55;
     }
 }

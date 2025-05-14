@@ -948,5 +948,6 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 			null
 		);
 	}
+    public IParameterBuilder ParameterBuilder(DbParameterCollection prms) => new StaticParameterBuilder(prms);
 }
 
