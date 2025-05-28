@@ -1875,6 +1875,44 @@ begin
 end
 go
 -------------------------------------------------
+create or alter procedure a2test.[DynamicGrouping.ReferenceMap]
+@UserId bigint = null
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	declare @test table(Store bigint, StoreName nvarchar(255), StoreGrp int,
+		Item bigint, ItemName nvarchar(255), ItemGrp int, InSum money, OutSum money);
+	insert into @test(Store, StoreName, StoreGrp, Item, ItemName, ItemGrp, InSum, OutSum)
+	values
+	(null, N'NoData', 1, null, N'NoData', 1, 8000, 500),
+	(1006, N'Prod',   0, null, N'NoData', 1, 7000, 100),
+	(null, N'NoData', 0, null, N'NoData', 1, 6000, 900),
+	(1006, N'Prod',   0, 1001, N'T1',     0, 1000, 300),
+	(1006, N'Prod',   0, 1002, N'T2',     0, 2000, 300),
+	(1006, N'Prod',   0, 1003, N'T3',     0, 3000, 300),
+	(null, N'NoData', 0, null, N'NoData', 0, 6000, 600),
+	(null, N'NoData', 0, 1001, N'T1',     0, 1000, 100),
+	(null, N'NoData', 0, 1002, N'T2',     0, 2000, 200),
+	(null, N'NoData', 0, 1003, N'T3',     0, 3000, 300);
+
+	select [RepData!TRepData!Group] = null,	
+		[Store.Id!TStore!Id] = Store,	[Store.Name!TStore!Name] = StoreName, [Store!!GroupMarker] = StoreGrp,	
+		[Item!TItem!RefId] = Item, [Item!!GroupMarker] = ItemGrp,
+		InSum, OutSum, [Items!TRepData!Items] = null
+	from @test
+	order by StoreGrp desc, ItemGrp desc;
+
+	with TI as (
+		select Item, ItemName from @test
+		group by Item, ItemName
+	)
+	select [!TItem!Map] = null, [Id!!Id] = Item, [Name!!Name] = ItemName
+	from TI;
+end
+go
+-------------------------------------------------
 create or alter procedure a2test.[DynamicGrouping.Index]
 @UserId bigint = null
 as

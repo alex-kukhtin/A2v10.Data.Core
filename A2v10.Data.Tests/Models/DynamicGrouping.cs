@@ -6,6 +6,7 @@ using System.Dynamic;
 
 using A2v10.Data.Tests.Configuration;
 using A2v10.Data.Tests;
+// using Newtonsoft.Json;
 
 namespace A2v10.Data.Models;
 
@@ -167,6 +168,36 @@ public class DynamicGrouping
     public async Task DynamicGroupsReference()
     {
         var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping.Reference]");
+
+        //var json = JsonConvert.SerializeObject(dm.Root);
+
+        Assert.IsNotNull(dm);
+        var md = new MetadataTester(dm);
+        md.HasAllProperties("TRoot", "RepData");
+        var dt = new DataTester(dm, "RepData");
+        dt.AreValueEqual(8000M, "InSum");
+        dt.AreValueEqual(500M, "OutSum");
+        dt = new DataTester(dm, "RepData.Items");
+        dt.IsArray(2);
+        dt.AreArrayValueEqual(7000M, 0, "InSum");
+        dt.AreArrayValueEqual(100M, 0, "OutSum");
+        dt = new DataTester(dm, "RepData.Items[0].Store");
+        dt.AreValueEqual(1006L, "Id");
+        dt.AreValueEqual("Prod", "Name");
+        dt = new DataTester(dm, "RepData.Items[0].Items");
+        dt.IsArray(3);
+        dt = new DataTester(dm, "RepData.Items[0].Items[0].Item");
+        dt.AreValueEqual(1001L, "Id");
+        dt.AreValueEqual("T1", "Name");
+        dt = new DataTester(dm, "RepData.Items[0].Items[1].Item");
+        dt.AreValueEqual(1002L, "Id");
+        dt.AreValueEqual("T2", "Name");
+    }
+
+    [TestMethod]
+    public async Task DynamicGroupsReferenceMap()
+    {
+        var dm = await _dbContext.LoadModelAsync(null, "a2test.[DynamicGrouping.ReferenceMap]");
 
         //var json = JsonConvert.SerializeObject(dm.Root);
 
