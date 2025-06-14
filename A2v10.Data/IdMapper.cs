@@ -5,6 +5,7 @@
 namespace A2v10.Data;
 
 using A2v10.Data.Core.Extensions.Dynamic;
+using System.Linq;
 
 internal class IdMapper : Dictionary<Tuple<String, Object?>, ExpandoObject>
 {
@@ -18,6 +19,27 @@ internal class IdMapper : Dictionary<Tuple<String, Object?>, ExpandoObject>
 		}
 		return valObj;
 	}
+
+	public Type GetRefType(String typeName)
+	{
+		var x = this.FirstOrDefault(x => x.Key.Item1 == typeName);
+		return x.Key.Item2?.GetType()
+			?? throw new InvalidOperationException($"Key for {typeName} not found");
+	}
+
+	public Object? StringToType(Type type, String value)
+	{
+        if (type == typeof(Int64))
+            return Int64.Parse(value);
+        else if (type == typeof(String))
+			return value;
+        else if (type == typeof(Guid))
+            return Guid.Parse(value);
+        else if (type == typeof(Int32))
+            return Int32.Parse(value);
+     	else
+            throw new InvalidOperationException($"Unsupported type for Id ({type.GetType})");
+    }
 }
 
 internal record RefMapperItem

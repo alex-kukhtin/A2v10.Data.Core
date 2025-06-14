@@ -116,15 +116,76 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		}
 	}
 
-	void ProcessSystemRecord(IDataReader rdr)
+	void ProcessFilter(FieldInfo fi, Object dataVal)
 	{
+        if (String.IsNullOrEmpty(fi.TypeName))
+            throw new DataLoaderException("For the Filter modifier, the field name must be specified");
+        Object? filter = dataVal;
+        var xs = fi.TypeName.Split('.');
+        if (xs.Length < 2)
+            throw new DataLoaderException("For the Filter modifier, the field name must be as ItemProperty.FilterProperty");
+        var fmi = _createModelInfo(xs[0]).GetOrCreate<ExpandoObject>("Filter");
+        if (filter is DateTime)
+            filter = DataHelpers.DateTime2StringWrap(filter);
+        else if (filter is String strFilter)
+            filter = _localizer.Localize(strFilter);
+        var lastFilterKey = xs[^1];
+        if (lastFilterKey == "RefId")
+        {
+            if (xs.Length < 4)
+                throw new DataLoaderException($"Invalid Filter for RefId modifier {fi.TypeName}");
+            var mapKey = xs[^2];
+            var propName = xs[^3];
+            var key = Tuple.Create<String, Object?>(mapKey, filter);
+            if (_idMap.TryGetValue(key, out ExpandoObject? filterValue))
+                fmi.Set(propName, filterValue);
+            else
+            {
+                fmi.Set(propName, new ExpandoObject()
+                            {
+                                { "Id", null },
+                                { "Name", null },
+                            });
+            }
+        }
+        else if (lastFilterKey == "Array")
+        {
+            if (xs.Length < 4)
+                throw new DataLoaderException($"Invalid Filter for Array modifier {fi.TypeName}");
+            var mapKey = xs[^2];
+            var propName = xs[^3];
+            if (filter is not String strFilter)
+                throw new DataLoaderException($"Filter value for {fi.TypeName}.Array must be a String");
+            var idType = _idMap.GetRefType(mapKey);
+            var exp = new List<ExpandoObject>();
+            fmi.Set(propName, exp);
+            foreach (var filterVal in strFilter.Split(','))
+            {
+                var idObj = _idMap.StringToType(idType, filterVal);
+                var key = Tuple.Create<String, Object?>(mapKey, idObj);
+                if (_idMap.TryGetValue(key, out ExpandoObject? refValue))
+                    exp.Add(refValue);
+            }
+        }
+        else
+        {
+            for (Int32 ii = 1; ii < xs.Length; ii++)
+            {
+                if (ii == xs.Length - 1)
+                    fmi.Set(xs[ii], filter);
+                else
+                    fmi = fmi.GetOrCreate<ExpandoObject>(xs[ii]);
+            }
+        }
+    }
+    ExpandoObject _createModelInfo(String elem)
+    {
+        return _root.GetOrCreate<ExpandoObject>("$ModelInfo").GetOrCreate<ExpandoObject>(elem);
+    }
 
-		ExpandoObject _createModelInfo(String elem)
-		{
-			return _root.GetOrCreate<ExpandoObject>("$ModelInfo").GetOrCreate<ExpandoObject>(elem);
-		}
-
-		// from 1
+    void ProcessSystemRecord(IDataReader rdr)
+	{
+		// from 1!!!
 		for (Int32 i = 1; i < rdr.FieldCount; i++)
 		{
 			var fn = rdr.GetName(i);
@@ -180,46 +241,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 						_createModelInfo(fi.TypeName).Set("GroupBy", strDataGroup);
 					break;
 				case SpecType.Filter:
-					if (String.IsNullOrEmpty(fi.TypeName))
-						throw new DataLoaderException("For the Filter modifier, the field name must be specified");
-					Object? filter = dataVal;
-					var xs = fi.TypeName.Split('.');
-					if (xs.Length < 2)
-						throw new DataLoaderException("For the Filter modifier, the field name must be as ItemProperty.FilterProperty");
-					var fmi = _createModelInfo(xs[0]).GetOrCreate<ExpandoObject>("Filter");
-					if (filter is DateTime)
-						filter = DataHelpers.DateTime2StringWrap(filter);
-					else if (filter is String strFilter)
-						filter = _localizer.Localize(strFilter);
-					var lastFilterKey = xs[^1];
-					if (lastFilterKey == "RefId")
-					{
-						if (xs.Length < 4)
-                            throw new DataLoaderException($"Invalid Filter for RefId modifier {fi.TypeName}");
-						var mapKey = xs[^2];
-						var propName = xs[^3];
-                        var key = Tuple.Create<String, Object?>(mapKey, filter);
-						if (_idMap.TryGetValue(key, out ExpandoObject? filterValue))
-							fmi.Set(propName, filterValue);
-						else
-						{
-							fmi.Set(propName, new ExpandoObject()
-							{
-								{ "Id", null },
-                                { "Name", null },
-                            });
-						}
-                    }
-                    else
-					{
-						for (Int32 ii = 1; ii < xs.Length; ii++)
-						{
-							if (ii == xs.Length - 1)
-								fmi.Set(xs[ii], filter);
-							else
-								fmi = fmi.GetOrCreate<ExpandoObject>(xs[ii]);
-						}
-					}
+					ProcessFilter(fi, dataVal);
 					break;
 				case SpecType.ReadOnly:
 					_sys.Add("ReadOnly", InternalHelpers.SqlToBoolean(dataVal));
