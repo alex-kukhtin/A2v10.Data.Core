@@ -2263,7 +2263,7 @@ begin
 
 	select [!TCompany!Map] = null, [Id!!Id] = 127, [Name] = N'Company 127';
 
-	declare @agents table(Id bigint, [Name] nvarchar(255);
+	declare @agents table(Id bigint, [Name] nvarchar(255));
 	insert into @agents(Id, [Name]) values
 	(15, N'Agent 15'),
 	(20, N'Agent 20'),
