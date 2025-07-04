@@ -103,6 +103,39 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2test.ComplexNullModel
+	@TenantId int = null,
+	@UserId bigint = null
+as
+begin
+	set nocount on;
+	select [Document!TDocument!Object] = null, [Id!!Id] = cast(0 as bigint), [No]='DocNo', [Date]=a2sys.fn_getCurrentDate(),
+		[Agent!TAgent!RefId] = 512, [Company!TAgent!RefId] = 512,
+		[Rows1!TRow!Array] = null, [Rows2!TRow!Array] = null;
+
+	select [!TRow!Array] = null, [Id!!Id] = cast(0 as bigint), [!TDocument.Rows1!ParentId] = cast(0 as bigint), 
+		[Product!TProduct!RefId] = 782,
+		Qty=cast(4.0 as float), Price=cast(8 as money), [Sum] = cast(32.0 as money),
+		[Series1!TSeries!Array] = null
+
+	select [!TRow!Array] = null, [Id!!Id] = cast(0 as bigint), [!TDocument.Rows2!ParentId] = cast(0 as bigint), 
+		[Product!TProduct!RefId] = 785,
+		Qty=cast(7.0 as float), Price=cast(2 as money), [Sum] = cast(14.0 as money),
+		[Series1!TSeries!Array] = null
+
+	-- maps for product
+	select [!TProduct!Map] = null, [Id!!Id] = 782, [Name!!Name] = N'Product 782',
+		[Unit.Id!TUnit!Id] = 7, [Unit.Name!TUnit!Name] = N'Unit7'
+	union all
+	select [!TProduct!Map] = null, [Id!!Id] = 785, [Name!!Name] = N'Product 785',
+		[Unit.Id!TUnit!Id] = 8, [Unit.Name!TUnit!Name] = N'Unit8'
+
+	-- maps for agent
+	select [!TAgent!Map] = null, [Id!!Id]=512, [Name!!Name] = 'Agent 512', Code=N'Code 512';
+end
+go
+
+------------------------------------------------
 create or alter procedure a2test.ComplexModelTyped
 	@TenantId int = null,
 	@UserId bigint = null

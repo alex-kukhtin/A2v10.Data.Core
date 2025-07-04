@@ -64,8 +64,15 @@ public class DataTester
 		var obj = _instanceArray[index] as IDictionary<String, Object>;
 		Assert.AreEqual(expected, obj[property]);
 	}
+    public void IsArrayValueNull(Int32 index, String property)
+    {
+        IsArray();
+        Assert.IsNotNull(_instanceArray);
+        var obj = _instanceArray[index] as IDictionary<String, Object>;
+        Assert.IsNull(obj[property]);
+    }
 
-	public T? GetArrayValue<T>(Int32 index, String property)
+    public T? GetArrayValue<T>(Int32 index, String property)
 	{
 		IsArray();
 		Assert.IsNotNull(_instanceArray);
