@@ -32,7 +32,7 @@ public class TestSimpleDbContext
 		var sp = GetServiceProvider();
 		var dbc = sp.GetService<IDbContext>();
 		Assert.IsNotNull(dbc);
-		var ex = await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => {
+		var ex = await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => {
 			return dbc.LoadModelAsync(null, "a2test.[SimpleModel.Load]");
 		});
 

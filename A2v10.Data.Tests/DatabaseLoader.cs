@@ -498,7 +498,7 @@ public class LoadList
 	[TestMethod]
 	public void InvalidElementType()
 	{
-		var ex = Assert.ThrowsException<DataLoaderException>(() =>
+		var ex = Assert.ThrowsExactly<DataLoaderException>(() =>
 		{
 			_dbContext.LoadModel(null, "a2test.[InvalidType.Load]");
 		});
