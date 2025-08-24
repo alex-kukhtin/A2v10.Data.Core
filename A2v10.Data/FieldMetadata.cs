@@ -109,6 +109,13 @@ public class FieldMetadata : IDataFieldMetadata
 			RefObject = fi.TypeName;
 			IsRefId = true;
 		}
+
+		if (fi.IsRowVersion)
+		{
+			DataType = DataType.String;
+			Length = 16;
+			ItemType = FieldType.RowVersion;
+        }
 	}
 
 	public String GetObjectType(String fieldName)

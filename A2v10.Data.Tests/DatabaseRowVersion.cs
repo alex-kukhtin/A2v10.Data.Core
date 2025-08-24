@@ -28,14 +28,15 @@ public class DatabaseRowVersion
         var md = new MetadataTester(dm);
         md.IsAllKeys("TRoot,TModel");
         md.HasAllProperties("TRoot", "Model");
-        md.HasAllProperties("TModel", "Name,Id,RV");
+        md.HasAllProperties("TModel", "Name,Id,rv");
         md.IsId("TModel", "Id");
         md.IsName("TModel", "Name");
+        md.IsType("TModel", "rv", DataType.String);
 
         var dt = new DataTester(dm, "Model");
         dt.AreValueEqual(123L, "Id");
         dt.AreValueEqual("ObjectName", "Name");
-        dt.AreValueEqual("00000000000007D2", "RV");
+        dt.AreValueEqual("00000000000007D2", "rv");
     }
 
     [TestMethod]
@@ -47,7 +48,7 @@ public class DatabaseRowVersion
             "Model": {
                 "Id" : 123,
                 "Name": "ObjectName",
-                "RV!!RowVersion": "00000000000007D2"
+                "rv": "00000000000007D2"
             }
         }
         """";
@@ -58,6 +59,6 @@ public class DatabaseRowVersion
         var dt = new DataTester(dm, "Model");
         dt.AreValueEqual(123L, "Id");
         dt.AreValueEqual("ObjectName", "Name");
-        dt.AreValueEqual("00000000000007D2", "RV");
+        dt.AreValueEqual("00000000000007D2", "rv");
     }
 }

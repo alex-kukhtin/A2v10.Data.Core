@@ -96,7 +96,7 @@ public static class SqlExtensions
 				return Guid.Parse(id!.ToString()!);
 			return Convert.ChangeType(id, to, CultureInfo.InvariantCulture)!;
 		}
-        else if (to == typeof(Byte[]) && columnName.EndsWith("!!RowVersion"))
+        else if (to == typeof(Byte[]) && (columnName == "rv" || columnName.EndsWith("!!RowVersion")))
         {
             if (value is Byte[])
 				return value;

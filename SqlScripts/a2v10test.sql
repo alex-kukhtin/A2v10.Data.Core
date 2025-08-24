@@ -2645,7 +2645,7 @@ begin
 		insert into a2test.[RowVersion] (Id) values (@Id);
 
 	select [Model!TModel!Object] = null, [Id!!Id] = @Id, 
-		[Name!!Name]='ObjectName', [RV!!RowVersion] = [version]
+		[Name!!Name]='ObjectName', [rv] = [version]
 	from a2test.[RowVersion] where Id = @Id;
 end
 go
@@ -2659,7 +2659,7 @@ create type [a2test].[RowVersion.TableType] as
 table (
 	[Id] bigint null,
 	[Name] nvarchar(255),
-	[RV!!RowVersion] varbinary(8)
+	[rv] varbinary(8)
 )
 go
 ------------------------------------------------
@@ -2683,13 +2683,13 @@ begin
 	set transaction isolation level read committed;
 
 	declare @rv varbinary(8), @id bigint;
-	select @rv = [RV!!RowVersion], @id = Id from @Model;
+	select @rv = [rv], @id = Id from @Model;
 	
 	if @rv <> (select [version] from a2test.[RowVersion] where Id = @id)
 		throw 60000, N'Invalid Row Version', 0;
 
 	select [Model!TModel!Object] = null, [Id!!Id] = @Id, 
-		[Name!!Name]='ObjectName', [RV!!RowVersion] = [version]
+		[Name!!Name]='ObjectName', [rv] = [version]
 	from a2test.[RowVersion] where Id = @id;
 end
 go
