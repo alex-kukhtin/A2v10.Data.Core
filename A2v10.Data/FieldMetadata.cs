@@ -28,7 +28,8 @@ public enum FieldType
 	Lookup,
 	Rows,
 	Columns,
-	Cells
+	Cells,
+	RowVersion
 }
 
 public enum SpecType

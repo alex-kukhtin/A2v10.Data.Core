@@ -83,7 +83,7 @@ public static class SqlExtensions
 		return str;
     }
 
-	public static Object ConvertTo(Object? value, Type to, Boolean allowEmptyString)
+	public static Object ConvertTo(Object? value, Type to, Boolean allowEmptyString, String columnName)
 	{
 		if (value == null)
 			return DBNull.Value;
@@ -96,7 +96,16 @@ public static class SqlExtensions
 				return Guid.Parse(id!.ToString()!);
 			return Convert.ChangeType(id, to, CultureInfo.InvariantCulture)!;
 		}
-		else if (value is String str)
+        else if (to == typeof(Byte[]) && columnName.EndsWith("!!RowVersion"))
+        {
+            if (value is Byte[])
+				return value;
+			// BEFORE STRING
+			else if (value is String s)
+				return Convert.FromHexString(s);
+            throw new InvalidCastException($"Cannot convert {value.GetType().Name} to Byte[]");
+        }
+        else if (value is String str)
 		{
 			if (!allowEmptyString && String.IsNullOrEmpty(str))
 				return DBNull.Value;

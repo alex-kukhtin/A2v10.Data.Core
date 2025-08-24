@@ -1,6 +1,6 @@
-﻿-- Copyright © 2008-2024 Oleksandr Kukhtin
+﻿-- Copyright © 2008-2025 Oleksandr Kukhtin
 
-/* 20240204-7358 */
+/* 20250824-7557 */
 
 use a2v10test;
 go
@@ -20,6 +20,14 @@ if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2tes
 		[Date] datetime,
 		[Sum] money,
 		[Memo] nvarchar(255)
+	);
+go
+-----------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=N'a2test' and TABLE_NAME=N'RowVersion')
+	create table a2test.[RowVersion]
+	(
+		Id bigint not null constraint PK_RowVersion primary key,
+		[version] rowversion
 	);
 go
 -----------------------------------------------
@@ -327,20 +335,10 @@ drop procedure if exists a2test.[NewObject.Update];
 drop procedure if exists a2test.[SubObjects.Metadata];
 go
 ------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'SubObjects.Update')
-	drop procedure a2test.[SubObjects.Update]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'Json.Metadata')
-	drop procedure a2test.[Json.Metadata]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'Json.Update')
-	drop procedure a2test.[Json.Update]
-go
-------------------------------------------------
-if exists (select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_SCHEMA=N'a2test' and ROUTINE_NAME=N'ParentKey.Metadata')
-	drop procedure a2test.[ParentKey.Metadata]
+drop procedure if exists a2test.[SubObjects.Update]
+drop procedure if exists a2test.[Json.Metadata]
+drop procedure if exists a2test.[Json.Update]
+drop procedure if exists a2test.[ParentKey.Metadata]
 go
 ------------------------------------------------
 drop procedure if exists a2test.[Document.RowsMethods.Metadata];
@@ -2634,3 +2632,65 @@ begin
 	select [Text] from a2test.[STATIC] where Id = @Id;
 end
 go
+------------------------------------------------
+create or alter procedure a2test.[RowVersion.Load]
+	@TenantId int = null,
+	@UserId bigint = null,
+	@Id bigint = null
+as
+begin
+	set nocount on;
+	
+	if not exists (select * from a2test.[RowVersion] where Id = @Id)
+		insert into a2test.[RowVersion] (Id) values (@Id);
+
+	select [Model!TModel!Object] = null, [Id!!Id] = @Id, 
+		[Name!!Name]='ObjectName', [RV!!RowVersion] = [version]
+	from a2test.[RowVersion] where Id = @Id;
+end
+go
+------------------------------------------------
+drop procedure if exists a2test.[RowVersion.Metadata];
+drop procedure if exists a2test.[RowVersion.Update];
+drop type if exists a2test.[RowVersion.TableType];
+go
+------------------------------------------------
+create type [a2test].[RowVersion.TableType] as
+table (
+	[Id] bigint null,
+	[Name] nvarchar(255),
+	[RV!!RowVersion] varbinary(8)
+)
+go
+------------------------------------------------
+create procedure a2test.[RowVersion.Metadata]
+as
+begin
+	set nocount on;
+	declare @Model [a2test].[RowVersion.TableType];
+	select [Model!Model!Metadata] = null, * from @Model;
+end
+go
+
+------------------------------------------------
+create procedure a2test.[RowVersion.Update]
+@TenantId int = null,
+@UserId bigint = null,
+@Model [a2test].[RowVersion.TableType] readonly
+as
+begin
+	set nocount on;
+	set transaction isolation level read committed;
+
+	declare @rv varbinary(8), @id bigint;
+	select @rv = [RV!!RowVersion], @id = Id from @Model;
+	
+	if @rv <> (select [version] from a2test.[RowVersion] where Id = @id)
+		throw 60000, N'Invalid Row Version', 0;
+
+	select [Model!TModel!Object] = null, [Id!!Id] = @Id, 
+		[Name!!Name]='ObjectName', [RV!!RowVersion] = [version]
+	from a2test.[RowVersion] where Id = @id;
+end
+go
+

@@ -157,8 +157,9 @@ public partial struct FieldInfo
 	public readonly Boolean IsJson => SpecType == SpecType.Json;
 	public readonly Boolean IsPermissions => SpecType == SpecType.Permissions;
 	public readonly Boolean IsUtc => SpecType == SpecType.Utc;
+    public readonly Boolean IsRowVersion => FieldType == FieldType.RowVersion;
 
-	public readonly Boolean IsParentIdSelf(FieldInfo root)
+    public readonly Boolean IsParentIdSelf(FieldInfo root)
 	{
 		return IsParentId && TypeName.StartsWith(root.TypeName);
 	}

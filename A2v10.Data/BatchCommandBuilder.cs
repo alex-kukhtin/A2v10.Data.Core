@@ -66,7 +66,7 @@ internal class BatchCommandBuilder(Boolean allowEmptyStrings)
 			{ 
 				var originalName = sqlParam.ParameterName;
 				sqlParam.ParameterName = $"{sqlParam.ParameterName}_${index}";
-				sqlParam.Value = SqlExtensions.ConvertTo(propValue, sqlParam.SqlDbType.ToType(), _allowEmptyStrings);
+				sqlParam.Value = SqlExtensions.ConvertTo(propValue, sqlParam.SqlDbType.ToType(), _allowEmptyStrings, originalName);
 				_values.Add(sqlParam);
 				paramDefs.Add(new ParameterDef(originalName, sqlParam.ParameterName));
 			}

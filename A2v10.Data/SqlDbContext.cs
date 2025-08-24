@@ -654,7 +654,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 				}
 				else
 				{
-					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType(), _config.AllowEmptyStrings);
+					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType(), _config.AllowEmptyStrings, k);
 				}
 			}
 		}
@@ -728,7 +728,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 				}
 				else
 				{
-					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType(), _config.AllowEmptyStrings);
+					sqlParam.Value = SqlExtensions.ConvertTo(sqlVal, sqlParam.SqlDbType.ToType(), _config.AllowEmptyStrings, p.Name);
 				}
 			}
 		}
@@ -879,7 +879,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 					{
 						var col = dt.Columns[c];
 						var rowVal = propsD[col.ColumnName].GetValue(itm);
-						var dbVal = SqlExtensions.ConvertTo(rowVal, col.DataType, _config.AllowEmptyStrings);
+						var dbVal = SqlExtensions.ConvertTo(rowVal, col.DataType, _config.AllowEmptyStrings, col.ColumnName);
 						row[col.ColumnName] = dbVal;
 					}
 					dt.Rows.Add(row);

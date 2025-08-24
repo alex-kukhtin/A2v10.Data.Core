@@ -92,7 +92,8 @@ internal static class InternalHelpers
 			"CrossObject" => FieldType.CrossObject,
 			"Json" => FieldType.Json,
 			"Lookup" => FieldType.Lookup,
-			_ => FieldType.Scalar,
+			"RowVersion" => FieldType.RowVersion,
+            _ => FieldType.Scalar,
 		};
 
 	public static Boolean SqlToBoolean(Object dataVal)

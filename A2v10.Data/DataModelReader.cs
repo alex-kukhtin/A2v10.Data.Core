@@ -716,6 +716,8 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			record.Add(field.PropertyName, _localizer.Localize(strVal));
 		else if (field.IsUtc && value is DateTime dt)
 			record.Add(field.PropertyName, DateTime.SpecifyKind(dt.ToLocalTime(), DateTimeKind.Unspecified));
+		else if (field.IsRowVersion && value is Byte[] byteVal)
+            record.Add(field.PropertyName, Convert.ToHexString(byteVal));
 		else
 			record.Add(field.PropertyName, value);
 	}

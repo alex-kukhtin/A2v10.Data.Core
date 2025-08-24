@@ -95,7 +95,7 @@ internal class DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmpty
 				// complex value
 				if (GetComplexValue(data, col.ColumnName, out Object? rowVal1))
 				{
-					var dbVal = SqlExtensions.ConvertTo(rowVal1, col.DataType, _allowEmptyStrings);
+					var dbVal = SqlExtensions.ConvertTo(rowVal1, col.DataType, _allowEmptyStrings, col.ColumnName);
 					dbVal = CheckId(col.ColumnName, dbVal, col.DataType);
                     CheckStringLength(col, dbVal, table.Rows.Count);
                     row[col.ColumnName] = dbVal;
@@ -104,7 +104,7 @@ internal class DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmpty
 			}
 			if (dataD.TryGetValue(col.ColumnName, out Object? rowVal2))
 			{
-				var dbVal = SqlExtensions.ConvertTo(rowVal2, col.DataType, _allowEmptyStrings);
+                var dbVal = SqlExtensions.ConvertTo(rowVal2, col.DataType, _allowEmptyStrings, col.ColumnName);
 				dbVal = CheckId(col.ColumnName, dbVal, col.DataType);
 				row[col.ColumnName] = dbVal;
 			}
