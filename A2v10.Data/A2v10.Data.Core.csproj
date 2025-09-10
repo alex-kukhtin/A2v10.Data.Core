@@ -4,8 +4,8 @@
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<LangVersion>Latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>10.1.7558</Version>
-		<AssemblyVersion>10.1.7558</AssemblyVersion>
+		<Version>10.1.7559</Version>
+		<AssemblyVersion>10.1.7559</AssemblyVersion>
 		<Product>A2v10</Product>
 		<Authors>Oleksandr Kukhtin</Authors>
 		<Copyright>Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.</Copyright>
@@ -31,12 +31,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Identity" Version="1.15.0" />
+		<PackageReference Include="Azure.Identity" Version="1.16.0" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.76.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="8.14.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.14.0" />
