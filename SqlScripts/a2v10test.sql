@@ -2275,6 +2275,7 @@ begin
 		[!Documents.Period.From!Filter] = @Date, [!Documents.Period.To!Filter] = dateadd(day, 1, @Date),
 		[!Documents.Agent.Id!Filter] = 15, [!Documents.Agent.Name!Filter] = N'AgentName',
 		[!Documents.Fragment!Filter] = N'FRAGMENT',
+		[!Documents.NullString!Filter] = cast(null as nvarchar(255)),
 		[!Documents.Company.TCompany.RefId!Filter] = 127,
 		[!Documents.Warehouse.TWarehouse.RefId!Filter] = null;
 end
@@ -2307,6 +2308,39 @@ begin
 		[!Documents!SortOrder] = N'name', [!Documents!SortDir] = N'asc',
 		[!Documents.Period.From!Filter] = @Date, [!Documents.Period.To!Filter] = dateadd(day, 1, @Date),
 		[!Documents.Agents.TAgent.Array!Filter] = N'15,20,25',
+		[!Documents.Fragment!Filter] = N'FRAGMENT',
+		[!Documents.Company.TCompany.RefId!Filter] = 127,
+		[!Documents.Warehouse.TWarehouse.RefId!Filter] = null;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[FiltersArrayNull.Load]
+@TenantId int = null,
+@UserId bigint = null,
+@Date date
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [TDocuments!TDocument!Array] = null, [Id!!Id] = Id, [Date], [Company!TCompany!RefId] = 127
+	from a2test.Documents;
+
+	select [!TCompany!Map] = null, [Id!!Id] = 127, [Name] = N'Company 127';
+
+	declare @agents table(Id bigint, [Name] nvarchar(255));
+	insert into @agents(Id, [Name]) values
+	(15, N'Agent 15'),
+	(20, N'Agent 20'),
+	(25, N'Agent 25');
+
+	select [!TAgent!Map] = null, [Id!!Id] = Id, [Name]
+	from @agents;
+
+	select [!$System!] = null, [!Documents!Offset] = 0, [!Documents!PageSize] = 20, 
+		[!Documents!SortOrder] = N'name', [!Documents!SortDir] = N'asc',
+		[!Documents.Period.From!Filter] = @Date, [!Documents.Period.To!Filter] = dateadd(day, 1, @Date),
+		[!Documents.Agents.TAgent.Array!Filter] = null,
 		[!Documents.Fragment!Filter] = N'FRAGMENT',
 		[!Documents.Company.TCompany.RefId!Filter] = 127,
 		[!Documents.Warehouse.TWarehouse.RefId!Filter] = null;

@@ -1,6 +1,7 @@
-﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
+
 using Newtonsoft.Json;
 
 namespace A2v10.Data;
@@ -121,6 +122,8 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
         if (String.IsNullOrEmpty(fi.TypeName))
             throw new DataLoaderException("For the Filter modifier, the field name must be specified");
         Object? filter = dataVal;
+        if (filter == DBNull.Value)
+            filter = null;
         var xs = fi.TypeName.Split('.');
         if (xs.Length < 2)
             throw new DataLoaderException("For the Filter modifier, the field name must be as ItemProperty.FilterProperty");
@@ -142,10 +145,10 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
             else
             {
                 fmi.Set(propName, new ExpandoObject()
-                            {
-                                { "Id", null },
-                                { "Name", null },
-                            });
+                {
+                    { "Id", null },
+                    { "Name", null },
+                });
             }
         }
         else if (lastFilterKey == "Array")
@@ -154,11 +157,13 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
                 throw new DataLoaderException($"Invalid Filter for Array modifier {fi.TypeName}");
             var mapKey = xs[^2];
             var propName = xs[^3];
+            var exp = new List<ExpandoObject>();
+            fmi.Set(propName, exp);
+			if (filter == null)
+				return;
             if (filter is not String strFilter)
                 throw new DataLoaderException($"Filter value for {fi.TypeName}.Array must be a String");
             var idType = _idMap.GetRefType(mapKey);
-            var exp = new List<ExpandoObject>();
-            fmi.Set(propName, exp);
             foreach (var filterVal in strFilter.Split(','))
             {
                 var idObj = _idMap.StringToType(idType, filterVal);
