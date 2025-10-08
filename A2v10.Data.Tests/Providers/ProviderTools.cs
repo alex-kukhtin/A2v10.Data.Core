@@ -12,11 +12,11 @@ internal class ProviderTools
 	{
 		var b1 = File.ReadAllBytes(file1);
 		var b2 = File.ReadAllBytes(file2);
-		Assert.AreEqual(b1.Length, b2.Length);
+		Assert.HasCount(b1.Length, b2);
 		for (Int32 i = 0; i < b1.Length; i++)
 		{
 			if (b1[i] != b2[i])
-				Assert.IsTrue(b1[i] == b2[i]);
+				Assert.AreEqual(b1[i], b2[i]);
 		}
 	}
 }

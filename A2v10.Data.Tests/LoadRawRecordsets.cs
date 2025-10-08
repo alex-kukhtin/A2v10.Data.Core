@@ -59,7 +59,7 @@ public class RawRecordset
 		Assert.AreEqual(id, info1.GuidValue);
 		Assert.AreEqual(23, info1.IntValue);
 		Assert.AreEqual("string", info1.StringValue);
-		Assert.AreEqual(2, list.Count);
+		Assert.HasCount(2, list);
 		Assert.AreEqual(id, list[0].GuidValue);
 		Assert.AreEqual(77, list[0].IntValue);
 		Assert.AreEqual(99, list[1].IntValue);
@@ -88,7 +88,7 @@ public class RawRecordset
 		Assert.AreEqual(id, info1.GuidValue);
 		Assert.AreEqual(23, info1.IntValue);
 		Assert.AreEqual("string", info1.StringValue);
-		Assert.AreEqual(2, list.Count);
+		Assert.HasCount(2, list);
 		Assert.AreEqual(id, list[0].GuidValue);
 		Assert.AreEqual(77, list[0].IntValue);
 		Assert.AreEqual(99, list[1].IntValue);

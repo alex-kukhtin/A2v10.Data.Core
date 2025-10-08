@@ -94,7 +94,7 @@ public class TypedDataTests
         await _dbContext.SaveListAsync<ScheduledCommand>("", "a2test.[List.Save]", null, sc);
         var list = await _dbContext.LoadListAsync<ScheduledCommand>(null, "a2test.[List.Load]", null);
         Assert.IsNotNull(list);
-        Assert.AreEqual(3, list.Count);
+        Assert.HasCount(3, list);
 
         var c0 = list[0];
         var c1 = list[1];

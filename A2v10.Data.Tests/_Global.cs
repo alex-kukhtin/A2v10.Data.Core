@@ -6,3 +6,5 @@ global using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 global using A2v10.Data.Interfaces;
 global using A2v10.Data.Core.Extensions.Dynamic;
+
+[assembly: DoNotParallelize]

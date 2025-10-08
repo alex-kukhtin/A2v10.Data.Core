@@ -109,7 +109,7 @@ namespace A2v10.Data.Tests
             Assert.AreEqual("string", item.Json.Get<String>("strval"));
 			Assert.AreEqual(22, item.Json.Get<Int64>("numval"));
 			Assert.AreEqual(7.5, item.Json.Get<Double>("dblval"));
-			Assert.AreEqual(true, item.Json.Get<Boolean>("boolval"));
+			Assert.IsTrue(item.Json.Get<Boolean>("boolval"));
 		}
 
 
@@ -118,7 +118,7 @@ namespace A2v10.Data.Tests
 		{
 			var list = await _dbContext.LoadListAsync<ListItem>(null, "a2test.[ClrTypes.LoadListItemList]", null);
 			Assert.IsNotNull(list);
-			Assert.AreEqual(3, list.Count);
+			Assert.HasCount(3, list);
 
 			Assert.AreEqual("String 1", list[0].StringValue);
 			Assert.AreEqual(22, list[0].Int32Value);
@@ -150,7 +150,7 @@ namespace A2v10.Data.Tests
 
 		private static void CheckList(IList<ListItem> list)
 		{
-			Assert.AreEqual(3, list.Count);
+			Assert.HasCount(3, list);
 
 			Assert.AreEqual("String 1", list[0].StringValue);
 			Assert.AreEqual(22, list[0].Int32Value);

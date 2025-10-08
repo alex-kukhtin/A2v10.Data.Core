@@ -31,8 +31,8 @@ namespace A2v10.Data.Tests
 			var mdate = dt.GetValue<DateTime>("Date");
 			var mutc = dt.GetValue<DateTime>("UtcDate");
 
-			Assert.IsTrue(Math.Abs((mdate - now).TotalSeconds) < 2);
-			Assert.IsTrue(Math.Abs((mutc - now).TotalSeconds) < 2);
+			Assert.IsLessThan(2, Math.Abs((mdate - now).TotalSeconds));
+			Assert.IsLessThan(2, Math.Abs((mutc - now).TotalSeconds));
 		}
 	}
 }

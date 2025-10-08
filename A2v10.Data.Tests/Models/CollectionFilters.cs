@@ -99,7 +99,7 @@ public class CollectionFilters
 
         var agents = dm.Eval<List<ExpandoObject>>("$ModelInfo.Documents.Filter.Agents")
             ?? throw new InvalidOperationException("Agent is null");
-        Assert.AreEqual(3, agents.Count);
+        Assert.HasCount(3, agents);
 
         Assert.AreEqual(15L, agents[0].Get<Int64>("Id"));
         Assert.AreEqual("Agent 15", agents[0].Get<String>("Name"));
@@ -153,7 +153,7 @@ public class CollectionFilters
 
         var agents = dm.Eval<List<ExpandoObject>>("$ModelInfo.Documents.Filter.Agents")
             ?? throw new InvalidOperationException("Agenst is null");
-        Assert.AreEqual(0, agents.Count);
+        Assert.HasCount(0, agents);
 
         var company = dm.Eval<ExpandoObject>("$ModelInfo.Documents.Filter.Company")
             ?? throw new InvalidOperationException("Company is null");

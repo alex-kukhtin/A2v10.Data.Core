@@ -85,11 +85,11 @@ public class ParamTypes
 
 		var ba = dat.GetValue<Byte[]>("ByteArray");
 		Assert.IsNotNull(ba);
-		Assert.AreEqual(ba.Length, bytes.Length);
+		Assert.HasCount(ba.Length, bytes);
 		for (int i = 0; i < ba.Length; i++)
 			Assert.AreEqual(ba[i], bytes[i]);
 
-		Assert.AreEqual(true, dat.GetValue<Boolean>("Boolean"));
+		Assert.IsTrue(dat.GetValue<Boolean>("Boolean"));
 	}
 
 	[TestMethod]
@@ -132,7 +132,7 @@ public class ParamTypes
 
 		var ba = dm.ByteArray;
 		Assert.IsNotNull(ba);
-		Assert.AreEqual(ba.Length, bytes.Length);
+		Assert.HasCount(ba.Length, bytes);
 		for (int i = 0; i < ba.Length; i++)
 			Assert.AreEqual(ba[i], bytes[i]);
 
@@ -153,7 +153,7 @@ public class ParamTypes
 
 
 		var dt = new DataTester(dm, "Document");
-		Assert.AreEqual(true, dt.GetValue<Boolean>("NameIsNull"));
+		Assert.IsTrue(dt.GetValue<Boolean>("NameIsNull"));
 
 	}
 

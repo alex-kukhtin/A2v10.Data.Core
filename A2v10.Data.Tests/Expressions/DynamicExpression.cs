@@ -1,8 +1,9 @@
-﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
-using A2v10.Data.Dynamic;
 using System.Dynamic;
 using System.Linq.Expressions;
+
+using A2v10.Data.Dynamic;
 
 /*TODO:
  * test invalid cases
@@ -51,33 +52,33 @@ public class Expressions
 		result = CalcSimpleExpression("+false");
 		Assert.AreEqual(0M, result); // as decimal
 		result = CalcSimpleExpression("!'aaa'");
-		Assert.AreEqual(false, result);
+		Assert.IsFalse(result as Boolean?);
 		result = CalcSimpleExpression("!!true");
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result as Boolean?);
 		result = CalcSimpleExpression("!!'a'");
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result as Boolean?);
 
 		result = CalcSimpleExpression("!''");
-		Assert.AreEqual(true, result);
+		Assert.IsTrue(result as Boolean?);
 	}
 
 	[TestMethod]
 	public void MultiplicativeOperations()
 	{
 		var result = CalcSimpleExpression("2 * 2");
-		Assert.AreEqual(result, 4M); // as decimal
+		Assert.AreEqual(4M, result); // as decimal
 
 		result = CalcSimpleExpression("2 * '2'");
-		Assert.AreEqual(result, 4M); // as decimal
+		Assert.AreEqual(4M, result); // as decimal
 
 		result = CalcSimpleExpression("'3'* 2");
-		Assert.AreEqual(result, 6M); // as decimal
+		Assert.AreEqual(6M, result); // as decimal
 
 		result = CalcSimpleExpression("2 * true");
-		Assert.AreEqual(result, 2M); // as decimal
+		Assert.AreEqual(2M, result); // as decimal
 
 		result = CalcSimpleExpression("4 / 2");
-		Assert.AreEqual(result, 2M); // as decimal
+		Assert.AreEqual(2M, result); // as decimal
 
 		result = CalcSimpleExpression("4 / 0");
 		Assert.IsTrue(Infinity.IsInfinity(result));
@@ -93,44 +94,44 @@ public class Expressions
 	public void LogicalOperations()
 	{
 		var result = CalcSimpleExpression("2 == 2 && 3 == 3");
-		Assert.AreEqual(true, result); // as decimal
+		Assert.IsTrue(result as Boolean?); // as decimal
 
 		result = CalcSimpleExpression("'aaa' && 'bbb'");
-		Assert.AreEqual(true, result); // as decimal
+		Assert.IsTrue(result as Boolean?); // as decimal
 
 		result = CalcSimpleExpression("false || 2 !== 2");
-		Assert.AreEqual(false, result); // as decimal
+		Assert.IsFalse(result as Boolean?); // as decimal
 
 		result = CalcSimpleExpression("false || 2 == 2");
-		Assert.AreEqual(true, result); // as decimal
+		Assert.IsTrue(result as Boolean?); // as decimal
 
 		result = CalcSimpleExpression("(3 == 3 && 2 == 2) || false");
-		Assert.AreEqual(true, result); // as decimal
+		Assert.IsTrue(result as Boolean?); // as decimal
 
 		result = CalcSimpleExpression("'' || 'a'");
-		Assert.AreEqual(true, result); // as decimal
+		Assert.IsTrue(result as Boolean?); // as decimal
 	}
 
 	[TestMethod]
 	public void AdditiveOperations()
 	{
 		var result = CalcSimpleExpression("2 + 2");
-		Assert.AreEqual(result, 4M); // as decimal
+		Assert.AreEqual(4M, result); // as decimal
 
 		result = CalcSimpleExpression("'2' + 4");
-		Assert.AreEqual(result, "24");
+		Assert.AreEqual("24", result);
 
 		result = CalcSimpleExpression("2 + '4'");
-		Assert.AreEqual(result, "24");
+		Assert.AreEqual("24", result);
 
 		result = CalcSimpleExpression("'aaa' + 'bbb'");
-		Assert.AreEqual(result, "aaabbb");
+		Assert.AreEqual("aaabbb", result);
 
 		result = CalcSimpleExpression("5 - '3'");
-		Assert.AreEqual(result, 2M);
+		Assert.AreEqual(2M, result);
 
 		result = CalcSimpleExpression("'5' - - 8");
-		Assert.AreEqual(result, 13M);
+		Assert.AreEqual(13M, result);
 
 		result = CalcSimpleExpression("'s' - 23");
 		Assert.IsTrue(NaN.IsNaN(result));
@@ -140,28 +141,28 @@ public class Expressions
 	public void TernaryOperation()
 	{
 		var result = CalcSimpleExpression("2 === 2 ? 'yes' : 'no'");
-		Assert.AreEqual(result, "yes");
+		Assert.AreEqual("yes", result);
 
 		result = CalcSimpleExpression("2 == 2 ? true : false");
-		Assert.AreEqual(result, true);
+		Assert.IsTrue(result as Boolean?);
 
 		result = CalcSimpleExpression("2 !== 2 ? 'yes' : 'no'");
-		Assert.AreEqual(result, "no");
+		Assert.AreEqual("no", result);
 
 		result = CalcSimpleExpression("2 !== 2 ? 'yes' : null");
-		Assert.AreEqual(result, null);
+		Assert.IsNull(result);
 
 		result = CalcSimpleExpression("2 != 2 ? 3 != 3 ? '1' : '2' : '3'");
-		Assert.AreEqual(result, "3");
+		Assert.AreEqual("3", result);
 
 		result = CalcSimpleExpression("2 == 2 ? 3 != 3 ? '1' : '2' : '3'");
-		Assert.AreEqual(result, "2");
+		Assert.AreEqual("2", result);
 
 		result = CalcSimpleExpression("2 == 2 ? 3 == 3 ? '1' : '2' : '3'");
-		Assert.AreEqual(result, "1");
+		Assert.AreEqual("1", result);
 
 		result = CalcSimpleExpression("'t' ? 'yes' : 'no'");
-		Assert.AreEqual(result, "yes");
+		Assert.AreEqual("yes", result);
 	}
 
 
@@ -169,22 +170,22 @@ public class Expressions
 	public void ComparisonOperation()
 	{
 		var result = CalcSimpleExpression("3 > 2");
-		Assert.AreEqual(result, true);
+		Assert.IsTrue(result as Boolean?);
 
 		result = CalcSimpleExpression("2 >= 2");
-		Assert.AreEqual(result, true);
+		Assert.IsTrue(result as Boolean?);
 
 		result = CalcSimpleExpression("2 > 3");
-		Assert.AreEqual(result, false);
+		Assert.IsFalse(result as Boolean?);
 
 		result = CalcSimpleExpression("2 < 3");
-		Assert.AreEqual(result, true);
+		Assert.IsTrue(result as Boolean?);
 
 		result = CalcSimpleExpression("2 <= 3");
-		Assert.AreEqual(result, true);
+		Assert.IsTrue(result as Boolean?);
 
 		result = CalcSimpleExpression("'aaa' < 'bbb'");
-		Assert.AreEqual(result, true);
+		Assert.IsTrue(result as Boolean?);
 	}
 
 	[TestMethod]
@@ -210,25 +211,25 @@ public class Expressions
 		agent.Set("Array", arr);
 
 		var result = CalcExpression("Agent.Name", "Agent", agent);
-		Assert.AreEqual(result, "agent name");
+		Assert.AreEqual("agent name", result);
 
 		result = CalcExpression("Agent.$dollar", "Agent", agent);
-		Assert.AreEqual(result, "$");
+		Assert.AreEqual("$", result);
 
 		result = CalcExpression("Agent._underscore", "Agent", agent);
-		Assert.AreEqual(result, "_");
+		Assert.AreEqual("_", result);
 
 		result = CalcExpression("Agent.Address.Text", "Agent", agent);
-		Assert.AreEqual(result, "text");
+		Assert.AreEqual("text", result);
 
 		result = CalcExpression("Agent.Array[0].Value", "Agent", agent);
-		Assert.AreEqual(result, 3);
+		Assert.AreEqual(3, result);
 
 		result = CalcExpression("Agent['Array'][0].Value", "Agent", agent);
-		Assert.AreEqual(result, 3);
+		Assert.AreEqual(3, result);
 
 		result = CalcExpression("Agent['Array'][2 - 2].Value", "Agent", agent);
-		Assert.AreEqual(result, 3);
+		Assert.AreEqual(3, result);
 
 		var root = new ExpandoObject
 		{
@@ -236,9 +237,9 @@ public class Expressions
 		};
 
 		result = CalcExpression("Root.Agent.Name", "Root", root);
-		Assert.AreEqual(result, "agent name");
+		Assert.AreEqual("agent name", result);
 
 		result = CalcExpression("Agent.Name", "Root", root);
-		Assert.AreEqual(result, "agent name");
+		Assert.AreEqual("agent name", result);
 	}
 }

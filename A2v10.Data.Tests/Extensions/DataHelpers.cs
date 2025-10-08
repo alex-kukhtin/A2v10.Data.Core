@@ -11,16 +11,16 @@ public class DataHelperTests
 	[TestMethod]
 	public void IdIsNull()
 	{
-		Assert.AreEqual(true, DataHelpers.IsIdIsNull(null));
-		Assert.AreEqual(true, DataHelpers.IsIdIsNull((Int64)0));
-		Assert.AreEqual(true, DataHelpers.IsIdIsNull((Int32)0));
-		Assert.AreEqual(true, DataHelpers.IsIdIsNull((Int16)0));
-		Assert.AreEqual(true, DataHelpers.IsIdIsNull(""));
-		Assert.AreEqual(true, DataHelpers.IsIdIsNull((String?)null));
-		Assert.AreEqual(false, DataHelpers.IsIdIsNull(-(Int64)1));
-		Assert.AreEqual(false, DataHelpers.IsIdIsNull((Int32)7));
-		Assert.AreEqual(false, DataHelpers.IsIdIsNull((Int16)22));
-		Assert.AreEqual(false, DataHelpers.IsIdIsNull("s"));
+		Assert.IsTrue(DataHelpers.IsIdIsNull(null));
+		Assert.IsTrue(DataHelpers.IsIdIsNull((Int64)0));
+		Assert.IsTrue(DataHelpers.IsIdIsNull((Int32)0));
+		Assert.IsTrue(DataHelpers.IsIdIsNull((Int16)0));
+		Assert.IsTrue(DataHelpers.IsIdIsNull(""));
+		Assert.IsTrue(DataHelpers.IsIdIsNull((String?)null));
+		Assert.IsFalse(DataHelpers.IsIdIsNull(-(Int64)1));
+		Assert.IsFalse(DataHelpers.IsIdIsNull((Int32)7));
+		Assert.IsFalse(DataHelpers.IsIdIsNull((Int16)22));
+		Assert.IsFalse(DataHelpers.IsIdIsNull("s"));
 	}
 
 	[TestMethod]
@@ -52,7 +52,7 @@ public class DataHelperTests
 		Assert.AreEqual(5, eo.GetConvert<Int16>("x"));
 		Assert.AreEqual("5", eo.GetConvert<String>("x"));
 		Assert.AreEqual(0, eo.GetConvert<Int64>("y"));
-		Assert.AreEqual(null, eo.GetConvert<String>("y"));
+		Assert.IsNull(eo.GetConvert<String>("y"));
 	}
 
 	[TestMethod]

@@ -18,7 +18,7 @@ namespace A2v10.Data.Tests
 			var propArray = props.Split(',');
 			foreach (var prop in propArray)
 				Assert.IsTrue(_meta.ContainsKey(prop));
-			Assert.AreEqual(propArray.Length, _meta.Count, $"invalid length for '{props}'");
+			Assert.HasCount(propArray.Length, _meta, $"invalid length for '{props}'");
 		}
 
 		public void HasAllProperties(String key, String props)

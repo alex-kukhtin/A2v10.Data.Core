@@ -43,7 +43,7 @@ public class ExternalDbContext
 			var eo = rdr.CreateDataModel(file);
 			var rows = eo.Eval<List<Object>>("Rows")
 				?? throw new InvalidCastException();	
-			Assert.AreEqual(2, rows.Count);
+			Assert.HasCount(2, rows);
 			if (rows[0] is not ExpandoObject row1)
                 throw new InvalidCastException();
 			Assert.AreEqual(10, row1.Eval<Decimal>("Id"));
@@ -69,7 +69,7 @@ public class ExternalDbContext
 			var eo = rdr.CreateDataModel(file);
 			var rows = eo.Eval<List<Object>>("Rows")
 				?? throw new InvalidCastException();
-			Assert.AreEqual(3, rows.Count);
+			Assert.HasCount(3, rows);
 		}
 	}
 }

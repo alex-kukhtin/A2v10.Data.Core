@@ -23,7 +23,7 @@ public class DataTester
 	{
 		_dataModel = dataModel;
 		_instance = _dataModel.Root;
-		Assert.IsTrue(_instance != null, "Could not evaluate expression 'Root'");
+		Assert.IsNotNull(_instance, "Could not evaluate expression 'Root'");
 	}
 
 	public void AllProperties(String props)
@@ -33,7 +33,7 @@ public class DataTester
 		Assert.IsNotNull(dict);
 		foreach (var prop in propArray)
 			Assert.IsTrue(dict.ContainsKey(prop), $"Property {prop} not found");
-		Assert.AreEqual(propArray.Length, dict.Count, $"invalid length for '{props}'");
+		Assert.HasCount(propArray.Length, dict, $"invalid length for '{props}'");
 	}
 
 	public void AreValueEqual<T>(T? expected, String property)
@@ -54,7 +54,7 @@ public class DataTester
 	{
 		Assert.IsTrue(_instanceArray != null && _instance == null);
 		if (length != -1)
-			Assert.AreEqual(length, _instanceArray.Count);
+			Assert.HasCount(length, _instanceArray);
 	}
 
 	public void AreArrayValueEqual<T>(T? expected, Int32 index, String property)

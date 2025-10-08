@@ -37,11 +37,11 @@ public class TypedModelTest
 		Assert.IsNotNull(doc.Agent);
 		Assert.IsNotNull(doc.Company);
 		Assert.AreEqual(doc.Agent, doc.Company);
-		Assert.AreEqual(doc.Agent.Id, 512);
-		Assert.AreEqual(doc.Agent.Name, "Agent 512");
-		Assert.AreEqual(doc.Agent.Code, "Code 512");
-		Assert.AreEqual(1, doc.Rows1.Count);
-		Assert.AreEqual(1, doc.Rows2.Count);
+		Assert.AreEqual(512, doc.Agent.Id);
+		Assert.AreEqual("Agent 512", doc.Agent.Name);
+		Assert.AreEqual("Code 512", doc.Agent.Code);
+		Assert.HasCount(1, doc.Rows1);
+		Assert.HasCount(1, doc.Rows2);
 
 		var row1 = doc.Rows1[0];
 		Assert.AreEqual(78, row1.Id);
@@ -52,7 +52,7 @@ public class TypedModelTest
 		Assert.IsNotNull(prod1);
 		Assert.AreEqual(782, prod1.Id);
 		Assert.AreEqual("Product 782", prod1.Name);
-		Assert.AreEqual(1, row1.Series1.Count);
+		Assert.HasCount(1, row1.Series1);
 		var ser1 = row1.Series1[0];
 		Assert.AreEqual(500, ser1.Id);
 		Assert.AreEqual(5.0, ser1.Price);
@@ -66,13 +66,13 @@ public class TypedModelTest
 		Assert.IsNotNull(prod2);
 		Assert.AreEqual(785, prod2.Id);
 		Assert.AreEqual("Product 785", prod2.Name);
-		Assert.AreEqual(1, row2.Series1.Count);
+		Assert.HasCount(1, row2.Series1);
 		var ser2 = row2.Series1[0];
 		Assert.AreEqual(501, ser2.Id);
 		Assert.AreEqual(10.0, ser2.Price);
 
-		Assert.AreEqual(1, root.Agents.Count);
-		Assert.AreEqual(2, root.Products.Count);
+		Assert.HasCount(1, root.Agents);
+		Assert.HasCount(2, root.Products);
 	}
 
 	[TestMethod]
@@ -82,11 +82,11 @@ public class TypedModelTest
 			?? throw new InvalidOperationException("Root is null");
 		var docs = root.Documents;
 		Assert.IsNotNull(docs);
-		Assert.AreEqual(1, docs.Count);
+		Assert.HasCount(1, docs);
 		var doc = docs[0];
 		Assert.AreEqual(123, doc.Id);
 		Assert.AreEqual("DocNo", doc.No);
-		Assert.IsTrue(Math.Abs((doc.Date - DateTime.Now).TotalSeconds) < 1);
+		Assert.IsLessThan(1, Math.Abs((doc.Date - DateTime.Now).TotalSeconds));
 		Assert.IsNotNull(doc.Agent);
 		Assert.IsNotNull(doc.Company);
 	}

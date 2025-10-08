@@ -503,7 +503,7 @@ public class LoadList
 			_dbContext.LoadModel(null, "a2test.[InvalidType.Load]");
 		});
 		// with grammatical error
-		Assert.AreEqual(ex.Message, "Invalid element type: 'Model!TModel!Aray'");
+		Assert.AreEqual("Invalid element type: 'Model!TModel!Aray'", ex.Message);
 	}
 
 	[TestMethod]
@@ -549,7 +549,7 @@ public class LoadList
 
 		var res = dm.Root.Eval<Object>("Company.Stream");
 		Assert.IsTrue(res is Byte[]);
-		Assert.AreEqual(2048, (res as Byte[])!.Length);
+		Assert.HasCount(2048, (res as Byte[])!);
     }
 
     [TestMethod]
