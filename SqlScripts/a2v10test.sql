@@ -2236,12 +2236,14 @@ create or alter procedure a2test.[List.Save]
 as
 begin
 	set nocount on;
-	set transaction isolation level read uncommitted;
+	set transaction isolation level read committed;
 
+	begin tran;
 	delete from a2test.ScheduledCommands;
 	insert a2test.ScheduledCommands (Command, [Data], UtcRunAt)
 	select Command, [Data], UtcRunAt
 	from @Commands;
+	commit tran;
 end
 go
 ------------------------------------------------

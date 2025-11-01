@@ -87,9 +87,9 @@ public class TypedDataTests
         var dt = DateTime.Today;
         var sc = new List<ScheduledCommand>()
         {
-            new("Test1", "Data"),
+            new("Test1", "Data 2"),
             new("Test2"),
-            new("Test3", "Sample data", dt)
+            new("Test3", "Sample data 2", dt)
         };
         await _dbContext.SaveListAsync<ScheduledCommand>("", "a2test.[List.Save]", null, sc);
         var list = await _dbContext.LoadListAsync<ScheduledCommand>(null, "a2test.[List.Load]", null);
@@ -101,7 +101,7 @@ public class TypedDataTests
         var c2 = list[2];
 
         Assert.AreEqual("Test1", c0.Command);
-        Assert.AreEqual("Data", c0.Data);
+        Assert.AreEqual("Data 2", c0.Data);
         Assert.IsNull(c0.UtcRunAt);
 
         Assert.AreEqual("Test2", c1.Command);
@@ -109,7 +109,7 @@ public class TypedDataTests
         Assert.IsNull(c1.UtcRunAt);
 
         Assert.AreEqual("Test3", c2.Command);
-        Assert.AreEqual("Sample data", c2.Data);
+        Assert.AreEqual("Sample data 2", c2.Data);
         Assert.AreEqual(dt, c2.UtcRunAt);
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Data.Common;
@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+
+
 using Microsoft.Data.SqlClient;
 
 using Newtonsoft.Json;
@@ -218,7 +220,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		return null;
 	}
 
-	public IList<T>? LoadList<T>(String? source, String command, Object? prms = null) where T : class
+	public IReadOnlyList<T>? LoadList<T>(String? source, String command, Object? prms = null) where T : class
 	{
 		using var token = _profiler.Start(command);
 		var listLoader = new ListLoader<T>();
@@ -235,7 +237,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		return listLoader.Result;
 	}
 
-	public async Task<IList<T>?> LoadListAsync<T>(String? source, String command, Object? prms = null) where T : class
+	public async Task<IReadOnlyList<T>?> LoadListAsync<T>(String? source, String command, Object? prms = null) where T : class
 	{
 		using var token = _profiler.Start(command);
 		var listLoader = new ListLoader<T>();

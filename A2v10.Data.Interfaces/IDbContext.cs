@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Data.Common;
@@ -26,8 +26,8 @@ public interface IDbContext
 	T? Load<T>(String? source, String command, Object? prms = null) where T : class;
 	Task<T?> LoadAsync<T>(String? source, String command, Object? prms = null) where T : class;
 
-	IList<T>? LoadList<T>(String? source, String command, Object? prms = null) where T : class;
-	Task<IList<T>?> LoadListAsync<T>(String? source, String command, Object? prms = null) where T : class;
+	IReadOnlyList<T>? LoadList<T>(String? source, String command, Object? prms = null) where T : class;
+	Task<IReadOnlyList<T>?> LoadListAsync<T>(String? source, String command, Object? prms = null) where T : class;
 
 	void SaveList<T>(String? source, String command, Object? prms, IEnumerable<T> list) where T : class;
 	Task SaveListAsync<T>(String? source, String command, Object? prms, IEnumerable<T> list) where T : class;

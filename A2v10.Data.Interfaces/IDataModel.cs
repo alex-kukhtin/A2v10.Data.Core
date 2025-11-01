@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data.Interfaces;
@@ -54,7 +54,7 @@ public interface IDataModel
 
 	String CreateScript(IDataScripter scripter);
 	void AddRuntimeProperties();
-	IDictionary<String, dynamic> GetDynamic();
+	IReadOnlyDictionary<String, dynamic> GetDynamic();
 
 	void Validate(IDataModelValidator validator);
 }

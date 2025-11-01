@@ -1,4 +1,5 @@
-﻿
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
+
 using Newtonsoft.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ internal class TestDataScipter : IDataScripter
     {
         return Task.FromResult(new ScriptInfo(null, null));
     }
-    public String CreateScript(IDataHelper helper, IDictionary<String, Object?>? sys, IDictionary<String, IDataMetadata> meta)
+    public String CreateScript(IDataHelper helper, IReadOnlyDictionary<String, Object?>? sys, IDictionary<String, IDataMetadata> meta)
     {
         var sb = new StringBuilder();
         sb.AppendLine("function modelData(template, data) {");
@@ -178,7 +179,7 @@ internal class TestDataScipter : IDataScripter
         return sb.ToString();
     }
 
-    static String SetModelInfo(IDataHelper helper, IDictionary<String, Object?>? sys)
+    static String SetModelInfo(IDataHelper helper, IReadOnlyDictionary<String, Object?>? sys)
     {
         if (sys == null)
             return String.Empty;

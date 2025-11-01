@@ -21,3 +21,12 @@ Test performance diff
 CODE GENERATOR -> C# DTO Objects from DataModel
 ===========================
 
+
+RUN COVERAGE REPORT GENERATION
+===========================
+
+dotnet build -c Debug
+
+dotnet test --collect:"Code Coverage"
+
+reportgenerator -reports:"A2v10.Data.Tests/TestResults/**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:HtmlInline_AzurePipelines;Cobertura

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2024 Oleksandr  Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr  Kukhtin. All rights reserved.
 
 using System.Text;
 using System.Linq;
@@ -113,13 +113,14 @@ public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadat
 
 	public String CreateScript(IDataScripter scripter)
 	{
-        ArgumentNullException.ThrowIfNull(scripter);	
-		var sys = System as IDictionary<String, Object?>;
+        ArgumentNullException.ThrowIfNull(scripter);
+        ArgumentNullException.ThrowIfNull(System);
+        var sys = System.AsReadOnly();
 		var meta = Metadata;
 		return scripter.CreateScript(DataHelper, sys, meta);
 	}
 
-	public IDictionary<String, dynamic> GetDynamic()
+	public IReadOnlyDictionary<String, dynamic> GetDynamic()
 	{
 		return ObjectBuilder.BuildObject(Root as ExpandoObject);
 	}
@@ -173,8 +174,8 @@ public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadat
 
 	public void Merge(IDataModel src)
 	{
-		var trgMeta = Metadata as IDictionary<String, IDataMetadata>;
-		var srcMeta = src.Metadata as IDictionary<String, IDataMetadata>;
+		var trgMeta = Metadata;
+		var srcMeta = src.Metadata;
 		var trgRoot = Root;
 		var srcRoot = src.Root as IDictionary<String, Object>;
 		var rootObj = trgMeta["TRoot"];

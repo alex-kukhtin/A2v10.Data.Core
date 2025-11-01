@@ -1,14 +1,10 @@
-﻿// Copyright © 2015-2021 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using A2v10.Data.Interfaces;
-using A2v10.Data.Tests.Configuration;
 using System.Dynamic;
+
+using A2v10.Data.Tests.Configuration;
 
 namespace A2v10.Data.Tests
 {
@@ -148,7 +144,7 @@ namespace A2v10.Data.Tests
 			CheckList(list);
 		}
 
-		private static void CheckList(IList<ListItem> list)
+		private static void CheckList(IReadOnlyList<ListItem> list)
 		{
 			Assert.HasCount(3, list);
 
