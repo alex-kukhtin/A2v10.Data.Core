@@ -14,4 +14,6 @@ public interface IParameterBuilder
     IParameterBuilder AddBit(String name, Boolean? value);
     IParameterBuilder AddTyped(String name, SqlDbType dbType, Object? value);
     IParameterBuilder AddStructured(String name, String dbTypeName, DataTable dataTable);
+    IParameterBuilder AddStringFromQuery(String name, ExpandoObject qry, String? prop = null);
+    IParameterBuilder AddFromQuery(String name, ExpandoObject qry, String? prop = null);
 }

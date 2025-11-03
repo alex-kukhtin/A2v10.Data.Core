@@ -39,7 +39,7 @@ internal static class InternalHelpers
 		};
 	}
 
-		public static Object SqlDataTypeDefault(this SqlDataType s)
+	public static Object SqlDataTypeDefault(this SqlDataType s)
 	{
 		return s switch
 		{
@@ -54,23 +54,9 @@ internal static class InternalHelpers
 
 	public static SqlDataType SqlTypeName2SqlDataType(this String s)
 	{
-		return s switch
-		{
-			"datetime" or "datetime2" or "smalldatetime" or "datetimeoffset" => SqlDataType.DateTime,
-			"date" => SqlDataType.Date,
-			"time" => SqlDataType.Time,
-			"nvarchar" or "varchar" or "nchar" or "char" or "text" or "ntext" => SqlDataType.String,
-			"bit" => SqlDataType.Bit,
-			"int" or "smallint" or "tinyint" => SqlDataType.Int,
-			"bigint" => SqlDataType.Bigint,
-			"float" or "real" => SqlDataType.Float,
-			"numeric" => SqlDataType.Numeric,
-			"decimal" => SqlDataType.Decimal,
-			"money" or "smallmoney" => SqlDataType.Currency,
-			"binary" or "varbinary" or "image" => SqlDataType.Binary,
-			"uniqueidentifier" => SqlDataType.Guid,
-			_ => SqlDataType.Unknown,
-		};
+		if (_name2SqlTypeMap.TryGetValue(s, out SqlDataType sqlType))
+			return sqlType;
+		return SqlDataType.Unknown;
 	}
 
 	public static FieldType TypeName2FieldType(this String s) =>
@@ -231,4 +217,45 @@ internal static class InternalHelpers
 		}
 		val.Set(keyProp, value);
 	}
+
+    private static IReadOnlyDictionary<String, SqlDataType> _name2SqlTypeMap = new Dictionary<String, SqlDataType>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["datetime"] = SqlDataType.DateTime,
+        ["datetime2"] = SqlDataType.DateTime,
+        ["smalldatetime"] = SqlDataType.DateTime,
+        ["datetimeoffset"] = SqlDataType.DateTime,
+
+        ["date"] = SqlDataType.Date,
+        ["time"] = SqlDataType.Time,
+
+        ["nvarchar"] = SqlDataType.String,
+        ["varchar"] = SqlDataType.String,
+        ["nchar"] = SqlDataType.String,
+        ["char"] = SqlDataType.String,
+        ["text"] = SqlDataType.String,
+        ["ntext"] = SqlDataType.String,
+
+        ["bit"] = SqlDataType.Bit,
+
+        ["int"] = SqlDataType.Int,
+        ["smallint"] = SqlDataType.Int,
+        ["tinyint"] = SqlDataType.Int,
+
+        ["bigint"] = SqlDataType.Bigint,
+
+        ["float"] = SqlDataType.Float,
+        ["real"] = SqlDataType.Float,
+
+        ["numeric"] = SqlDataType.Numeric,
+        ["decimal"] = SqlDataType.Decimal,
+
+        ["money"] = SqlDataType.Currency,
+        ["smallmoney"] = SqlDataType.Currency,
+
+        ["binary"] = SqlDataType.Binary,
+        ["varbinary"] = SqlDataType.Binary,
+        ["image"] = SqlDataType.Binary,
+
+        ["uniqueidentifier"] = SqlDataType.Guid
+    }.AsReadOnly();
 }

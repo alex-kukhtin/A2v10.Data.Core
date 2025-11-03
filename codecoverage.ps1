@@ -1,6 +1,6 @@
 # Очистка и пересборка
-# dotnet clean
-# dotnet build -c Debug
+dotnet clean
+dotnet build -c Debug
 
 # Запуск тестов с покрытием
 dotnet test -f net8.0 --no-build --collect:"XPlat Code Coverage"
@@ -15,7 +15,7 @@ reportgenerator `
   -reports:$reportList `
   -targetdir:"coveragereport" `
   -classfilters:-System.Text.RegularExpressions.* `
-  -reporttypes:HtmlInline_AzurePipelines;Cobertura `
+  -reporttypes:HtmlInline_AzurePipelines `
   -verbosity:Info
 
 # Открытие отчета

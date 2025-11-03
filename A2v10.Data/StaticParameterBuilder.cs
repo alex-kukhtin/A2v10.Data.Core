@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Data;
 
 using A2v10.Data.Core.Extensions;
+using A2v10.Data.Core.Extensions.Dynamic;
 
 namespace A2v10.Data;
 
@@ -47,6 +48,40 @@ public class StaticParameterBuilder(DbParameterCollection _prms) : IParameterBui
     public IParameterBuilder AddStructured(String name, String dbTypeName, DataTable dataTable)
     {
         _prms.AddStructured(name, dbTypeName, dataTable);
+        return this;
+    }
+
+    public IParameterBuilder AddStringFromQuery(String name, ExpandoObject qry, String? prop = null)
+    {
+        prop = prop ?? name.TrimStart('@');
+        _prms.AddStringFromQuery(name, qry, prop);
+        return this;
+    }
+
+    public IParameterBuilder AddFromQuery(String name, ExpandoObject qry, String? prop = null)
+    {
+        prop = prop ?? name.TrimStart('@');
+        var val = qry.Get<Object>(prop);
+        switch (val)
+        {
+            case String s:
+                _prms.AddString(name, s);
+                break;
+            case Int32 i:
+                _prms.AddInt(name, i);
+                break;
+            case Int64 l:
+                _prms.AddBigInt(name, l);
+                break;
+            case DateTime dt:
+                _prms.AddDateTime(name, dt);
+                break;
+            case Boolean b:
+                _prms.AddBit(name, b);
+                break;
+            default:
+                throw new DataDynamicException($"Unsupported parameter type from query: {val?.GetType().Name}");
+        }
         return this;
     }
 }

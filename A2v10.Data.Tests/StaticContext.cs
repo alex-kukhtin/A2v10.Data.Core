@@ -22,10 +22,14 @@ public class TestStaticDbContext
 	[TestMethod]
 	public async Task ExecAsync()
 	{
+        var dt = DateTime.Today;
 		await _staticDbContext.ExecuteNonQueryAsync(null, "a2test.StaticNonQuery", (prms) =>
 		{
 			_staticDbContext.ParameterBuilder(prms).AddBigInt("@Id", 10)
-				.AddString("@Text", "Test Text");
+				.AddString("@Text", "Test Text")
+                .AddInt("@Int", 73)
+                .AddDate("@Date", dt)
+                .AddBit("@Bit", true);
         });
 
 		await _staticDbContext.ExecuteReaderAsync(null, "a2test.[StaticNonQuery.Load]", (prms) =>
@@ -34,7 +38,43 @@ public class TestStaticDbContext
 		}, 
 		(rdrNo, rdr) =>
 		{
-			Assert.AreEqual("Test Text", rdr.GetString(0));	
+			Assert.AreEqual("Test Text", rdr.GetString(0));
+            Assert.AreEqual(73, rdr.GetInt32(1));
+            Assert.AreEqual(dt, rdr.GetDateTime(2));
+            Assert.IsTrue(rdr.GetBoolean(3));
+        });
+    }
+
+    [TestMethod]
+    public async Task ExecFromQueryAsync()
+    {
+        var dt = DateTime.Today;
+        var query = new ExpandoBuilder()
+        .Add("Text", "Test Text")
+        .Add("Int", 73)
+        .Add("Date", dt)
+        .Add("Bit", true)
+        .Build();
+
+        await _staticDbContext.ExecuteNonQueryAsync(null, "a2test.StaticNonQuery", (prms) =>
+        {
+            _staticDbContext.ParameterBuilder(prms).AddBigInt("@Id", 10)
+                .AddStringFromQuery("@Text", query)
+                .AddFromQuery("@Int", query)
+                .AddFromQuery("@Date", query)
+                .AddFromQuery("@Bit", query);
+        });
+
+        await _staticDbContext.ExecuteReaderAsync(null, "a2test.[StaticNonQuery.Load]", (prms) =>
+        {
+            _staticDbContext.ParameterBuilder(prms).AddBigInt("@Id", 10);
+        },
+        (rdrNo, rdr) =>
+        {
+            Assert.AreEqual("Test Text", rdr.GetString(0));
+            Assert.AreEqual(73, rdr.GetInt32(1));
+            Assert.AreEqual(dt, rdr.GetDateTime(2));
+            Assert.IsTrue(rdr.GetBoolean(3));
         });
     }
 
@@ -44,7 +84,10 @@ public class TestStaticDbContext
         _staticDbContext.ExecuteNonQuery(null, "a2test.StaticNonQuery", (prms) =>
         {
             _staticDbContext.ParameterBuilder(prms).AddBigInt("@Id", 10)
-                .AddString("@Text", "Test Text");
+                .AddString("@Text", "Test Text", 50)
+                .AddInt("@Int", null)
+                .AddDate("@Date", null)
+                .AddBit("@Bit", null);
         });
 
         _staticDbContext.ExecuteReader(null, "a2test.[StaticNonQuery.Load]", (prms) =>
@@ -54,6 +97,9 @@ public class TestStaticDbContext
         (rdrNo, rdr) =>
         {
             Assert.AreEqual("Test Text", rdr.GetString(0));
+            Assert.IsTrue(rdr.IsDBNull(1));
+            Assert.IsTrue(rdr.IsDBNull(2));
+            Assert.IsTrue(rdr.IsDBNull(3));
         });
     }
 
@@ -63,7 +109,8 @@ public class TestStaticDbContext
     {
         await _staticDbContext.ExecuteNonQuerySqlAsync(null, "update a2test.[STATIC] set [Text] = @Text where Id = @Id", (prms) =>
         {
-            _staticDbContext.ParameterBuilder(prms).AddBigInt("@Id", 10)
+            _staticDbContext.ParameterBuilder(prms)
+                .AddBigInt("@Id", 10)
                 .AddString("@Text", "Test Text SQL");
         });
 
@@ -80,10 +127,20 @@ public class TestStaticDbContext
     [TestMethod]
     public void ExecSqlSync()
     {
+
+        var dt = DateTime.Today;
+        var query = new ExpandoBuilder()
+        .Add("Text", "Test Text")
+        .Add("Int", 73)
+        .Add("Date", dt)
+        .Add("Bit", true)
+        .Build();
+
         _staticDbContext.ExecuteNonQuerySql(null, "update a2test.[STATIC] set [Text] = @Text where Id = @Id", (prms) =>
         {
             prms.AddBigInt("@Id", 10)
-                .AddString("@Text", "Test Text SQL");
+                .AddString("@Text", "Test Text SQL")
+                .AddDateFromQuery("@Date", query, "Date");
         });
 
         _staticDbContext.ExecuteReaderSql(null, "select [Text] from a2test.[STATIC] where [Id] = @Id", (prms) =>

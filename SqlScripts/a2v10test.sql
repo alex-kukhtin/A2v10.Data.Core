@@ -2633,28 +2633,37 @@ if not exists(select * from INFORMATION_SCHEMA.TABLES where [TABLE_SCHEMA] = N'a
 create table a2test.[STATIC]
 (
 	Id bigint,
-	[Text] nvarchar(max)
+	[Text] nvarchar(max),
+	[Int] int,
+	[Date] date,
+	[Bit] bit
 )
 go
 ------------------------------------------------
 create or alter procedure a2test.[StaticNonQuery]
 @Id bigint,
-@Text nvarchar(255)
+@Text nvarchar(255),
+@Int int = null,
+@Date date = null,
+@Bit bit = null
 as
 begin
 	set nocount on;
 	set transaction isolation level read committed;
 	with TX as (
-		select [Id] = @Id, [Text] = @Text
+		select [Id] = @Id, [Text] = @Text, [Int] = @Int, [Date] = @Date, [Bit] = @Bit
 	)
 	merge a2test.[STATIC] as t
 	using TX as s 
 	on t.Id = s.Id
 	when matched then update set 
-		t.[Text] = s.[Text]
+		t.[Text] = s.[Text],
+		t.[Int] = s.[Int],
+		t.[Date] = s.[Date],
+		t.[Bit] = s.[Bit]
 	when not matched then insert
-		(Id, [Text]) values
-		(Id, [Text]);
+		(Id, [Text], [Int], [Date], [Bit]) values
+		(Id, [Text], [Int], [Date], [Bit]);
 end
 go
 ------------------------------------------------
@@ -2665,7 +2674,7 @@ begin
 	set nocount on;
 	set transaction isolation level read uncommitted;
 
-	select [Text] from a2test.[STATIC] where Id = @Id;
+	select [Text], [Int], [Date], [Bit] from a2test.[STATIC] where Id = @Id;
 end
 go
 ------------------------------------------------
