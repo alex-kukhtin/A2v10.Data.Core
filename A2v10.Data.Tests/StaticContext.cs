@@ -136,20 +136,21 @@ public class TestStaticDbContext
         .Add("Bit", true)
         .Build();
 
-        _staticDbContext.ExecuteNonQuerySql(null, "update a2test.[STATIC] set [Text] = @Text where Id = @Id", (prms) =>
+        _staticDbContext.ExecuteNonQuerySql(null, "update a2test.[STATIC] set [Text] = @Text, [Date] = @Date where Id = @Id", (prms) =>
         {
             prms.AddBigInt("@Id", 10)
                 .AddString("@Text", "Test Text SQL")
                 .AddDateFromQuery("@Date", query, "Date");
         });
 
-        _staticDbContext.ExecuteReaderSql(null, "select [Text] from a2test.[STATIC] where [Id] = @Id", (prms) =>
+        _staticDbContext.ExecuteReaderSql(null, "select [Text], [Date] from a2test.[STATIC] where [Id] = @Id", (prms) =>
         {
             prms.AddBigInt("@Id", 10);
         },
         (rdrNo, rdr) =>
         {
             Assert.AreEqual("Test Text SQL", rdr.GetString(0));
+            Assert.AreEqual(dt, rdr.GetDateTime(1));
         });
     }
 }

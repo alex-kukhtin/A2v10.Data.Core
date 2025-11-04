@@ -62,9 +62,13 @@ public static class DbParamsExtension
     public static DbParameterCollection AddDateFromQuery(this DbParameterCollection coll, String paramName, ExpandoObject qry, String? prop = null)
     {
         prop = prop ?? paramName.TrimStart('@');
-        var val = qry.Get<String>(prop);
+        var val = qry.Get<Object>(prop);
+        if (val == null)
+            return coll.AddDate(paramName, null);
+        if (val is DateTime dt)
+            return coll.AddDate(paramName, dt);
         return coll.AddDate(paramName, val != null ?
-            DateTime.ParseExact(val, "yyyyMMdd", CultureInfo.InvariantCulture) : null);
+            DateTime.ParseExact(val.ToString()!, "yyyyMMdd", CultureInfo.InvariantCulture) : null);
     }
     public static DbParameterCollection AddBitFromQuery(this DbParameterCollection coll, String paramName, ExpandoObject qry, String prop)
     {

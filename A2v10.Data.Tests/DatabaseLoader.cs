@@ -550,6 +550,10 @@ public class LoadList
 		var res = dm.Root.Eval<Object>("Company.Stream");
 		Assert.IsTrue(res is Byte[]);
 		Assert.HasCount(2048, (res as Byte[])!);
+
+        var res2 = dm.Eval<Object>(dm.Root, "Company.Stream");
+        Assert.IsTrue(res2 is Byte[]);
+        Assert.HasCount(2048, (res2 as Byte[])!);
     }
 
     [TestMethod]
