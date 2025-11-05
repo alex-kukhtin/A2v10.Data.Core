@@ -112,4 +112,36 @@ public class TypedDataTests
         Assert.AreEqual("Sample data 2", c2.Data);
         Assert.AreEqual(dt, c2.UtcRunAt);
     }
+
+    [TestMethod]
+    public void SaveList()
+    {
+        var dt = DateTime.Today;
+        var sc = new List<ScheduledCommand>()
+        {
+            new("Test1", "Data 2"),
+            new("Test2"),
+            new("Test3", "Sample data 2", dt)
+        };
+        _dbContext.SaveList<ScheduledCommand>("", "a2test.[List.Save]", null, sc);
+        var list = _dbContext.LoadList<ScheduledCommand>(null, "a2test.[List.Load]", null);
+        Assert.IsNotNull(list);
+        Assert.HasCount(3, list);
+
+        var c0 = list[0];
+        var c1 = list[1];
+        var c2 = list[2];
+
+        Assert.AreEqual("Test1", c0.Command);
+        Assert.AreEqual("Data 2", c0.Data);
+        Assert.IsNull(c0.UtcRunAt);
+
+        Assert.AreEqual("Test2", c1.Command);
+        Assert.IsNull(c1.Data);
+        Assert.IsNull(c1.UtcRunAt);
+
+        Assert.AreEqual("Test3", c2.Command);
+        Assert.AreEqual("Sample data 2", c2.Data);
+        Assert.AreEqual(dt, c2.UtcRunAt);
+    }
 }

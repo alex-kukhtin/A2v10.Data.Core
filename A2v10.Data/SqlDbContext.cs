@@ -25,7 +25,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 	private readonly IDataLocalizer _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 	private readonly ITenantManager? _tenantManager = tenantManager;
 	private readonly ITokenProvider? _tokenProvider = tokenProvider;
-	private readonly MetadataCache _metadataCache = metadataCache;
+	private readonly MetadataCache _metadataCache = metadataCache ?? throw new ArgumentNullException(nameof(metadataCache));
 
     Int32 CommandTimeout => (Int32)_config.CommandTimeout.TotalSeconds;
 

@@ -1,18 +1,18 @@
 ﻿// Copyright © 2015-2025 Oleksandr  Kukhtin. All rights reserved.
 
-using System.Text;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
-
-using Newtonsoft.Json;
 
 
 namespace A2v10.Data;
 
-using A2v10.Data.Dynamic;
 using A2v10.Data.Core.Extensions.Dynamic;
+using A2v10.Data.Dynamic;
+using System.ComponentModel;
 
 [DataContract]
 public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadata, ExpandoObject root, ExpandoObject? system) : IDataModel
@@ -67,10 +67,9 @@ public partial class DynamicDataModel(IDictionary<String, IDataMetadata> metadat
 			return default;
 		if (result is T resultT)
 			return resultT;
-		var tp = typeof(T);
-		if (tp.IsNullableType())
-			tp = Nullable.GetUnderlyingType(tp);
-		return (T)Convert.ChangeType(result, tp!);
+
+        var tp = typeof(T);
+        return (T) Convert.ChangeType(result, tp!);
 	}
 
 	const String RESOLVE_PATTERN = "\\{\\{(.+?)\\}\\}";

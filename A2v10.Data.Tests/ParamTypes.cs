@@ -92,8 +92,55 @@ public class ParamTypes
 		Assert.IsTrue(dat.GetValue<Boolean>("Boolean"));
 	}
 
-	[TestMethod]
-	public async Task PrimitiveExecAndLoad()
+    [TestMethod]
+    public void PrimitiveExecAndLoad()
+    {
+        var now = DateTime.Now;
+        var bytes = new Byte[23];
+        for (var i = 0; i < bytes.Length; i++)
+            bytes[i] = (Byte)i;
+
+        var prms = new TestParams2()
+        {
+            NVarChar = "NVarChar",
+            VarChar = "VarChar",
+            Money = 123.34M,
+            Real = 787.2345,
+            Date = now,
+            DateTime = now,
+            Time = TimeSpan.FromSeconds(1234),
+            ByteArray = bytes,
+            Boolean = true
+        };
+
+        var dm = _dbContext.ExecuteAndLoad<TestParams2, TestParams2>(null, "a2test.[ParamTypes.ExecLoad]", prms);
+
+        Assert.IsNotNull(dm);
+        Assert.AreEqual(prms.NVarChar, dm.NVarChar);
+        Assert.AreEqual(prms.VarChar, dm.VarChar);
+        Assert.AreEqual(prms.Money, dm.Money);
+        Assert.AreEqual(prms.Real, dm.Real);
+        Assert.AreEqual(prms.Time, dm.Time);
+
+        var date = dm.Date;
+        Assert.IsTrue(date.Year == now.Year && date.Month == now.Month && date.Day == now.Day &&
+            date.Hour == 0 && date.Minute == 0 && date.Second == 0);
+        date = dm.DateTime;
+        Assert.IsTrue(date.Year == now.Year && date.Month == now.Month && date.Day == now.Day &&
+            date.Hour == now.Hour && date.Minute == now.Minute && Math.Abs(date.Second - now.Second) < 2);
+
+
+        var ba = dm.ByteArray;
+        Assert.IsNotNull(ba);
+        Assert.HasCount(ba.Length, bytes);
+        for (int i = 0; i < ba.Length; i++)
+            Assert.AreEqual(ba[i], bytes[i]);
+
+        Assert.AreEqual(prms.Boolean, dm.Boolean);
+    }
+
+    [TestMethod]
+	public async Task PrimitiveExecAndLoadAsync()
 	{
 		var now = DateTime.Now;
 		var bytes = new Byte[23];

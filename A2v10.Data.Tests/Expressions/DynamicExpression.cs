@@ -216,9 +216,6 @@ public class Expressions
 		result = CalcExpression("Agent.$dollar", "Agent", agent);
 		Assert.AreEqual("$", result);
 
-        // check lambda caching with special char
-        result = CalcExpression("Agent.$dollar", "Agent", agent);
-        Assert.AreEqual("$", result);
 
         result = CalcExpression("Agent._underscore", "Agent", agent);
 		Assert.AreEqual("_", result);
@@ -234,10 +231,6 @@ public class Expressions
 
 		result = CalcExpression("Agent['Array'][2 - 2].Value", "Agent", agent);
 		Assert.AreEqual(3, result);
-
-        // check lambda caching with special char
-        result = CalcExpression("Agent['Array'][2 - 2].Value", "Agent", agent);
-        Assert.AreEqual(3, result);
 
         var root = new ExpandoObject
 		{
