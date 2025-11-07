@@ -451,13 +451,48 @@ internal class ExpressionParser
 		ch = textPos < textLen ? text[textPos] : '\0';
 	}
 
-	void NextToken()
+    private static readonly IReadOnlyDictionary<Char, TokenId> _singleCharTokens = new Dictionary<Char, TokenId>()
+    {
+        ['%'] = TokenId.Percent,
+        ['('] = TokenId.OpenParen,
+        [')'] = TokenId.CloseParen,
+        ['*'] = TokenId.Asterisk,
+        ['+'] = TokenId.Plus,
+        [','] = TokenId.Comma,
+        ['-'] = TokenId.Minus,
+        ['.'] = TokenId.Dot,
+        ['/'] = TokenId.Slash,
+        [':'] = TokenId.Colon,
+        ['?'] = TokenId.Question,
+        ['['] = TokenId.OpenBracket,
+        [']'] = TokenId.CloseBracket
+    }.AsReadOnly();
+
+	void SetToken(TokenId id, Int32 start)
+	{
+        token.id = id;
+        token.text = text[start..textPos];
+        token.pos = start;
+
+    }
+
+    void NextToken()
 	{
 		while (Char.IsWhiteSpace(ch))
 			NextChar();
+
+
+		if (_singleCharTokens.TryGetValue(ch, out TokenId tok))
+		{
+            NextChar();
+            SetToken(tok, textPos);
+            return;
+        }
+
+        Int32 tokenPos = textPos;
 		TokenId t;
-		Int32 tokenPos = textPos;
-		switch (ch)
+
+        switch (ch)
 		{
 			case '!':
 				NextChar();
@@ -477,10 +512,6 @@ internal class ExpressionParser
 					t = TokenId.Exclamation;
 				}
 				break;
-			case '%':
-				NextChar();
-				t = TokenId.Percent;
-				break;
 			case '&':
 				NextChar();
 				if (ch == '&')
@@ -489,45 +520,7 @@ internal class ExpressionParser
 					t = TokenId.DoubleAmphersand;
 				}
 				else
-				{
 					t = TokenId.Amphersand;
-				}
-				break;
-			case '(':
-				NextChar();
-				t = TokenId.OpenParen;
-				break;
-			case ')':
-				NextChar();
-				t = TokenId.CloseParen;
-				break;
-			case '*':
-				NextChar();
-				t = TokenId.Asterisk;
-				break;
-			case '+':
-				NextChar();
-				t = TokenId.Plus;
-				break;
-			case ',':
-				NextChar();
-				t = TokenId.Comma;
-				break;
-			case '-':
-				NextChar();
-				t = TokenId.Minus;
-				break;
-			case '.':
-				NextChar();
-				t = TokenId.Dot;
-				break;
-			case '/':
-				NextChar();
-				t = TokenId.Slash;
-				break;
-			case ':':
-				NextChar();
-				t = TokenId.Colon;
 				break;
 			case '<':
 				NextChar();
@@ -537,9 +530,7 @@ internal class ExpressionParser
 					t = TokenId.LessThanEqual;
 				}
 				else
-				{
 					t = TokenId.LessThan;
-				}
 				break;
 			case '=':
 				NextChar();
@@ -551,9 +542,7 @@ internal class ExpressionParser
 						NextChar(); // ===
 				}
 				else
-				{
 					t = TokenId.Equal;
-				}
 				break;
 			case '>':
 				NextChar();
@@ -563,21 +552,7 @@ internal class ExpressionParser
 					t = TokenId.GreaterThanEqual;
 				}
 				else
-				{
 					t = TokenId.GreaterThan;
-				}
-				break;
-			case '?':
-				NextChar();
-				t = TokenId.Question;
-				break;
-			case '[':
-				NextChar();
-				t = TokenId.OpenBracket;
-				break;
-			case ']':
-				NextChar();
-				t = TokenId.CloseBracket;
 				break;
 			case '|':
 				NextChar();
@@ -587,9 +562,7 @@ internal class ExpressionParser
 					t = TokenId.DoubleBar;
 				}
 				else
-				{
 					t = TokenId.Bar;
-				}
 				break;
 			case '"':
 			case '\'':

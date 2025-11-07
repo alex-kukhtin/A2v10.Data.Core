@@ -53,8 +53,9 @@ public class TestResolve
         Assert.IsNull(decResult3);
 
 		Decimal? dx = 12.34M;
-		var m = dm.Root.Get<ExpandoObject>("Model");
-		m.Set("Decimal3", new Nullable<Decimal>(12.34M));
+		var m = dm.Root.Get<ExpandoObject>("Model")
+			?? throw new InvalidOperationException("Model not found");
+        m.Set("Decimal3", dx);
 
         var decResult4 = dm.CalcExpression<Decimal?>("Model.Decimal3");
         Assert.AreEqual(12.34M, decResult4);
