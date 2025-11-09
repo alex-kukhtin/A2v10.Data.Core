@@ -1,9 +1,6 @@
-﻿// Copyright © 2015-2021 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
-using A2v10.Data.Interfaces;
 using A2v10.Data.Tests.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Dynamic;
 using System.Threading.Tasks;
 

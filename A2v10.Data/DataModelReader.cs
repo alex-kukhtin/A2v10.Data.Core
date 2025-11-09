@@ -111,9 +111,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		{
 			String name = rdr.GetName(i);
 			if (_aliases.ContainsKey(name))
-			{
 				_aliases[name] = rdr.GetString(i);
-			}
 		}
 	}
 
@@ -133,8 +131,9 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
         else if (filter is String strFilter)
             filter = _localizer.Localize(strFilter);
         var lastFilterKey = xs[^1];
-        if (lastFilterKey == "RefId")
-        {
+
+		void _setFilterRefId()
+		{
             if (xs.Length < 4)
                 throw new DataLoaderException($"Invalid Filter for RefId modifier {fi.TypeName}");
             var mapKey = xs[^2];
@@ -143,24 +142,23 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
             if (_idMap.TryGetValue(key, out ExpandoObject? filterValue))
                 fmi.Set(propName, filterValue);
             else
-            {
                 fmi.Set(propName, new ExpandoObject()
                 {
                     { "Id", null },
                     { "Name", null },
                 });
-            }
         }
-        else if (lastFilterKey == "Array")
-        {
+
+		void _setFilterArray()
+		{
             if (xs.Length < 4)
                 throw new DataLoaderException($"Invalid Filter for Array modifier {fi.TypeName}");
             var mapKey = xs[^2];
             var propName = xs[^3];
             var exp = new List<ExpandoObject>();
             fmi.Set(propName, exp);
-			if (filter == null)
-				return;
+            if (filter == null)
+                return;
             if (filter is not String strFilter)
                 throw new DataLoaderException($"Filter value for {fi.TypeName}.Array must be a String");
             var idType = _idMap.GetRefType(mapKey);
@@ -172,8 +170,9 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
                     exp.Add(refValue);
             }
         }
-        else
-        {
+
+		void _setFilterPlain()
+		{
             for (Int32 ii = 1; ii < xs.Length; ii++)
             {
                 if (ii == xs.Length - 1)
@@ -182,6 +181,13 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
                     fmi = fmi.GetOrCreate<ExpandoObject>(xs[ii]);
             }
         }
+
+		if (lastFilterKey == "RefId")
+			_setFilterRefId();
+		else if (lastFilterKey == "Array")
+			_setFilterArray();
+		else
+			_setFilterPlain();
     }
     ExpandoObject _createModelInfo(String elem)
     {

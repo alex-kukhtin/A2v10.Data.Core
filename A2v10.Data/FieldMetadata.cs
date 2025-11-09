@@ -116,6 +116,7 @@ public class FieldMetadata : IDataFieldMetadata
 			Length = 16;
 			ItemType = FieldType.RowVersion;
         }
+		IsJson = fi.IsJson;
 	}
 
 	public String GetObjectType(String fieldName)
@@ -129,7 +130,7 @@ public class FieldMetadata : IDataFieldMetadata
 			case FieldType.Rows:
 			case FieldType.Columns:
 			case FieldType.Cells:	
-				return RefObject + "Array";
+				return $"{RefObject}Array";
 			case FieldType.Object:
 			case FieldType.CrossObject:
 			case FieldType.Group:
@@ -137,7 +138,7 @@ public class FieldMetadata : IDataFieldMetadata
 				return RefObject;
 			case FieldType.MapObject:
 			case FieldType.Lookup:
-				return RefObject + "Map";
+				return $"{RefObject}Map";
 			case FieldType.Json:
 				return "Json";
 			default:
@@ -182,12 +183,12 @@ public class FieldMetadata : IDataFieldMetadata
 				DataType.Date => "Date",
 				_ => DataType.ToString(),
 			},
-			FieldType.Array or
-			FieldType.Tree => $"IElementArray<{RefObject}>",
-			FieldType.Map or FieldType.Lookup or
-			FieldType.MapObject => RefObject + "[]",
-			FieldType.Object or
-			FieldType.Group => RefObject,
+			FieldType.Array or FieldType.Tree 
+                => $"IElementArray<{RefObject}>",
+			FieldType.Map or FieldType.Lookup or FieldType.MapObject 
+				=> $"{RefObject}[]",
+			FieldType.Object or FieldType.Group 
+				=> RefObject,
 			_ => DataType.ToString(),
 		};
 
