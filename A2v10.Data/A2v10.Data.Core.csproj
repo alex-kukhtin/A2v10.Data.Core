@@ -4,8 +4,8 @@
 		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<LangVersion>Latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>10.1.7572</Version>
-		<AssemblyVersion>10.1.7572</AssemblyVersion>
+		<Version>10.1.7573</Version>
+		<AssemblyVersion>10.1.7573</AssemblyVersion>
 		<Product>A2v10</Product>
 		<Authors>Oleksandr Kukhtin</Authors>
 		<Copyright>Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.</Copyright>
@@ -39,8 +39,8 @@
 		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.79.2" />
-		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="8.14.0" />
-		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.14.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="8.15.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.15.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 	</ItemGroup>
 
