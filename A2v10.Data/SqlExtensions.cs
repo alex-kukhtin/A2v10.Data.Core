@@ -1,9 +1,10 @@
-﻿// Copyright © 2015-2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+
 using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
