@@ -243,7 +243,7 @@ internal class DataModelWriter(WriterMetadata writerMetadata, Boolean allowEmpty
 										yield return dx;
 								}
 								else
-									throw new InvalidProgramException("Map item is not an Expando");
+									throw new InvalidOperationException("Map item is not an Expando");
 							}
 						}
 						else

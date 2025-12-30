@@ -507,37 +507,37 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		if (bAddMap)
 		{
 			if (key == null)
-				throw new InvalidProgramException("AddToMap: key is null");
+				throw new InvalidOperationException("AddToMap: key is null");
 			AddMapToRecord(mapPropName, id, key, currentRecord);
 		}
 		else if (bAddRow)
 		{
 			if (index == null)
-				throw new InvalidProgramException("AddSheetRow: index is null");
+				throw new InvalidOperationException("AddSheetRow: index is null");
 			if (id == null)
-				throw new InvalidProgramException("AddSheetRow: ParentId is null");
+				throw new InvalidOperationException("AddSheetRow: ParentId is null");
 			if (indexName == null)
-				throw new InvalidProgramException("AddSheetRow: IndexName is null");
+				throw new InvalidOperationException("AddSheetRow: IndexName is null");
 			AddRecordToRows(mapPropName, id, currentRecord, index, indexName);
 		}
 		else if (bAddColumn)
 		{
 			if (id == null)
-				throw new InvalidProgramException("AddSheetColumn: ParentId is null");
+				throw new InvalidOperationException("AddSheetColumn: ParentId is null");
 			if (key == null)
-				throw new InvalidProgramException("AddSheetColumn: Key is null");
+				throw new InvalidOperationException("AddSheetColumn: Key is null");
 			if (keyName == null)
-				throw new InvalidProgramException("AddSheetColumn: KeyName is null");
+				throw new InvalidOperationException("AddSheetColumn: KeyName is null");
 			AddRecordToColumns(mapPropName, id, currentRecord, key.ToString()!, keyName);
 		}
 		else if (bAddCell)
 		{
 			if (id == null)
-				throw new InvalidProgramException("AddSheetCell: ParentId is null");
+				throw new InvalidOperationException("AddSheetCell: ParentId is null");
 			if (column == null)
-				throw new InvalidProgramException("AddSheetCell: Column is null");
+				throw new InvalidOperationException("AddSheetCell: Column is null");
 			if (columnName == null)
-				throw new InvalidProgramException("AddSheetCell: ColumnName is null");
+				throw new InvalidOperationException("AddSheetCell: ColumnName is null");
 			AddRecordToCells(mapPropName, id, currentRecord, column, columnName);
 		}
 		if (!bAdded)
@@ -545,7 +545,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			if (rootFI.IsGroup)
 			{
 				if (groupKeys == null)
-					throw new InvalidProgramException("IsGroup: groupKeys is null");
+					throw new InvalidOperationException("IsGroup: groupKeys is null");
 				AddRecordToGroup(currentRecord, rootFI, groupKeys);
 			}
 			else

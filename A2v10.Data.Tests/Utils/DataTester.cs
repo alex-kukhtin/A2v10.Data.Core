@@ -46,7 +46,7 @@ public class DataTester
 	public void IsNull(String property)
 	{
 		if (_instance is not IDictionary<String, Object?> obj)
-			throw new InvalidProgramException(nameof(_instance));
+			throw new InvalidOperationException(nameof(_instance));
 		Assert.IsNull(obj[property]);
 	}
 

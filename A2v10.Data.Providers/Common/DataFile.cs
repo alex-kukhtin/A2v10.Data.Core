@@ -140,13 +140,13 @@ public class DataFile : IExternalDataFile
 		return f;
     }
 
-	public Field CreateField(String name, SqlDataType dataType, Int32? len = null)
+	public Field CreateField(String name, SqlDataType dataType, Int32? len = null, Int32? dec = null)
 	{
 		var f = new Field(name);
 		switch (Format)
 		{
 			case DataFileFormat.dbf:
-				f.SetFieldTypeDbf(dataType, len);
+				f.SetFieldTypeDbf(dataType, len, dec);
 				break;
 			case DataFileFormat.csv:
 				f.SetFieldTypeCsv();

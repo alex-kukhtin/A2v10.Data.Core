@@ -133,7 +133,7 @@ public class ElementMetadata : IDataMetadata
 			}
 			else
             {
-				throw new InvalidProgramException("Invalid metadata. variable is not FieldMetadata");
+				throw new InvalidOperationException("Invalid metadata. variable is not FieldMetadata");
             }
 		}
 		return false;

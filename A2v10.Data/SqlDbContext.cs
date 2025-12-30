@@ -676,7 +676,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		foreach (var (k, v) in firstElem)
 		{
 			if (v == null)
-				throw new InvalidProgramException("GetTableExpando() value is null");
+				throw new InvalidOperationException("GetTableExpando() value is null");
 			var dc = new DataColumn(k, v.GetType());
 			table.Columns.Add(dc);
 		}

@@ -145,7 +145,7 @@ public class DbfWriter(DataFile file) : IExternalDataWriter
 					}
 					if (sVal.Length != fd.Size)
 					{
-						throw new InvalidProgramException();
+						throw new InvalidOperationException($"Numeric: Invalid field size ({fd.Size})");
 					}
 					break;
 				case FieldType.Date:
@@ -163,15 +163,15 @@ public class DbfWriter(DataFile file) : IExternalDataWriter
 						sVal += x;
 					}
 					if (sVal.Length != fd.Size)
-						throw new InvalidProgramException();
-					break;
+                        throw new InvalidOperationException($"Char: Invalid field size ({fd.Size})");
+                    break;
 				case FieldType.Boolean:
 					sVal = xd.BooleanValue ? "T" : "F";
 					break;
 				default:
-					throw new InvalidProgramException();
-			}
-			Encoder enc = _file.Encoding.GetEncoder();
+                    throw new InvalidOperationException($"Unknown field type ({xd.FieldType})");
+            }
+            Encoder enc = _file.Encoding.GetEncoder();
 			Char[] chs = sVal.ToCharArray();
 			Byte[] buff = new Byte[sVal.Length];
 			enc.GetBytes(chs, 0, chs.Length, buff, 0, true);

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2020 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data.Providers;
 public sealed record Field
@@ -14,7 +14,7 @@ public sealed record Field
 		Type = type;
     }
 
-	internal void SetFieldTypeDbf(SqlDataType dataType, Int32? len)
+	internal void SetFieldTypeDbf(SqlDataType dataType, Int32? len, Int32? dec)
 	{
 		switch (dataType)
 		{
@@ -39,18 +39,19 @@ public sealed record Field
 			case SqlDataType.Bigint:
 			case SqlDataType.Int:
 				Type = FieldType.Numeric;
-				Size = 19;
+				Size = len ?? 19;
+				Decimal = dec ?? 0;
 				break;
 			case SqlDataType.Decimal:
 			case SqlDataType.Currency:
 				Type = FieldType.Numeric;
-				Size = 19;
-				Decimal = 4;
+				Size = len ?? 19;
+				Decimal = dec ?? 4;
 				break;
 			case SqlDataType.Float:
 				Type = FieldType.Numeric;
-				Size = 19;
-				Decimal = 8;
+				Size = len ?? 19;
+				Decimal = dec ?? 8;
 				break;
 		}
 	}

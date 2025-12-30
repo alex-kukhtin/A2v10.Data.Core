@@ -52,13 +52,13 @@ public static class Starter
 	public static IDbContext Create(DataConfigurationOptions? options = null)
 	{
 		var svc = BuildServices(options);
-		return svc.GetService<IDbContext>() ?? throw new InvalidProgramException("IDbContext not found");
+		return svc.GetService<IDbContext>() ?? throw new InvalidOperationException("IDbContext not found");
 	}
 
     public static IStaticDbContext  CreateStatic(DataConfigurationOptions? options = null)
     {
         var svc = BuildServices(options);
-        return svc.GetService<IStaticDbContext>() ?? throw new InvalidProgramException("IStaticDbContext not found");
+        return svc.GetService<IStaticDbContext>() ?? throw new InvalidOperationException("IStaticDbContext not found");
     }
 
     public static IDbContext CreateWithTenants()

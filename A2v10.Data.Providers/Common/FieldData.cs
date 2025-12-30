@@ -60,7 +60,7 @@ namespace A2v10.Data.Providers
 					SetValueCsv(value);
 					break;
 				default:
-					throw new InvalidProgramException($"Unknown DataFile format: '{format}'");
+					throw new InvalidOperationException($"Unknown DataFile format: '{format}'");
 			}
 		}
 
