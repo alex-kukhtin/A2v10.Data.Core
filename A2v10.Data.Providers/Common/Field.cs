@@ -14,7 +14,7 @@ public sealed record Field
 		Type = type;
     }
 
-	internal void SetFieldTypeDbf(SqlDataType dataType)
+	internal void SetFieldTypeDbf(SqlDataType dataType, Int32? len)
 	{
 		switch (dataType)
 		{
@@ -24,7 +24,7 @@ public sealed record Field
 				break;
 			case SqlDataType.String:
 				Type = FieldType.Char;
-				Size = 254; // max size for dbf
+				Size = len ?? 254; // max size for dbf
 				break;
 			case SqlDataType.Guid:
 				Type = FieldType.Char;
