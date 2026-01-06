@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 
@@ -125,7 +125,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
         var xs = fi.TypeName.Split('.');
         if (xs.Length < 2)
             throw new DataLoaderException("For the Filter modifier, the field name must be as ItemProperty.FilterProperty");
-        var fmi = _createModelInfo(xs[0]).GetOrCreate<ExpandoObject>("Filter");
+        var fmi = СreateModelInfo(xs[0]).GetOrCreate<ExpandoObject>("Filter");
         if (filter is DateTime)
             filter = DataHelpers.DateTime2StringWrap(filter);
         else if (filter is String strFilter)
@@ -189,7 +189,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		else
 			_setFilterPlain();
     }
-    ExpandoObject _createModelInfo(String elem)
+    ExpandoObject СreateModelInfo(String elem)
     {
         return _root.GetOrCreate<ExpandoObject>("$ModelInfo").GetOrCreate<ExpandoObject>(elem);
     }
@@ -210,7 +210,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 				case SpecType.PageSize:
 					Int32 pageSize = (Int32) dataVal;
 					if (!String.IsNullOrEmpty(fi.TypeName))
-						_createModelInfo(fi.TypeName).Set("PageSize", pageSize);
+						СreateModelInfo(fi.TypeName).Set("PageSize", pageSize);
 					else
 					{
 						// for compatibility with older versions
@@ -221,15 +221,15 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 					if (String.IsNullOrEmpty(fi.TypeName))
 						throw new DataLoaderException("For the Offset modifier, the field name must be specified");
 					Int32 offset = (Int32)dataVal;
-					_createModelInfo(fi.TypeName).Set("Offset", offset);
+					СreateModelInfo(fi.TypeName).Set("Offset", offset);
 					break;
 				case SpecType.HasRows:
 					if (String.IsNullOrEmpty(fi.TypeName))
 						throw new DataLoaderException("For the HasRows modifier, the field name must be specified");
 					if (dataVal is Int32 intHasRows)
-						_createModelInfo(fi.TypeName).Set("HasRows", intHasRows != 0);
+						СreateModelInfo(fi.TypeName).Set("HasRows", intHasRows != 0);
 					else if (dataVal is Boolean boolHasRows)
-						_createModelInfo(fi.TypeName).Set("HasRows", boolHasRows);
+						СreateModelInfo(fi.TypeName).Set("HasRows", boolHasRows);
 					else
 						throw new DataLoaderException("Invalid data type for the TotalRows modifier. Expected 'int' or 'bit'");
 					break;
@@ -237,19 +237,19 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 					if (String.IsNullOrEmpty(fi.TypeName))
 						throw new DataLoaderException("For the SortDir modifier, the field name must be specified");
 					String? dir = dataVal?.ToString();
-					_createModelInfo(fi.TypeName).Set("SortDir", dir);
+					СreateModelInfo(fi.TypeName).Set("SortDir", dir);
 					break;
 				case SpecType.SortOrder:
 					if (String.IsNullOrEmpty(fi.TypeName))
 						throw new DataLoaderException("For the SortOrder modifier, the field name must be specified");
 					if (dataVal is String strDataOrder)
-						_createModelInfo(fi.TypeName).Set("SortOrder", strDataOrder);
+						СreateModelInfo(fi.TypeName).Set("SortOrder", strDataOrder);
 					break;
 				case SpecType.GroupBy:
 					if (String.IsNullOrEmpty(fi.TypeName))
 						throw new DataLoaderException("For the Group modifier, the field name must be specified");
 					if (dataVal is String strDataGroup)
-						_createModelInfo(fi.TypeName).Set("GroupBy", strDataGroup);
+						СreateModelInfo(fi.TypeName).Set("GroupBy", strDataGroup);
 					break;
 				case SpecType.Filter:
 					ProcessFilter(fi, dataVal);
@@ -267,7 +267,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 					var xp = fi.TypeName.Split('.');
 					if (xp.Length < 1)
 						throw new DataLoaderException("For the Permissions modifier, the field name must be as ItemProperty");
-					var fmp = _createModelInfo(fi.TypeName);
+					var fmp = СreateModelInfo(fi.TypeName);
 					fmp.Set("Permissions", perm);
 					break;
 				default:
