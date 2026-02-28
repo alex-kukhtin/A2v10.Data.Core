@@ -2739,3 +2739,56 @@ begin
 end
 go
 
+------------------------------------------------
+drop procedure if exists a2test.[ComplexModels.Metadata], a2test.[ComplexModels.Update];
+drop type if exists a2test.[ComplexModels.TableType];
+go
+------------------------------------------------
+create type [a2test].[ComplexModels.TableType] as
+table (
+	[Id] bigint,
+	[Name] nvarchar(255),
+	[SubObject.Id] bigint,
+	[SubObject.Name] nvarchar(255),
+	[SubObject.Sub2.Id] int,
+	[SubObject.Sub2.Name] nvarchar(255),
+	[SubObject.Sub2.Guid] uniqueidentifier,
+	[SubObject.Sub2.Number] decimal(7, 2),
+	[SubObjectString.Id] nvarchar(20),
+	[SubObjectString.Name] nvarchar(100),
+	[SubObjectString.DateTime] datetime,
+	[SubObjectString.Number] money
+)
+go
+------------------------------------------------
+create or alter procedure a2test.[ComplexModels.Metadata]
+as
+begin
+	set nocount on;
+
+	declare @MainObject a2test.[ComplexModels.TableType];
+	select [MainObject!MainObject!Metadata] = null, * from @MainObject;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[ComplexModels.Update]
+@TenantId int = null,
+@UserId bigint = null,
+@MainObject a2test.[ComplexModels.TableType] readonly
+as
+begin
+	set nocount on;
+	select [MainObject!TMainObject!Object] = null, [Id], [Name], 
+		[SubObject_Id] = [SubObject.Id],
+		[SubObject_Name] = [SubObject.Name],
+		[SubObject_Sub2_Id] = [SubObject.Sub2.Id],
+		[SubObject_Sub2_Name] = [SubObject.Sub2.Name],
+		[SubObject_Sub2_Guid] = [SubObject.Sub2.Guid],
+		[SubObject_Sub2_Number]= [SubObject.Sub2.Number],
+		[SubObjectString_Id] = [SubObjectString.Id],
+		[SubObjectString_Name] = [SubObjectString.Name],
+		[SubObjectString_DateTime] = [SubObjectString.DateTime],
+		[SubObjectString_Number] = [SubObjectString.Number]
+	from @MainObject;	
+end
+go

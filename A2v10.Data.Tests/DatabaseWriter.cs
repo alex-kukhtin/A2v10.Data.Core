@@ -1,31 +1,31 @@
-﻿// Copyright © 2015-2022 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
+using A2v10.Data.Dynamic;
+using A2v10.Data.Tests.Configuration;
+using Microsoft.SqlServer.Server;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Dynamic;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+namespace A2v10.Data.Tests;
 
-using A2v10.Data.Tests.Configuration;
-
-namespace A2v10.Data.Tests
+[TestClass]
+[TestCategory("Write models")]
+public class DatabaseWriter
 {
-	[TestClass]
-	[TestCategory("Write models")]
-	public class DatabaseWriter
+	readonly IDbContext _dbContext;
+
+	public DatabaseWriter()
 	{
-		readonly IDbContext _dbContext;
+		_dbContext = Starter.Create();
+	}
 
-		public DatabaseWriter()
-		{
-			_dbContext = Starter.Create();
-		}
-
-		[TestMethod]
-		public async Task WriteSubObjectData()
-		{
-			// DATA with ROOT
-			var jsonData = @"
+	[TestMethod]
+	public async Task WriteSubObjectData()
+	{
+		// DATA with ROOT
+		var jsonData = @"
 			{
 			    MainObject: {
 				    Id : 45,
@@ -45,52 +45,52 @@ namespace A2v10.Data.Tests
 			    }
             }
 			";
-			IDataModel? dm = null;
-			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-			Assert.IsNotNull(dataToSave);
-			try
-			{
-				dm = await _dbContext.SaveModelAsync(null, "a2test.[NestedObject.Update]", dataToSave);
-			}
-			catch (Exception /*ex*/)
-			{
-				throw;
-			}
-
-			var dt = new DataTester(dm, "MainObject");
-			dt.AreValueEqual(45L, "Id");
-			dt.AreValueEqual("MainObjectName", "Name");
-			var guid = dt.GetValue<Guid>("GUID");
-			var guidVal = dt.GetValue<Guid>("GuidValue");
-			Assert.AreEqual(Guid.Parse("0db82076-0bec-4c5c-adbf-73A056FCCB04"), guidVal);
-
-			var tdsub = new DataTester(dm, "MainObject.SubObject");
-			tdsub.AreValueEqual(55L, "Id");
-			tdsub.AreValueEqual("SubObjectName", "Name");
-			tdsub.AreValueEqual(guid, "ParentGuid");
-
-			var tdsubarray = new DataTester(dm, "MainObject.SubObject.SubArray");
-			tdsubarray.IsArray(2);
-
-			tdsubarray.AreArrayValueEqual(5, 0, "X");
-			tdsubarray.AreArrayValueEqual(6, 0, "Y");
-			tdsubarray.AreArrayValueEqual(5.1M, 0, "D");
-
-			tdsubarray.AreArrayValueEqual(8, 1, "X");
-			tdsubarray.AreArrayValueEqual(9, 1, "Y");
-			tdsubarray.AreArrayValueEqual(7.23M, 1, "D");
-
+		IDataModel? dm = null;
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		Assert.IsNotNull(dataToSave);
+		try
+		{
 			dm = await _dbContext.SaveModelAsync(null, "a2test.[NestedObject.Update]", dataToSave);
-			dt = new DataTester(dm, "MainObject");
-			dt.AreValueEqual(45L, "Id");
-			dt.AreValueEqual("MainObjectName", "Name");
+		}
+		catch (Exception /*ex*/)
+		{
+			throw;
 		}
 
-		[TestMethod]
-		public async Task WriteNewObject()
-		{
-			// DATA with ROOT
-			var jsonData = @"
+		var dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual(45L, "Id");
+		dt.AreValueEqual("MainObjectName", "Name");
+		var guid = dt.GetValue<Guid>("GUID");
+		var guidVal = dt.GetValue<Guid>("GuidValue");
+		Assert.AreEqual(Guid.Parse("0db82076-0bec-4c5c-adbf-73A056FCCB04"), guidVal);
+
+		var tdsub = new DataTester(dm, "MainObject.SubObject");
+		tdsub.AreValueEqual(55L, "Id");
+		tdsub.AreValueEqual("SubObjectName", "Name");
+		tdsub.AreValueEqual(guid, "ParentGuid");
+
+		var tdsubarray = new DataTester(dm, "MainObject.SubObject.SubArray");
+		tdsubarray.IsArray(2);
+
+		tdsubarray.AreArrayValueEqual(5, 0, "X");
+		tdsubarray.AreArrayValueEqual(6, 0, "Y");
+		tdsubarray.AreArrayValueEqual(5.1M, 0, "D");
+
+		tdsubarray.AreArrayValueEqual(8, 1, "X");
+		tdsubarray.AreArrayValueEqual(9, 1, "Y");
+		tdsubarray.AreArrayValueEqual(7.23M, 1, "D");
+
+		dm = await _dbContext.SaveModelAsync(null, "a2test.[NestedObject.Update]", dataToSave);
+		dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual(45L, "Id");
+		dt.AreValueEqual("MainObjectName", "Name");
+	}
+
+	[TestMethod]
+	public async Task WriteNewObject()
+	{
+		// DATA with ROOT
+		var jsonData = @"
             {
 			    MainObject: {
 				    Id : 0,
@@ -98,24 +98,24 @@ namespace A2v10.Data.Tests
 			    }
             }
 			";
-			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-			Assert.IsNotNull(dataToSave);
-			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[NewObject.Update]", dataToSave);
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		Assert.IsNotNull(dataToSave);
+		IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[NewObject.Update]", dataToSave);
 
-			var dt = new DataTester(dm, "MainObject");
-			dt.AreValueEqual("Id is null", "Name");
+		var dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual("Id is null", "Name");
 
-			dm = await _dbContext.SaveModelAsync(null, "a2test.[NewObject.Update]", dataToSave);
+		dm = await _dbContext.SaveModelAsync(null, "a2test.[NewObject.Update]", dataToSave);
 
-			dt = new DataTester(dm, "MainObject");
-			dt.AreValueEqual("Id is null", "Name");
-		}
+		dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual("Id is null", "Name");
+	}
 
-		[TestMethod]
-		public async Task WriteSubObjects()
-		{
-			// DATA with ROOT
-			var jsonData = @"
+	[TestMethod]
+	public async Task WriteSubObjects()
+	{
+		// DATA with ROOT
+		var jsonData = @"
 			{
 				MainObject: {
 					Id : 0,
@@ -131,32 +131,32 @@ namespace A2v10.Data.Tests
 				}
 			}
 			";
-			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-			Assert.IsNotNull(dataToSave);
-			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		Assert.IsNotNull(dataToSave);
+		IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
 
-			var dt = new DataTester(dm, "MainObject");
-			dt.AreValueEqual("null", "RootId");
-			dt.AreValueEqual("null", "SubId");
-			dt.AreValueEqual("null", "SubIdString");
+		var dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual("null", "RootId");
+		dt.AreValueEqual("null", "SubId");
+		dt.AreValueEqual("null", "SubIdString");
 
-			IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
-			dt = new DataTester(dm2, "MainObject");
-			dt.AreValueEqual("null", "RootId");
-			dt.AreValueEqual("null", "SubId");
-			dt.AreValueEqual("null", "SubIdString");
+		IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
+		dt = new DataTester(dm2, "MainObject");
+		dt.AreValueEqual("null", "RootId");
+		dt.AreValueEqual("null", "SubId");
+		dt.AreValueEqual("null", "SubIdString");
 
-			Assert.IsNotNull(dataToSave);
-			dm = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
-			dt = new DataTester(dm, "MainObject");
-			dt.AreValueEqual("null", "RootId");
-		}
+		Assert.IsNotNull(dataToSave);
+		dm = await _dbContext.SaveModelAsync(null, "a2test.[SubObjects.Update]", dataToSave);
+		dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual("null", "RootId");
+	}
 
-		[TestMethod]
-		public async Task WriteJson()
-		{
-			// DATA with ROOT
-			var jsonData = @"
+	[TestMethod]
+	public async Task WriteJson()
+	{
+		// DATA with ROOT
+		var jsonData = @"
 			{
 				MainObject: {
 					Id : 0,
@@ -173,39 +173,39 @@ namespace A2v10.Data.Tests
 				}
 			}
 			";
-			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-			Assert.IsNotNull(dataToSave);
-			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Json.Update]", dataToSave);
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		Assert.IsNotNull(dataToSave);
+		IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Json.Update]", dataToSave);
 
-			var dt = new DataTester(dm, "MainObject");
-			dt.AreValueEqual("null", "RootId");
-			dt.AreValueEqual("not null", "SubId");
-			dt.AreValueEqual("null", "SubIdString");
+		var dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual("null", "RootId");
+		dt.AreValueEqual("not null", "SubId");
+		dt.AreValueEqual("null", "SubIdString");
 
-			dt = new DataTester(dm, "MainObject.SubJson");
+		dt = new DataTester(dm, "MainObject.SubJson");
 
-			dt.AreValueEqual(112233L, "Id");
-			dt.AreValueEqual("Test Agent", "Name");
-			dt.AreValueEqual("CODE", "Code");
+		dt.AreValueEqual(112233L, "Id");
+		dt.AreValueEqual("Test Agent", "Name");
+		dt.AreValueEqual("CODE", "Code");
 
-			dt = new DataTester(dm, "RootJson");
+		dt = new DataTester(dm, "RootJson");
 
-			dt.AreValueEqual(112233L, "Id");
-			dt.AreValueEqual("Test Agent", "Name");
-			dt.AreValueEqual("CODE", "Code");
+		dt.AreValueEqual(112233L, "Id");
+		dt.AreValueEqual("Test Agent", "Name");
+		dt.AreValueEqual("CODE", "Code");
 
-			IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[Json.Update]", dataToSave);
-			dt = new DataTester(dm2, "MainObject");
-			dt.AreValueEqual("null", "RootId");
-			dt.AreValueEqual("not null", "SubId");
-			dt.AreValueEqual("null", "SubIdString");
-		}
+		IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[Json.Update]", dataToSave);
+		dt = new DataTester(dm2, "MainObject");
+		dt.AreValueEqual("null", "RootId");
+		dt.AreValueEqual("not null", "SubId");
+		dt.AreValueEqual("null", "SubIdString");
+	}
 
-		[TestMethod]
-		public async Task WriteModelWithGuids()
-		{
-			// DATA with ROOT
-			var jsonData = @"
+	[TestMethod]
+	public async Task WriteModelWithGuids()
+	{
+		// DATA with ROOT
+		var jsonData = @"
 			{
 				Document: {
 					Id : 150,
@@ -219,54 +219,54 @@ namespace A2v10.Data.Tests
 				}
 			}
 			";
-			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-			Assert.IsNotNull(dataToSave);
-			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Guid.Update]", dataToSave);
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		Assert.IsNotNull(dataToSave);
+		IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Guid.Update]", dataToSave);
 
-			var dt = new DataTester(dm, "Document");
-			dt.AreValueEqual(150L, "Id");
-			var guid = dt.GetValue<Guid>("GUID");
-			var rows = new DataTester(dm, "Document.Rows");
-			rows.IsArray(2);
-			rows.AreArrayValueEqual(guid, 0, "ParentGuid");
-			rows.AreArrayValueEqual(guid, 1, "ParentGuid");
-			rows.AreArrayValueEqual(10L, 0, "Id");
-			rows.AreArrayValueEqual(20L, 1, "Id");
-			rows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
-			rows.AreArrayValueEqual(2, 1, "RowNo");
+		var dt = new DataTester(dm, "Document");
+		dt.AreValueEqual(150L, "Id");
+		var guid = dt.GetValue<Guid>("GUID");
+		var rows = new DataTester(dm, "Document.Rows");
+		rows.IsArray(2);
+		rows.AreArrayValueEqual(guid, 0, "ParentGuid");
+		rows.AreArrayValueEqual(guid, 1, "ParentGuid");
+		rows.AreArrayValueEqual(10L, 0, "Id");
+		rows.AreArrayValueEqual(20L, 1, "Id");
+		rows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
+		rows.AreArrayValueEqual(2, 1, "RowNo");
 
-			var rowguid = rows.GetArrayValue<Guid>(0, "GUID");
-			Assert.AreNotEqual(guid, rowguid);
-			var subrows = new DataTester(dm, "Document.Rows[0].SubRows");
-			subrows.IsArray(2);
-			subrows.AreArrayValueEqual(rowguid, 0, "ParentGuid");
-			subrows.AreArrayValueEqual(rowguid, 1, "ParentGuid");
-			subrows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
-			subrows.AreArrayValueEqual(2, 1, "RowNo");
-			subrows.AreArrayValueEqual(1, 0, "ParentRN"); // 1-based
-			subrows.AreArrayValueEqual(1, 1, "ParentRN");
+		var rowguid = rows.GetArrayValue<Guid>(0, "GUID");
+		Assert.AreNotEqual(guid, rowguid);
+		var subrows = new DataTester(dm, "Document.Rows[0].SubRows");
+		subrows.IsArray(2);
+		subrows.AreArrayValueEqual(rowguid, 0, "ParentGuid");
+		subrows.AreArrayValueEqual(rowguid, 1, "ParentGuid");
+		subrows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
+		subrows.AreArrayValueEqual(2, 1, "RowNo");
+		subrows.AreArrayValueEqual(1, 0, "ParentRN"); // 1-based
+		subrows.AreArrayValueEqual(1, 1, "ParentRN");
 
-			// next time
-			IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[Guid.Update]", dataToSave);
-			dt = new DataTester(dm2, "Document");
-			dt.AreValueEqual(150L, "Id");
-			rows = new DataTester(dm, "Document.Rows");
-			rows.IsArray(2);
-			rows.IsArray(2);
-			rows.AreArrayValueEqual(guid, 0, "ParentGuid");
-			rows.AreArrayValueEqual(guid, 1, "ParentGuid");
-			rows.AreArrayValueEqual(10L, 0, "Id");
-			rows.AreArrayValueEqual(20L, 1, "Id");
-			rows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
-			rows.AreArrayValueEqual(2, 1, "RowNo");
+		// next time
+		IDataModel dm2 = await _dbContext.SaveModelAsync(null, "a2test.[Guid.Update]", dataToSave);
+		dt = new DataTester(dm2, "Document");
+		dt.AreValueEqual(150L, "Id");
+		rows = new DataTester(dm, "Document.Rows");
+		rows.IsArray(2);
+		rows.IsArray(2);
+		rows.AreArrayValueEqual(guid, 0, "ParentGuid");
+		rows.AreArrayValueEqual(guid, 1, "ParentGuid");
+		rows.AreArrayValueEqual(10L, 0, "Id");
+		rows.AreArrayValueEqual(20L, 1, "Id");
+		rows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
+		rows.AreArrayValueEqual(2, 1, "RowNo");
 
-		}
+	}
 
-		[TestMethod]
-		public async Task WriteModelFallback()
-		{
-			// DATA with ROOT
-			var jsonData = @"
+	[TestMethod]
+	public async Task WriteModelFallback()
+	{
+		// DATA with ROOT
+		var jsonData = @"
 			{
 				Document: {
 					Id : 150,
@@ -277,35 +277,84 @@ namespace A2v10.Data.Tests
 				}
 			}
 			";
-			var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
-			Assert.IsNotNull(dataToSave);
-			IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Fallback.Update]", dataToSave);
-			var dt = new DataTester(dm, "Document");
-			dt.AreValueEqual(150L, "Id");
-			var rows = new DataTester(dm, "Document.Rows");
-			rows.IsArray(2);
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		Assert.IsNotNull(dataToSave);
+		IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[Fallback.Update]", dataToSave);
+		var dt = new DataTester(dm, "Document");
+		dt.AreValueEqual(150L, "Id");
+		var rows = new DataTester(dm, "Document.Rows");
+		rows.IsArray(2);
 
-			var nv0 = new DataTester(dm, "Document.Rows[0].Nested");
-			nv0.AreValueEqual(3, "Key");
-			nv0.AreValueEqual("Value3", "Value");
+		var nv0 = new DataTester(dm, "Document.Rows[0].Nested");
+		nv0.AreValueEqual(3, "Key");
+		nv0.AreValueEqual("Value3", "Value");
 
-			var nv1 = new DataTester(dm, "Document.Rows[1].Nested");
-			nv1.AreValueEqual(5, "Key");
-			nv1.AreValueEqual("Value5", "Value");
+		var nv1 = new DataTester(dm, "Document.Rows[1].Nested");
+		nv1.AreValueEqual(5, "Key");
+		nv1.AreValueEqual("Value5", "Value");
 
-			dm = await _dbContext.SaveModelAsync(null, "a2test.[Fallback.Update]", dataToSave);
-			dt = new DataTester(dm, "Document");
-			dt.AreValueEqual(150L, "Id");
-			rows = new DataTester(dm, "Document.Rows");
-			rows.IsArray(2);
+		dm = await _dbContext.SaveModelAsync(null, "a2test.[Fallback.Update]", dataToSave);
+		dt = new DataTester(dm, "Document");
+		dt.AreValueEqual(150L, "Id");
+		rows = new DataTester(dm, "Document.Rows");
+		rows.IsArray(2);
 
-			nv0 = new DataTester(dm, "Document.Rows[0].Nested");
-			nv0.AreValueEqual(3, "Key");
-			nv0.AreValueEqual("Value3", "Value");
+		nv0 = new DataTester(dm, "Document.Rows[0].Nested");
+		nv0.AreValueEqual(3, "Key");
+		nv0.AreValueEqual("Value3", "Value");
 
-			nv1 = new DataTester(dm, "Document.Rows[1].Nested");
-			nv1.AreValueEqual(5, "Key");
-			nv1.AreValueEqual("Value5", "Value");
-		}
+		nv1 = new DataTester(dm, "Document.Rows[1].Nested");
+		nv1.AreValueEqual(5, "Key");
+		nv1.AreValueEqual("Value5", "Value");
 	}
+
+	[TestMethod]
+	public async Task WriteComplexObjects()
+	{
+		var guid = Guid.NewGuid();
+		var dateTime = new DateTime(2026, 02, 22, 12, 55, 20);
+        // DATA with ROOT
+        var jsonData = $$"""
+			{
+				MainObject: {
+					Id : 299,
+					Name: 'Test Object',
+					SubObject: {
+						Id: 500,
+						Name: 'Test Agent',
+						Sub2: {
+							Id: 120,
+							Name: 'Test Sub2',
+							Guid: '{{guid.ToString()}}',
+							Number: 123.45	
+						}
+					},
+					SubObjectString: {
+						Id: 'NULL',
+						Name: 'Test Method',
+						DateTime: '{{dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ")}}',
+						Number: 123.42	
+					}
+				}
+			}
+			""";
+		var dataToSave = JsonConvert.DeserializeObject<ExpandoObject>(jsonData.Replace('\'', '"'), new ExpandoObjectConverter());
+		Assert.IsNotNull(dataToSave);
+		IDataModel dm = await _dbContext.SaveModelAsync(null, "a2test.[ComplexModels.Update]", dataToSave);
+
+		var dt = new DataTester(dm, "MainObject");
+		dt.AreValueEqual(299L, "Id");
+		dt.AreValueEqual("Test Object", "Name");
+        dt.AreValueEqual(500L, "SubObject_Id");
+        dt.AreValueEqual("Test Agent", "SubObject_Name");
+        dt.AreValueEqual(120, "SubObject_Sub2_Id");
+        dt.AreValueEqual("Test Sub2", "SubObject_Sub2_Name");
+        dt.AreValueEqual(guid, "SubObject_Sub2_Guid");
+        dt.AreValueEqual(123.45M, "SubObject_Sub2_Number");
+
+        dt.AreValueEqual("NULL", "SubObjectString_Id");
+        dt.AreValueEqual("Test Method", "SubObjectString_Name");
+        dt.AreValueEqual(123.42M, "SubObjectString_Number");
+        dt.AreValueEqual(dateTime, "SubObjectString_DateTime");
+    }
 }
