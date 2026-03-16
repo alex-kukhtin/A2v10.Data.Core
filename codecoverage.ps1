@@ -14,7 +14,7 @@ $reportList = $coverageFiles -join ";"
 reportgenerator `
   -reports:$reportList `
   -targetdir:"coveragereport" `
-  -classfilters:-System.Text.RegularExpressions.* `
+  -filefilters:-*.g.cs `
   -reporttypes:HtmlInline_AzurePipelines `
   -verbosity:Info
 
