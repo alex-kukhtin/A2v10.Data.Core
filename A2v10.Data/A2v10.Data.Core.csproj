@@ -4,8 +4,8 @@
 		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<LangVersion>Latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>10.1.7592</Version>
-		<AssemblyVersion>10.1.7592</AssemblyVersion>
+		<Version>10.1.7593</Version>
+		<AssemblyVersion>10.1.7593</AssemblyVersion>
 		<Product>A2v10</Product>
 		<Authors>Oleksandr Kukhtin</Authors>
 		<Copyright>Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.</Copyright>
@@ -33,7 +33,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.7" />
