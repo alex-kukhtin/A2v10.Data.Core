@@ -1,4 +1,4 @@
-﻿// Copyright © 2020-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2020-2026 Oleksandr Kukhtin. All rights reserved.
 
 using A2v10.Data;
 using Microsoft.Extensions.Configuration;
@@ -18,13 +18,13 @@ public static class DataCoreDependencyInjection
 	}
 
 
-	public static IServiceCollection ConfigureDbContext(this IServiceCollection services, String DefaultConnectioString, IConfiguration config)
+	public static IServiceCollection ConfigureDbContext(this IServiceCollection services, String defaultConnectionString, IConfiguration config)
 	{
 		var sect = new DataConfigurationSection();
 		config.GetSection("A2v10:Data").Bind(sect);
 		services.Configure<DataConfigurationOptions>(options =>
 		{
-			options.ConnectionStringName = DefaultConnectioString;
+			options.ConnectionStringName = defaultConnectionString;
 			options.DisableWriteMetadataCaching = !sect.MetadataCache;
 			options.DefaultCommandTimeout = sect.CommandTimeout;
 			options.CatalogAsDefault = sect.CatalogAsDefault;
