@@ -126,4 +126,18 @@ public class CsvReaderTest
             Assert.AreEqual(8, v1?.Length);
         }
     }
+
+    [TestMethod]
+    public void InvalidCsvFile()
+    {
+		/*
+        var f = new DataFile();
+        var rdr = new CsvReader(f);
+
+        using (var file = File.Open("invalid_file.csv", FileMode.Open))
+        {
+            rdr.Read(file);
+        }
+		*/
+    }
 }
