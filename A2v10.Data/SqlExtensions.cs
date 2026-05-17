@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Globalization;
@@ -83,8 +83,20 @@ public static class SqlExtensions
 		}
 		return str;
     }
-
 	public static Object ConvertTo(Object? value, Type to, Boolean allowEmptyString, String columnName)
+	{
+		try
+		{
+			return ConvertToInternal(value, to, allowEmptyString, columnName);
+		}
+		catch (Exception ex)
+		{
+			throw new InvalidOperationException($"ConvertTo. '{ex.Message}', column:'{columnName}', type:'{to.Name}', value:'{value}'", ex);
+		}
+	}
+
+
+    private static Object ConvertToInternal(Object? value, Type to, Boolean allowEmptyString, String columnName)
 	{
 		if (value == null)
 			return DBNull.Value;
