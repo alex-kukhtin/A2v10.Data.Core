@@ -1,4 +1,4 @@
-﻿// Copyright © 2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2024-2026 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data;
 
@@ -17,7 +17,16 @@ public class DataModelBuilder
 		};
 	}
 
-	public ElementMetadata AddMetadata(String typeName)
+	public void AddSystem(String key, Object value)
+	{
+		_sys.Add(key, value);
+	}
+    public void AddGroup(String key, GroupMetadata group)
+    {
+        _groupMetadata.Add(key, group);
+    }
+
+    public ElementMetadata AddMetadata(String typeName)
 	{
 		if (_metadata.TryGetValue(typeName, out IDataMetadata? elemMeta))
 		{
