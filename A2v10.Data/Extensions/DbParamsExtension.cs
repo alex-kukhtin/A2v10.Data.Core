@@ -47,7 +47,7 @@ public static class DbParamsExtension
 	}
     public static DbParameterCollection AddTyped(this DbParameterCollection coll, String name, SqlDbType dbType, Object? value)
     {
-        coll.Add(new SqlParameter(name, dbType) { Value = value != null ? value : DBNull.Value });
+        coll.Add(new SqlParameter(name, dbType) { Value = value ?? DBNull.Value });
         return coll;
     }
     public static DbParameterCollection AddStructured(this DbParameterCollection coll, String name, String dbTypeName, DataTable dataTable)
@@ -61,7 +61,7 @@ public static class DbParamsExtension
 
     public static DbParameterCollection AddDateFromQuery(this DbParameterCollection coll, String paramName, ExpandoObject qry, String? prop = null)
     {
-        prop = prop ?? paramName.TrimStart('@');
+        prop ??= paramName.TrimStart('@');
         var val = qry.Get<Object>(prop);
         if (val == null)
             return coll.AddDate(paramName, null);

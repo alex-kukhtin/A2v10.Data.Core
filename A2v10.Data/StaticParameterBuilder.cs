@@ -53,14 +53,14 @@ public class StaticParameterBuilder(DbParameterCollection _prms) : IParameterBui
 
     public IParameterBuilder AddStringFromQuery(String name, ExpandoObject qry, String? prop = null)
     {
-        prop = prop ?? name.TrimStart('@');
+        prop ??= name.TrimStart('@');
         _prms.AddStringFromQuery(name, qry, prop);
         return this;
     }
 
     public IParameterBuilder AddFromQuery(String name, ExpandoObject qry, String? prop = null)
     {
-        prop = prop ?? name.TrimStart('@');
+        prop ??= name.TrimStart('@');
         var val = qry.Get<Object>(prop);
         switch (val)
         {
