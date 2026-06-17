@@ -1,6 +1,7 @@
 ﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
+using System.Linq;
 using System.Text;
 
 namespace A2v10.Data.Providers;
@@ -281,5 +282,6 @@ public class DataFile : IExternalDataFile
 		}
 	}
 
+	public List<String> FieldNames => [.. _fields.Select(x => x.Name)];
 }
 

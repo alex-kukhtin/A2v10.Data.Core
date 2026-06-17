@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Text;
 
@@ -29,20 +29,13 @@ public class ExternalDataContext : IExternalDataProvider
 			else if (fileName.EndsWith(".xml"))
 				format = "xml";
 		}
-		switch (format)
+		return format switch
 		{
-			case "dbf":
-				var dataFileDbf = new DataFile(enc);
-				return new DbfReader(dataFileDbf);
-			case "csv":
-				var dataFileCsv = new DataFile(enc);
-				return new CsvReader(dataFileCsv);
-			case "xml":
-				var dataFileXml = new DataFile();
-				return new XmlReader(dataFileXml);
-			default:
-				throw new ExternalDataException($"Format '{format}'. Reader not found.");
-		}
+			"dbf" => new DbfReader(new DataFile(enc)),
+			"csv" => new CsvReader(new DataFile(enc)),
+			"xml" => new XmlReader(new DataFile()),
+			_ => throw new ExternalDataException($"Format '{format}'. Reader not found.")
+		};
 	}
 
 	public IExternalDataWriter GetWriter(IDataModel model, String format, Encoding enc)

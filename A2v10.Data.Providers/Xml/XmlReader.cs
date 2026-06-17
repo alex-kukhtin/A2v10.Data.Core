@@ -1,4 +1,4 @@
-﻿// Copyright © 2018-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2018-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.IO;
@@ -56,7 +56,13 @@ public class XmlReader(DataFile file) : IExternalDataReader
 		return this.ParseFlatFile(stream, table);
 	}
 
-	public ExpandoObject CreateDataModel(Stream stream)
+    public (ExpandoObject Model, IExternalDataFile Reader) CreateDataModelFile(Stream stream)
+    {
+        var eo = this.CreateExpandoObject(stream);
+        return (eo, _file);
+    }
+
+    public ExpandoObject CreateDataModel(Stream stream)
 	{
 		// extension
 		return this.CreateExpandoObject(stream);

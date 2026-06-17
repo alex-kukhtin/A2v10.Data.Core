@@ -1,13 +1,12 @@
-﻿// Copyright © 2015-2018 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
-using A2v10.Data.Providers.Dbf;
-using A2v10.Data.Tests.Configuration;
-using A2v10.Data.Tests.Providers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
+using A2v10.Data.Providers;
+using A2v10.Data.Providers.Dbf;
+using A2v10.Data.Tests.Configuration;
 
-namespace A2v10.Data.Providers
+namespace A2v10.Data.Tests.Providers
 {
 	[TestClass]
 	[TestCategory("Providers")]
@@ -54,6 +53,8 @@ namespace A2v10.Data.Providers
 			{
 				rdr.Read(file);
 			}
+
+			Assert.AreEqual("ID|FTEXT|FNUM|FDATE|FBOOL", String.Join('|', f.FieldNames));
 
 			var wrt = new DbfWriter(f);
 

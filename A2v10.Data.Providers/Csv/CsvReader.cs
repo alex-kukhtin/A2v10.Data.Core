@@ -39,15 +39,19 @@ public class CsvReader(DataFile file) : IExternalDataReader
 		return this.CreateExpandoObject(stream);
 	}
 
-	Encoding FindEncoding(Stream stream)
+	public (ExpandoObject Model, IExternalDataFile Reader) CreateDataModelFile(Stream stream)
 	{
-		using (var br = new BinaryReader(stream, Encoding.Default, true))
-		{
-			var bytes = br.ReadBytes(2048);
-			stream.Seek(0, SeekOrigin.Begin);
-			return _file.FindDecoding(bytes);
-		}
+		var eo = this.CreateExpandoObject(stream);
+		return (eo, _file);
 	}
+
+    Encoding FindEncoding(Stream stream)
+	{
+        using var br = new BinaryReader(stream, Encoding.Default, true);
+        var bytes = br.ReadBytes(2048);
+        stream.Seek(0, SeekOrigin.Begin);
+        return _file.FindDecoding(bytes);
+    }
 
 	void ReadHeader(StreamReader rdr)
 	{

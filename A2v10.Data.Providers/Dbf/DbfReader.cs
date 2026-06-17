@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Globalization;
@@ -6,10 +6,8 @@ using System.IO;
 using System.Text;
 
 namespace A2v10.Data.Providers.Dbf;
-public class DbfReader(DataFile file) : IExternalDataReader
+public class DbfReader(DataFile _file) : IExternalDataReader
 {
-	private readonly DataFile _file = file;
-
 	const String ErrorIncorrectFormat = "DbfReader. Incorrect file format";
 
     public IExternalDataFile Read(Stream stream)
@@ -33,8 +31,13 @@ public class DbfReader(DataFile file) : IExternalDataReader
 		return this.CreateExpandoObject(stream);
 	}
 
+    public (ExpandoObject Model, IExternalDataFile Reader) CreateDataModelFile(Stream stream)
+    {
+        var eo = this.CreateExpandoObject(stream);
+        return (eo, _file);
+    }
 
-	public void Read(BinaryReader rdr)
+    public void Read(BinaryReader rdr)
 	{
 		rdr.ReadByte(); // char
 		Byte y = rdr.ReadByte(); // modified date

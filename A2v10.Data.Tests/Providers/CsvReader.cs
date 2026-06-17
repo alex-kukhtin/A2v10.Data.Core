@@ -30,6 +30,8 @@ public class CsvReaderTest
 			rdr.Read(file);
 		}
 
+		Assert.AreEqual("Header1|Header2|Header3|Number|Date|Header4", String.Join("|", f.FieldNames));
+
 		var wrt = new CsvWriter(f);
 		using (var file = File.Create("testfiles/output.csv"))
 		{
@@ -110,21 +112,19 @@ public class CsvReaderTest
         var f = new DataFile();
         var rdr = new CsvReader(f);
 
-		using (var file = File.Open("testfiles/zerospace.csv", FileMode.Open))
-		{
-			rdr.Read(file);
-			Assert.AreEqual(1, f.Records.Count());
-			Assert.AreEqual(13, f.FieldCount);
+        using var file = File.Open("testfiles/zerospace.csv", FileMode.Open);
+        rdr.Read(file);
+        Assert.HasCount(1, f.Records);
+        Assert.AreEqual(13, f.FieldCount);
 
-			var r1 = f.GetRecord(0);
-			var v1 = r1.FieldValue(2)?.ToString();
-            Assert.AreEqual("UA9999999999999999", v1);
-			Assert.AreEqual(18, v1?.Length);
+        var r1 = f.GetRecord(0);
+        var v1 = r1.FieldValue(2)?.ToString();
+        Assert.AreEqual("UA9999999999999999", v1);
+        Assert.AreEqual(18, v1?.Length);
 
-            v1 = r1.FieldValue(0)?.ToString();
-			Assert.AreEqual("BO122222", v1);
-            Assert.AreEqual(8, v1?.Length);
-        }
+        v1 = r1.FieldValue(0)?.ToString();
+        Assert.AreEqual("BO122222", v1);
+        Assert.AreEqual(8, v1?.Length);
     }
 
     [TestMethod]

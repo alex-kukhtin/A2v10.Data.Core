@@ -8,5 +8,6 @@ public interface IExternalDataReader
 	IExternalDataFile Read(Stream stream);
 	ExpandoObject ParseFile(Stream stream, ITableDescription table);
 	ExpandoObject CreateDataModel(Stream stream);
+    (ExpandoObject Model, IExternalDataFile Reader) CreateDataModelFile(Stream stream);
 }
 
