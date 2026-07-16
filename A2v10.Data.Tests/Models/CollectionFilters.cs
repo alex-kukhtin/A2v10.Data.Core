@@ -66,6 +66,30 @@ public class CollectionFilters
             ?? throw new InvalidOperationException("Warehouse is null");
 		Assert.IsNull(wh.Get<Object>("Id"));
         Assert.IsNull(wh.Get<Object>("Name"));
+
+        var mis = dm.Metadata["TRoot"].ModelInfos
+            ?? throw new InvalidOperationException("ModelInfos is null");
+        var mi = mis["Documents"];
+        Assert.IsTrue(mi.HasPageSize);
+        Assert.IsTrue(mi.HasOffset);
+        Assert.IsTrue(mi.HasSortOrder);
+        Assert.IsTrue(mi.HasSortDir);
+        Assert.IsFalse(mi.HasGroupBy);
+        Assert.IsFalse(mi.HasRowCount);
+
+        var fm = mi.Filters
+            ?? throw new InvalidOperationException("Filters is null");
+        Assert.HasCount(6, fm);
+        Assert.AreEqual(FilterType.Period, fm["Period"].Type);
+        Assert.IsNull(fm["Period"].RefType);
+        Assert.AreEqual(FilterType.Ref, fm["Agent"].Type);
+        Assert.AreEqual("TObject", fm["Agent"].RefType);
+        Assert.AreEqual(FilterType.String, fm["Fragment"].Type);
+        Assert.AreEqual(FilterType.String, fm["NullString"].Type);
+        Assert.AreEqual(FilterType.Ref, fm["Company"].Type);
+        Assert.AreEqual("TCompany", fm["Company"].RefType);
+        Assert.AreEqual(FilterType.Ref, fm["Warehouse"].Type);
+        Assert.AreEqual("TWarehouse", fm["Warehouse"].RefType);
     }
 
     [TestMethod]
@@ -120,6 +144,20 @@ public class CollectionFilters
             ?? throw new InvalidOperationException("Warehouse is null");
         Assert.IsNull(wh.Get<Object>("Id"));
         Assert.IsNull(wh.Get<Object>("Name"));
+
+        var mis = dm.Metadata["TRoot"].ModelInfos
+            ?? throw new InvalidOperationException("ModelInfos is null");
+        var fm = mis["Documents"].Filters
+            ?? throw new InvalidOperationException("Filters is null");
+        Assert.HasCount(5, fm);
+        Assert.AreEqual(FilterType.Period, fm["Period"].Type);
+        Assert.AreEqual(FilterType.RefArray, fm["Agents"].Type);
+        Assert.AreEqual("TAgent", fm["Agents"].RefType);
+        Assert.AreEqual(FilterType.String, fm["Fragment"].Type);
+        Assert.AreEqual(FilterType.Ref, fm["Company"].Type);
+        Assert.AreEqual("TCompany", fm["Company"].RefType);
+        Assert.AreEqual(FilterType.Ref, fm["Warehouse"].Type);
+        Assert.AreEqual("TWarehouse", fm["Warehouse"].RefType);
     }
 
     [TestMethod]
@@ -165,5 +203,37 @@ public class CollectionFilters
             ?? throw new InvalidOperationException("Warehouse is null");
         Assert.IsNull(wh.Get<Object>("Id"));
         Assert.IsNull(wh.Get<Object>("Name"));
+    }
+
+    [TestMethod]
+    public async Task FilterMetadata()
+    {
+        var dm = await _dbContext.LoadModelAsync(null, "a2test.[FiltersMeta.Load]");
+
+        // legacy root-level PageSize goes to $System only
+        Assert.IsNotNull(dm.System);
+        Assert.AreEqual(10, dm.System.Get<Int32>("PageSize"));
+
+        var mis = dm.Metadata["TRoot"].ModelInfos
+            ?? throw new InvalidOperationException("ModelInfos is null");
+        Assert.HasCount(1, mis);
+        var mi = mis["Elements"];
+        Assert.IsTrue(mi.HasPageSize);
+        Assert.IsTrue(mi.HasGroupBy);
+        Assert.IsTrue(mi.HasRowCount);
+        Assert.IsFalse(mi.HasOffset);
+        Assert.IsFalse(mi.HasSortOrder);
+        Assert.IsFalse(mi.HasSortDir);
+
+        var fm = mi.Filters
+            ?? throw new InvalidOperationException("Filters is null");
+        Assert.HasCount(5, fm);
+        Assert.AreEqual(FilterType.Boolean, fm["Flag"].Type);
+        Assert.AreEqual(FilterType.Number, fm["Count"].Type);
+        Assert.AreEqual(FilterType.Date, fm["DateOpt"].Type);
+        // the "Period" prefix rule applies to nested nodes only
+        Assert.AreEqual(FilterType.Period, fm["PeriodShip"].Type);
+        Assert.IsNull(fm["PeriodShip"].RefType);
+        Assert.AreEqual(FilterType.String, fm["PeriodKind"].Type);
     }
 }

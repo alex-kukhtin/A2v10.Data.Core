@@ -1,32 +1,12 @@
-﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data.Interfaces;
-public struct DataElementInfo
+public record struct DataElementInfo
 {
 	public IDataMetadata? Metadata { get; set; }
 	public Object? Element { get; set; }
 	public Object? Id { get; set; }
-
-	public override Boolean Equals(Object? obj)
-	{
-		throw new NotImplementedException();
-	}
-
-	public override Int32 GetHashCode()
-	{
-		throw new NotImplementedException();
-	}
-
-	public static Boolean operator ==(DataElementInfo left, DataElementInfo right)
-	{
-		return left.Equals(right);
-	}
-
-	public static Boolean operator !=(DataElementInfo left, DataElementInfo right)
-	{
-		return !(left == right);
-	}
 }
 
 public interface IDataModel

@@ -30,6 +30,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 	private FieldInfo? mainElement;
     private DynamicDataGrouping? _dynamicGrouping = null;
     Dictionary<String, String>? _aliases = null;
+	private HashSet<String>? _rowCountProps = null;
 
 	void AddAliasesFromReader(IDataReader rdr)
 	{
@@ -572,7 +573,10 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		var objectDef = new FieldInfo(firstFieldName);
 		objectDef.CheckTypeName(); // for first field only
 		if (objectDef.TypeName == SYSTEM_TYPE)
-			return; // not needed
+		{
+			ProcessSystemMetadata(rdr);
+			return;
+		}
 		else if (objectDef.TypeName == ALIASES_TYPE)
 		{
 			AddAliasesFromReader(rdr);
@@ -663,7 +667,77 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			}
 		}
 		if (hasRowCount)
+		{
 			_root.AddChecked($"{objectDef.PropertyName}.$RowCount", 0);
+			(_rowCountProps ??= []).Add(objectDef.PropertyName);
+		}
+	}
+
+	const String GENERIC_REF_TYPE = "TObject";
+	const String PERIOD_PREFIX = "Period";
+
+	void ProcessSystemMetadata(IDataReader rdr)
+	{
+		// $System is always the last recordset, so the metadata
+		// of all elements (including RowCount) is already collected here
+		var rootMetadata = GetOrCreateMetadata(ROOT);
+
+		ModelInfoMetadata GetModelInfo(String name)
+		{
+			var mi = rootMetadata.GetOrCreateModelInfo(name);
+			mi.HasRowCount = _rowCountProps != null && _rowCountProps.Contains(name);
+			return mi;
+		}
+
+		for (Int32 i = 1; i < rdr.FieldCount; i++)
+		{
+			var fi = new FieldInfo(rdr.GetName(i));
+			if (String.IsNullOrEmpty(fi.TypeName))
+				continue; // legacy root-level modifiers ([!!PageSize])
+			switch (fi.SpecType)
+			{
+				case SpecType.PageSize:
+					GetModelInfo(fi.TypeName).HasPageSize = true;
+					break;
+				case SpecType.Offset:
+					GetModelInfo(fi.TypeName).HasOffset = true;
+					break;
+				case SpecType.SortOrder:
+					GetModelInfo(fi.TypeName).HasSortOrder = true;
+					break;
+				case SpecType.SortDir:
+					GetModelInfo(fi.TypeName).HasSortDir = true;
+					break;
+				case SpecType.GroupBy:
+					GetModelInfo(fi.TypeName).HasGroupBy = true;
+					break;
+				case SpecType.Filter:
+					var xs = fi.TypeName.Split('.');
+					if (xs.Length < 2)
+						continue; // invalid, ProcessFilter will throw
+					ProcessFilterMetadata(GetModelInfo(xs[0]), xs, rdr.GetFieldType(i));
+					break;
+			}
+		}
+	}
+
+	static void ProcessFilterMetadata(ModelInfoMetadata mi, String[] xs, Type fieldType)
+	{
+		var lastFilterKey = xs[^1];
+		if (lastFilterKey == "RefId" && xs.Length >= 4)
+			mi.AddFilter(new ModelInfoFilterMetadata(xs[^3], FilterType.Ref, xs[^2]));
+		else if (lastFilterKey == "Array" && xs.Length >= 4)
+			mi.AddFilter(new ModelInfoFilterMetadata(xs[^3], FilterType.RefArray, xs[^2]));
+		else if (xs.Length > 2)
+		{
+			// nested node: the predefined Period or a generalized reference
+			var node = xs[1];
+			mi.AddFilter(node.StartsWith(PERIOD_PREFIX, StringComparison.Ordinal)
+				? new ModelInfoFilterMetadata(node, FilterType.Period)
+				: new ModelInfoFilterMetadata(node, FilterType.Ref, GENERIC_REF_TYPE));
+		}
+		else
+			mi.AddFilter(new ModelInfoFilterMetadata(xs[1], fieldType.Name.TypeName2DataType().ToFilterType()));
 	}
 
 	Dictionary<String, GroupMetadata>? _groupMetadata;

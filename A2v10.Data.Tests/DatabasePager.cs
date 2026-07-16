@@ -39,6 +39,17 @@ namespace A2v10.Data.Tests
 			dt.AreValueEqual(20, "PageSize");
 			dt.AreValueEqual("asc", "SortDir");
 			dt.AreValueEqual("Name", "SortOrder");
+
+			var mis = dm.Metadata["TRoot"].ModelInfos
+				?? throw new InvalidOperationException("ModelInfos is null");
+			var mi = mis["Elems"];
+			Assert.IsTrue(mi.HasPageSize);
+			Assert.IsTrue(mi.HasSortOrder);
+			Assert.IsTrue(mi.HasSortDir);
+			Assert.IsFalse(mi.HasOffset);
+			Assert.IsFalse(mi.HasGroupBy);
+			Assert.IsTrue(mi.HasRowCount);
+			Assert.IsNull(mi.Filters);
 		}
 	}
 }

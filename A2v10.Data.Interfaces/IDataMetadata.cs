@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 namespace A2v10.Data.Interfaces;
 public interface IDataMetadata
@@ -17,6 +17,7 @@ public interface IDataMetadata
 
 	IDictionary<String, IDataFieldMetadata> Fields { get; }
 	IDictionary<String, IList<String?>?>? Cross { get; }
+	IDictionary<String, IModelInfoMetadata>? ModelInfos { get; }
 
 	Boolean IsArrayType { get; }
 	Boolean IsGroup { get; set; }

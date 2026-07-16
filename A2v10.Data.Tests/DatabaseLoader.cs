@@ -38,6 +38,9 @@ public class LoadList
 		dt.AreValueEqual(123, "Id");
 		dt.AreValueEqual("ObjectName", "Name");
 		dt.AreValueEqual(55.1234M, "Decimal");
+
+		// no $System recordset - no ModelInfos
+		Assert.IsNull(dm.Metadata["TRoot"].ModelInfos);
 	}
 
 	[TestMethod]

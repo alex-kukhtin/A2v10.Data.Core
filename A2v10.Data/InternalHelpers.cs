@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2025 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2026 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
@@ -48,6 +48,17 @@ internal static class InternalHelpers
         if (_name2SqlTypeMap.TryGetValue(s, out SqlDataType sqlType))
             return sqlType;
         return SqlDataType.Unknown;
+    }
+
+    public static FilterType ToFilterType(this DataType dt)
+    {
+        return dt switch
+        {
+            DataType.Number => FilterType.Number,
+            DataType.Date => FilterType.Date,
+            DataType.Boolean => FilterType.Boolean,
+            _ => FilterType.String
+        };
     }
 
     public static FieldType TypeName2FieldType(this String s)

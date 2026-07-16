@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2026 Oleksandr Kukhtin. All rights reserved.
 
 
 namespace A2v10.Data;
@@ -35,6 +35,19 @@ public class ElementMetadata : IDataMetadata
 
 	public IDictionary<String, IDataFieldMetadata> Fields => _fields;
 	public IDictionary<String, IList<String?>?>? Cross => _cross;
+
+	private Dictionary<String, IModelInfoMetadata>? _modelInfos;
+	public IDictionary<String, IModelInfoMetadata>? ModelInfos => _modelInfos;
+
+	internal ModelInfoMetadata GetOrCreateModelInfo(String name)
+	{
+		_modelInfos ??= [];
+		if (_modelInfos.TryGetValue(name, out IModelInfoMetadata? mi))
+			return (ModelInfoMetadata)mi;
+		var newMi = new ModelInfoMetadata();
+		_modelInfos.Add(name, newMi);
+		return newMi;
+	}
 
 	public String? FindPropertyByType(String typeName)
 	{

@@ -2349,6 +2349,28 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2test.[FiltersMeta.Load]
+@TenantId int = null,
+@UserId bigint = null
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [Elements!TElem!Array] = null, [Id!!Id] = 1, [Name!!Name] = N'Element',
+		[!!RowCount] = 1;
+
+	select [!$System!] = null, [!!PageSize] = 10, [!Elements!PageSize] = 20,
+		[!Elements!GroupBy] = N'Name',
+		[!Elements.Flag!Filter] = cast(1 as bit),
+		[!Elements.Count!Filter] = 42,
+		[!Elements.DateOpt!Filter] = cast(N'2026-01-01' as date),
+		[!Elements.PeriodShip.From!Filter] = cast(N'2026-01-01' as date),
+		[!Elements.PeriodShip.To!Filter] = cast(N'2026-01-31' as date),
+		[!Elements.PeriodKind!Filter] = N'ALL';
+end
+go
+------------------------------------------------
 create or alter procedure a2test.[Sheet.Model.Load]
 as
 begin
