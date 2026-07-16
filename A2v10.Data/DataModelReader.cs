@@ -15,6 +15,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 	const String SYSTEM_TYPE = "$System";
 	const String ALIASES_TYPE = "$Aliases";
     const String GROUPING_TYPE = "$Grouping";
+    const String DEFAULTS_TYPE = "$Defaults";
 
     private readonly IDataLocalizer _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 	private readonly ITokenProvider? _tokenProvider = tokenProvider;
@@ -31,6 +32,9 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
     private DynamicDataGrouping? _dynamicGrouping = null;
     Dictionary<String, String>? _aliases = null;
 	private HashSet<String>? _rowCountProps = null;
+	private List<DefaultValue>? _defaults = null;
+
+	private readonly record struct DefaultValue(String[] Path, Object? Value);
 
 	void AddAliasesFromReader(IDataReader rdr)
 	{
@@ -195,6 +199,56 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
         return _root.GetOrCreate<ExpandoObject>("$ModelInfo").GetOrCreate<ExpandoObject>(elem);
     }
 
+	void ProcessDefaultsRecord(IDataReader rdr)
+	{
+		// from 1!!!
+		for (Int32 i = 1; i < rdr.FieldCount; i++)
+		{
+			var dataVal = rdr.GetValue(i);
+			if (dataVal == DBNull.Value)
+				continue; // null default is meaningless
+			var fi = new FieldInfo(GetAlias(rdr.GetName(i)));
+			var path = fi.PropertyName.Split('.');
+			Object? value;
+			if (fi.IsRefId)
+			{
+				// same contract as regular RefId fields: the referenced object
+				// must be present in its Map recordset, the value type must match
+				// the Map Id type (int literal 22 != bigint 22)
+				var refValue = new ExpandoObject();
+				_refMap.Add(fi.TypeName, dataVal, refValue);
+				value = refValue;
+			}
+			else if (dataVal is String strVal)
+				value = _localizer.Localize(strVal);
+			else if (fi.IsUtc && dataVal is DateTime dt)
+				value = DateTime.SpecifyKind(dt.ToLocalTime(), DateTimeKind.Unspecified);
+			else
+				value = dataVal;
+			(_defaults ??= []).Add(new DefaultValue(path, value));
+		}
+	}
+
+	void ApplyDefaults()
+	{
+		if (_defaults == null)
+			return;
+		// defaults apply only to objects that were NOT loaded (new models),
+		// so the recordset may be returned unconditionally, without @Id = 0 branching.
+		// the snapshot is taken before the loop: the first default creates the root
+		// property, the rest must still apply to it
+		var loaded = new HashSet<String>(((IDictionary<String, Object?>)_root).Keys);
+		foreach (var def in _defaults)
+		{
+			if (loaded.Contains(def.Path[0]))
+				continue;
+			var target = _root;
+			for (var i = 0; i < def.Path.Length - 1; i++)
+				target = target.GetOrCreate<ExpandoObject>(def.Path[i]);
+			target.Set(def.Path[^1], def.Value);
+		}
+	}
+
     void ProcessSystemRecord(IDataReader rdr)
 	{
 		// from 1!!!
@@ -289,6 +343,11 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 		else if (rootFI.TypeName == ALIASES_TYPE)
 		{
 			ProcessAliasesRecord(rdr);
+			return;
+		}
+		else if (rootFI.TypeName == DEFAULTS_TYPE)
+		{
+			ProcessDefaultsRecord(rdr);
 			return;
 		}
         else if (rootFI.TypeName == GROUPING_TYPE)
@@ -582,6 +641,8 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 			AddAliasesFromReader(rdr);
 			return;
 		}
+		else if (objectDef.TypeName == DEFAULTS_TYPE)
+			return; // service recordset, no metadata
         else if (objectDef.TypeName == GROUPING_TYPE)
         {
             AddGroupingFromReader(rdr);
@@ -1048,6 +1109,7 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 
 	public void PostProcess()
 	{
+		ApplyDefaults();
 		_crossMap.Transform();
 		foreach (var (k, v) in _crossMap)
 		{

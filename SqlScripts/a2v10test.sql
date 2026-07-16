@@ -2814,3 +2814,41 @@ begin
 	from @MainObject;	
 end
 go
+
+------------------------------------------------
+create or alter procedure a2test.[Defaults.Model.Load]
+@TenantId int = null,
+@UserId bigint = null,
+@Id bigint = null
+as
+begin
+	set nocount on;
+
+	select [Document!TDocument!Object] = null, [Id!!Id] = cast(0 as bigint), [Name!!Name] = N'',
+		[IsInvoice] = cast(0 as bit), [Num] = cast(0 as float),
+		[StoreIn!TStore!RefId] = cast(null as bigint), [StoreOut!TStore!RefId] = cast(null as bigint),
+		[Agent!TAgentObj!Object] = null
+	where 0 <> 0;
+
+	select [!TAgentObj!Object] = null, [Id!!Id] = cast(0 as bigint), [Memo] = N'',
+		[Contact!TContact!RefId] = cast(null as bigint),
+		[!TDocument.Agent!ParentId] = cast(null as bigint)
+	where 0 <> 0;
+
+	-- returned unconditionally: applied only if the Document was not loaded.
+	-- the default value type must match the Map Id type (bigint)
+	select [!$Defaults!] = null,
+		[Document.StoreIn!TStore!RefId] = cast(101 as bigint),
+		[Document.StoreOut!TStore!RefId] = cast(102 as bigint),
+		[Document.Agent.Contact!TContact!RefId] = cast(305 as bigint),
+		[Document.Name] = N'New Document',
+		[Document.IsInvoice] = cast(1 as bit),
+		[Document.Num] = cast(42.5 as float);
+
+	select [!TStore!Map] = null, [Id!!Id] = cast(101 as bigint), [Name!!Name] = N'Store In'
+	union all
+	select null, cast(102 as bigint), N'Store Out';
+
+	select [!TContact!Map] = null, [Id!!Id] = cast(305 as bigint), [Name!!Name] = N'Contact 305';
+end
+go
