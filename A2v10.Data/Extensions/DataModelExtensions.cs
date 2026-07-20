@@ -153,7 +153,9 @@ public static class DataModelExtensions
 				return fm.DataType switch
 				{
 					DataType.String => String.Empty,
-					DataType.Number => 0,
+					// the CLR type of the default matches the column type (bigint → Int64 etc.)
+					DataType.Number => fm.SqlDataType == SqlDataType.Unknown
+						? 0 : fm.SqlDataType.SqlDataTypeDefault(),
 					DataType.Boolean => false,
 					_ => null // Date, Blob, Undefined
 				};

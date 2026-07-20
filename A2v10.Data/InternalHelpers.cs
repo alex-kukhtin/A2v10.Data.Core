@@ -35,11 +35,12 @@ internal static class InternalHelpers
         return s switch
         {
             SqlDataType.Decimal => (Decimal)0,
+            SqlDataType.Numeric => (Decimal)0,
             SqlDataType.Currency => (Decimal)0,
             SqlDataType.Float => (Double)0,
             SqlDataType.Bigint => (Int64)0,
             SqlDataType.Int => (Int32)0,
-            _ => throw new DataLoaderException($"SqlDataType not supported 's'")
+            _ => throw new DataLoaderException($"SqlDataType not supported '{s}'")
         };
     }
 

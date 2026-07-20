@@ -107,7 +107,7 @@ select null, cast(22 as bigint), N'Store 22';
 		var dm = await _dbContext.LoadModelSqlAsync(null, NewModelSql);
 		var instance = dm.BuildNewInstance();
 
-		Assert.AreEqual(0, dm.Eval<Object>(instance, "Document.Id"));
+		Assert.AreEqual((Int64)0, dm.Eval<Object>(instance, "Document.Id"));
 		Assert.AreEqual("", dm.Eval<String>(instance, "Document.No"));
 		Assert.IsNull(dm.Eval<Object>(instance, "Document.Date"));
 		Assert.AreEqual(false, dm.Eval<Boolean>(instance, "Document.Done"));
@@ -129,6 +129,7 @@ select null, cast(22 as bigint), N'Store 22';
 		// the full instance is built from metadata only
 		var sqlText = """
 select [Document!TDocument!Object] = null, [Id!!Id] = cast(0 as bigint), [Memo] = N'',
+	[Price] = cast(0 as money), [Qty] = cast(0 as float),
 	[Store!TStore!RefId] = cast(null as bigint),
 	[Agent!TAgent!RefId] = cast(null as bigint)
 where 0 <> 0;
@@ -144,11 +145,14 @@ where 0 <> 0;
 		Assert.IsFalse(((IDictionary<String, Object?>)dm.Root).ContainsKey("Document"));
 
 		var instance = dm.BuildNewInstance();
-		Assert.AreEqual(0, dm.Eval<Object>(instance, "Document.Id"));
+		// the CLR type of a number default follows the column type
+		Assert.AreEqual((Int64)0, dm.Eval<Object>(instance, "Document.Id"));
+		Assert.AreEqual((Decimal)0, dm.Eval<Object>(instance, "Document.Price"));
+		Assert.AreEqual((Double)0, dm.Eval<Object>(instance, "Document.Qty"));
 		Assert.AreEqual("", dm.Eval<String>(instance, "Document.Memo"));
 
 		// references are built one level deep
-		Assert.AreEqual(0, dm.Eval<Object>(instance, "Document.Store.Id"));
+		Assert.AreEqual((Int64)0, dm.Eval<Object>(instance, "Document.Store.Id"));
 		Assert.AreEqual("", dm.Eval<String>(instance, "Document.Store.Name"));
 
 		// a reference inside a reference (self-referencing type) stays empty
@@ -186,14 +190,14 @@ where 0 <> 0;
 
 		// the full create-instance over the same model
 		var instance = dm.BuildNewInstance();
-		Assert.AreEqual(0, dm.Eval<Object>(instance, "Document.Id"));
+		Assert.AreEqual((Int64)0, dm.Eval<Object>(instance, "Document.Id"));
 		Assert.AreEqual("New Document", dm.Eval<String>(instance, "Document.Name"));
 		Assert.AreEqual(true, dm.Eval<Boolean>(instance, "Document.IsInvoice"));
 		Assert.AreEqual(42.5, dm.Eval<Object>(instance, "Document.Num"));
 		Assert.AreEqual((Int64)101, dm.Eval<Object>(instance, "Document.StoreIn.Id"));
 		Assert.AreEqual((Int64)102, dm.Eval<Object>(instance, "Document.StoreOut.Id"));
 		// the nested object is completed from metadata, its reference is overlaid
-		Assert.AreEqual(0, dm.Eval<Object>(instance, "Document.Agent.Id"));
+		Assert.AreEqual((Int64)0, dm.Eval<Object>(instance, "Document.Agent.Id"));
 		Assert.AreEqual("", dm.Eval<String>(instance, "Document.Agent.Memo"));
 		Assert.AreEqual((Int64)305, dm.Eval<Object>(instance, "Document.Agent.Contact.Id"));
 	}
