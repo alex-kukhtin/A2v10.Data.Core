@@ -1,4 +1,4 @@
-﻿// Copyright © 2012-2024 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2012-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Text.RegularExpressions;
 
@@ -70,11 +70,14 @@ public partial struct FieldInfo
 		"Root",
 		"Context",
 		"ParentId",
-		"CurrentyKey",
+		"CurrentKey",
 		"ParentRowNumber",
 		"ParentKey",
-		"ParentGUID"
-	];
+		"ParentGUID",
+        "RowNumber", 
+		"GUID", 
+		"Prop"
+    ];
 
     readonly void CheckReservedWords()
 	{

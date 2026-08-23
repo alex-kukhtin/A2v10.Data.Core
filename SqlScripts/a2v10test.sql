@@ -1,6 +1,6 @@
-﻿-- Copyright © 2008-2025 Oleksandr Kukhtin
+﻿-- Copyright © 2008-2026 Oleksandr Kukhtin
 
-/* 20250824-7557 */
+/* 20260823-7617 */
 
 use a2v10test;
 go
@@ -528,7 +528,7 @@ begin
 
 	select [MainObject!TMainObject!Object] = null, [Id!!Id] = Id, [Name!!Name] = [Name],
 		NumValue, BitValue, GuidValue,
-		[SubObject!TSubObject!RefId] = SubObject, [GUID]
+		[SubObject!TSubObject!RefId] = SubObject, SystemGuid = [GUID]
 	from @MainObject;
 
 	select [!TSubObject!Map] = null, [Id!!Id] = Id, [Name!!Name] = Name, [!TMainObject.SubObject!ParentId] = ParentId,
@@ -1106,16 +1106,19 @@ begin
 
 	select @Id = Id, @Guid = [GUID] from @Document;
 
-	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Rows!TRow!Array] = null,  
-		[GUID] from @Document;
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Rows!TRow!Array] = null, 
+		SystemGuid = [GUID] 
+	from @Document;
 
 	select [!TRow!Array] = null, [!TDocument.Rows!ParentId]=@Id, 
-		[Id!!Id] = Id, Code, ParentGuid = ParentGUID, RowNo = RowNumber, ParentRN = ParentRowNumber, [GUID],
+		[Id!!Id] = Id, Code, ParentGuid = ParentGUID, RowNo = RowNumber, 
+		ParentRN = ParentRowNumber, SystemGuid = [GUID],
 		[SubRows!TSubRow!Array] = null
 	from @Rows
 	order by Id;
 
-	select [!TSubRow!Array] = null, [!TRow.SubRows!ParentId] = cast(10 as bigint), [GUID],
+	select [!TSubRow!Array] = null, [!TRow.SubRows!ParentId] = cast(10 as bigint), 
+		SystemGuid = [GUID],
 		Id, Code, ParentGuid=ParentGUID, RowNo = RowNumber, ParentRN = ParentRowNumber
 	from @SubRows
 	order by Id;

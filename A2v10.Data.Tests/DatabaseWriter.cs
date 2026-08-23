@@ -60,7 +60,7 @@ public class DatabaseWriter
 		var dt = new DataTester(dm, "MainObject");
 		dt.AreValueEqual(45L, "Id");
 		dt.AreValueEqual("MainObjectName", "Name");
-		var guid = dt.GetValue<Guid>("GUID");
+		var guid = dt.GetValue<Guid>("SystemGuid");
 		var guidVal = dt.GetValue<Guid>("GuidValue");
 		Assert.AreEqual(Guid.Parse("0db82076-0bec-4c5c-adbf-73A056FCCB04"), guidVal);
 
@@ -225,7 +225,7 @@ public class DatabaseWriter
 
 		var dt = new DataTester(dm, "Document");
 		dt.AreValueEqual(150L, "Id");
-		var guid = dt.GetValue<Guid>("GUID");
+		var guid = dt.GetValue<Guid>("SystemGuid");
 		var rows = new DataTester(dm, "Document.Rows");
 		rows.IsArray(2);
 		rows.AreArrayValueEqual(guid, 0, "ParentGuid");
@@ -235,7 +235,7 @@ public class DatabaseWriter
 		rows.AreArrayValueEqual(1, 0, "RowNo"); // 1-based
 		rows.AreArrayValueEqual(2, 1, "RowNo");
 
-		var rowguid = rows.GetArrayValue<Guid>(0, "GUID");
+		var rowguid = rows.GetArrayValue<Guid>(0, "SystemGuid");
 		Assert.AreNotEqual(guid, rowguid);
 		var subrows = new DataTester(dm, "Document.Rows[0].SubRows");
 		subrows.IsArray(2);
