@@ -88,6 +88,9 @@ internal static class InternalHelpers
     {
         if (Enum.TryParse<SpecType>(s, out SpecType st))
             return st;
+        // !!UTC is written in live SQL; an unknown modifier silently degrades to a plain scalar
+        if (String.Equals(s, "Utc", StringComparison.OrdinalIgnoreCase))
+            return SpecType.Utc;
         return SpecType.Unknown;
     }
     public static void AddToArray(this ExpandoObject eo, String key, ExpandoObject? value)

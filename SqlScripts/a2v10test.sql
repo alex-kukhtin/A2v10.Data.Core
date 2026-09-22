@@ -1,6 +1,6 @@
 ﻿-- Copyright © 2008-2026 Oleksandr Kukhtin
 
-/* 20260823-7617 */
+/* 20260921-7621 */
 
 use a2v10test;
 go
@@ -2371,6 +2371,44 @@ begin
 		[!Elements.PeriodShip.From!Filter] = cast(N'2026-01-01' as date),
 		[!Elements.PeriodShip.To!Filter] = cast(N'2026-01-31' as date),
 		[!Elements.PeriodKind!Filter] = N'ALL';
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[FiltersLinq.Load]
+@TenantId int = null,
+@UserId bigint = null
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [Elements!TElem!Array] = null, [Id!!Id] = 1, [Name!!Name] = N'Element';
+
+	select [!$System!] = null, [!Elements!Skip] = 40, [!Elements!Take] = 20,
+		[!Elements!OrderBy] = N'name', [!Elements!Desc] = cast(1 as bit),
+		[!Others!Desc] = 0, [!Others!OrderBy] = cast(null as nvarchar(255));
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[FiltersLinqInvalid.Load]
+@TenantId int = null,
+@UserId bigint = null,
+@Kind nvarchar(16)
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [Elements!TElem!Array] = null, [Id!!Id] = 1, [Name!!Name] = N'Element';
+
+	if @Kind = N'Take'
+		select [!$System!] = null, [!Elements!Take] = cast(20 as bigint);
+	else if @Kind = N'Skip'
+		select [!$System!] = null, [!Elements!Skip] = cast(null as int);
+	else if @Kind = N'Desc'
+		select [!$System!] = null, [!Elements!Desc] = N'desc';
+	else if @Kind = N'OrderBy'
+		select [!$System!] = null, [!Elements!OrderBy] = 1;
 end
 go
 ------------------------------------------------

@@ -300,6 +300,39 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 					if (dataVal is String strDataOrder)
 						СreateModelInfo(fi.TypeName).Set("SortOrder", strDataOrder);
 					break;
+				case SpecType.Take:
+					if (String.IsNullOrEmpty(fi.TypeName))
+						throw new DataLoaderException("For the Take modifier, the field name must be specified");
+					if (dataVal is not Int32 intTake)
+						throw new DataLoaderException("Invalid data type for the Take modifier. Expected 'int'");
+					СreateModelInfo(fi.TypeName).Set("Take", intTake);
+					break;
+				case SpecType.Skip:
+					if (String.IsNullOrEmpty(fi.TypeName))
+						throw new DataLoaderException("For the Skip modifier, the field name must be specified");
+					if (dataVal is not Int32 intSkip)
+						throw new DataLoaderException("Invalid data type for the Skip modifier. Expected 'int'");
+					СreateModelInfo(fi.TypeName).Set("Skip", intSkip);
+					break;
+				case SpecType.Desc:
+					if (String.IsNullOrEmpty(fi.TypeName))
+						throw new DataLoaderException("For the Desc modifier, the field name must be specified");
+					if (dataVal is Int32 intDesc)
+						СreateModelInfo(fi.TypeName).Set("Desc", intDesc != 0);
+					else if (dataVal is Boolean boolDesc)
+						СreateModelInfo(fi.TypeName).Set("Desc", boolDesc);
+					else
+						throw new DataLoaderException("Invalid data type for the Desc modifier. Expected 'int' or 'bit'");
+					break;
+				case SpecType.OrderBy:
+					if (String.IsNullOrEmpty(fi.TypeName))
+						throw new DataLoaderException("For the OrderBy modifier, the field name must be specified");
+					// null means "no sorting": the key is not written
+					if (dataVal is String strOrderBy)
+						СreateModelInfo(fi.TypeName).Set("OrderBy", strOrderBy);
+					else if (dataVal is not DBNull)
+						throw new DataLoaderException("Invalid data type for the OrderBy modifier. Expected 'nvarchar'");
+					break;
 				case SpecType.GroupBy:
 					if (String.IsNullOrEmpty(fi.TypeName))
 						throw new DataLoaderException("For the Group modifier, the field name must be specified");
@@ -757,16 +790,21 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 				continue; // legacy root-level modifiers ([!!PageSize])
 			switch (fi.SpecType)
 			{
+				// Take/Skip/OrderBy/Desc are synonyms of PageSize/Offset/SortOrder/SortDir
 				case SpecType.PageSize:
+				case SpecType.Take:
 					GetModelInfo(fi.TypeName).HasPageSize = true;
 					break;
 				case SpecType.Offset:
+				case SpecType.Skip:
 					GetModelInfo(fi.TypeName).HasOffset = true;
 					break;
 				case SpecType.SortOrder:
+				case SpecType.OrderBy:
 					GetModelInfo(fi.TypeName).HasSortOrder = true;
 					break;
 				case SpecType.SortDir:
+				case SpecType.Desc:
 					GetModelInfo(fi.TypeName).HasSortDir = true;
 					break;
 				case SpecType.GroupBy:

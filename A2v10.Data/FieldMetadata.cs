@@ -62,7 +62,11 @@ public enum SpecType
 	Utc,
 	Token,
 	Index,
-	ColumnId
+	ColumnId,
+	Take,
+	Skip,
+	Desc,
+	OrderBy
 }
 
 public class FieldMetadata : IDataFieldMetadata

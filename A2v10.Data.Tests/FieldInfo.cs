@@ -15,5 +15,14 @@ namespace A2v10.Data.Tests
             Assert.Throws<DataLoaderException>(() => new FieldInfo("Test", "212%%").CheckTypeName());
             Assert.Throws<DataLoaderException>(() => new FieldInfo("Test", "2T$").CheckTypeName());
         }
+
+		[TestMethod]
+		public void UtcCaseInsensitive()
+		{
+			Assert.IsTrue(new FieldInfo("Date!!Utc").IsUtc);
+			Assert.IsTrue(new FieldInfo("Date!!UTC").IsUtc);
+			Assert.IsTrue(new FieldInfo("Date!!utc").IsUtc);
+			Assert.IsFalse(new FieldInfo("Date!!UTCDate").IsUtc);
+		}
     }
 }

@@ -236,4 +236,49 @@ public class CollectionFilters
         Assert.IsNull(fm["PeriodShip"].RefType);
         Assert.AreEqual(FilterType.String, fm["PeriodKind"].Type);
     }
+
+    [TestMethod]
+    public async Task LinqModifiers()
+    {
+        var dm = await _dbContext.LoadModelAsync(null, "a2test.[FiltersLinq.Load]");
+
+        var dt = new DataTester(dm, "$ModelInfo.Elements");
+        dt.AllProperties("Skip,Take,OrderBy,Desc");
+        dt.AreValueEqual(40, "Skip");
+        dt.AreValueEqual(20, "Take");
+        dt.AreValueEqual("name", "OrderBy");
+        dt.AreValueEqual(true, "Desc");
+
+        // Desc accepts int as well as bit; null OrderBy is not written
+        var ot = new DataTester(dm, "$ModelInfo.Others");
+        ot.AllProperties("Desc");
+        ot.AreValueEqual(false, "Desc");
+
+        // synonyms raise the same flags as PageSize/Offset/SortOrder/SortDir
+        var mis = dm.Metadata["TRoot"].ModelInfos
+            ?? throw new InvalidOperationException("ModelInfos is null");
+        var mi = mis["Elements"];
+        Assert.IsTrue(mi.HasPageSize);
+        Assert.IsTrue(mi.HasOffset);
+        Assert.IsTrue(mi.HasSortOrder);
+        Assert.IsTrue(mi.HasSortDir);
+        Assert.IsFalse(mi.HasGroupBy);
+        Assert.IsNull(mi.Filters);
+    }
+
+    [TestMethod]
+    [DataRow("Take", "Invalid data type for the Take modifier. Expected 'int'")]
+    [DataRow("Skip", "Invalid data type for the Skip modifier. Expected 'int'")]
+    [DataRow("Desc", "Invalid data type for the Desc modifier. Expected 'int' or 'bit'")]
+    [DataRow("OrderBy", "Invalid data type for the OrderBy modifier. Expected 'nvarchar'")]
+    public async Task LinqModifiersInvalidType(String kind, String message)
+    {
+        var prms = new ExpandoObject()
+        {
+            { "Kind", kind },
+        };
+        var ex = await Assert.ThrowsExactlyAsync<DataLoaderException>(() =>
+            _dbContext.LoadModelAsync(null, "a2test.[FiltersLinqInvalid.Load]", prms));
+        Assert.AreEqual(message, ex.Message);
+    }
 }
