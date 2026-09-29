@@ -263,4 +263,49 @@ select [!TAgent!Map] = null, [Id!!Id] = @Agent, [Name!!Name] = 'Agent 512', Code
 		seriesObj.AreArrayValueEqual(501, 0, "Id");
 		seriesObj.AreArrayValueEqual(10.0, 0, "Price");
 	}
+
+	[TestMethod]
+	public async Task LoadCreateOnBaseSqlAsync()
+	{
+		// new document from base: Id = 0 is the ParentId key for rows (null ParentId is skipped)
+		var sqlString =
+"""
+-- @Base bigint
+
+select [Document!TDocument!Object] = null, [Id!!Id] = cast(0 as bigint), [Base] = @Base,
+	[Rows!TRow!Array] = null;
+
+select [!TRow!Array] = null, [Id!!Id] = cast(null as bigint), [!TDocument.Rows!ParentId] = cast(0 as bigint),
+	[Product!TProduct!RefId] = r.Product, Qty = r.Qty
+from (values (782, cast(4.0 as float)), (785, cast(7.0 as float))) r(Product, Qty);
+
+select [!TProduct!Map] = null, [Id!!Id] = 782, [Name!!Name] = N'Product 782'
+union all
+select [!TProduct!Map] = null, [Id!!Id] = 785, [Name!!Name] = N'Product 785';
+""";
+
+		IDataModel dm = await _dbContext.LoadModelSqlAsync(null, sqlString, (prms) => {
+			prms.Add(new SqlParameter("@Base", System.Data.SqlDbType.BigInt) { Value = 123 });
+		});
+
+		var md = new MetadataTester(dm);
+		md.IsAllKeys("TRoot,TDocument,TRow,TProduct");
+		md.HasAllProperties("TDocument", "Id,Base,Rows");
+		md.HasAllProperties("TRow", "Id,Product,Qty");
+
+		var docT = new DataTester(dm, "Document");
+		docT.AreValueEqual((Int64)0, "Id");
+		docT.AreValueEqual((Int64)123, "Base");
+
+		var rowsT = new DataTester(dm, "Document.Rows");
+		rowsT.IsArray(2);
+		rowsT.IsArrayValueNull(0, "Id");
+		rowsT.IsArrayValueNull(1, "Id");
+		rowsT.AreArrayValueEqual(4.0, 0, "Qty");
+		rowsT.AreArrayValueEqual(7.0, 1, "Qty");
+
+		var prodT = new DataTester(dm, "Document.Rows[1].Product");
+		prodT.AreValueEqual(785, "Id");
+		prodT.AreValueEqual("Product 785", "Name");
+	}
 }
