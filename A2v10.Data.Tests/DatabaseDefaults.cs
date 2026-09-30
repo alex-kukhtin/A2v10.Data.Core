@@ -79,12 +79,14 @@ select [!$Defaults!] = null, [Document.Store!TStore!RefId] = cast(22 as bigint);
 	[TestMethod]
 	public async Task DefaultsIgnoredForLoadedModel()
 	{
+		// empty fields of a loaded object stay empty too
 		var sqlText = """
 select [Document!TDocument!Object] = null, [Id!!Id] = cast(100 as bigint),
-	[Memo] = N'RealMemo', [Store!TStore!RefId] = cast(55 as bigint);
+	[Memo] = N'RealMemo', [Store!TStore!RefId] = cast(55 as bigint),
+	[No] = cast(null as nvarchar(20));
 
 select [!$Defaults!] = null, [Document.Store!TStore!RefId] = cast(22 as bigint),
-	[Document.Memo] = N'DefaultMemo';
+	[Document.Memo] = N'DefaultMemo', [Document.No] = N'DefaultNo';
 
 select [!TStore!Map] = null, [Id!!Id] = cast(55 as bigint), [Name!!Name] = N'Store 55'
 union all
@@ -95,10 +97,71 @@ select null, cast(22 as bigint), N'Store 22';
 		var docT = new DataTester(dm, "Document");
 		docT.AreValueEqual((Int64)100, "Id");
 		docT.AreValueEqual("RealMemo", "Memo");
+		docT.IsNull("No");
 
 		var storeT = new DataTester(dm, "Document.Store");
 		storeT.AreValueEqual((Int64)55, "Id");
 		storeT.AreValueEqual("Store 55", "Name");
+	}
+
+	[TestMethod]
+	[DataRow("Object")]
+	[DataRow("MainObject")]
+	public async Task DefaultsForCreateOnBase(String objectKind)
+	{
+		// loaded with Id = 0 (the ParentId key for rows): defaults fill empty fields only
+		var sqlText = $"""
+select [Document!TDocument!{objectKind}] = null, [Id!!Id] = cast(0 as bigint),
+	[Memo] = N'BaseMemo', [Date] = cast(null as date),
+	[Store!TStore!RefId] = cast(null as bigint),
+	[Agent!TAgent!Object] = null,
+	[Rows!TRow!Array] = null;
+
+select [!TRow!Array] = null, [Id!!Id] = cast(null as bigint), [!TDocument.Rows!ParentId] = cast(0 as bigint),
+	Qty = r.Qty
+from (values (cast(4.0 as float)), (cast(7.0 as float))) r(Qty);
+
+select [!$Defaults!] = null, [Document.Store!TStore!RefId] = cast(22 as bigint),
+	[Document.Memo] = N'DefaultMemo', [Document.Date] = cast('20260101' as date),
+	[Document.Agent.Code] = N'A1';
+
+select [!TStore!Map] = null, [Id!!Id] = cast(22 as bigint), [Name!!Name] = N'Main Store';
+""";
+		var dm = await _dbContext.LoadModelSqlAsync(null, sqlText);
+
+		var docT = new DataTester(dm, "Document");
+		docT.AreValueEqual((Int64)0, "Id");
+		docT.AreValueEqual("BaseMemo", "Memo");
+		docT.AreValueEqual(new DateTime(2026, 1, 1), "Date");
+
+		// the empty reference {} is replaced
+		var storeT = new DataTester(dm, "Document.Store");
+		storeT.AreValueEqual((Int64)22, "Id");
+		storeT.AreValueEqual("Main Store", "Name");
+
+		// the null object field is created
+		var agentT = new DataTester(dm, "Document.Agent");
+		agentT.AreValueEqual("A1", "Code");
+
+		var rowsT = new DataTester(dm, "Document.Rows");
+		rowsT.IsArray(2);
+	}
+
+	[TestMethod]
+	public async Task DefaultsForGuidEmptyId()
+	{
+		var sqlText = """
+select [Document!TDocument!Object] = null,
+	[Id!!Id] = cast('00000000-0000-0000-0000-000000000000' as uniqueidentifier),
+	[Memo] = cast(null as nvarchar(255));
+
+select [!$Defaults!] = null, [Document.Memo] = N'DefaultMemo';
+""";
+		var dm = await _dbContext.LoadModelSqlAsync(null, sqlText);
+
+		var docT = new DataTester(dm, "Document");
+		docT.AreValueEqual(Guid.Empty, "Id");
+		docT.AreValueEqual("DefaultMemo", "Memo");
 	}
 
 	[TestMethod]

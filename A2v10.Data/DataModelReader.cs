@@ -233,21 +233,53 @@ internal class DataModelReader(IDataLocalizer localizer, ITokenProvider? tokenPr
 	{
 		if (_defaults == null)
 			return;
-		// defaults apply only to objects that were NOT loaded (new models),
-		// so the recordset may be returned unconditionally, without @Id = 0 branching.
+		// defaults apply only to new objects: not loaded, or loaded with an empty Id
+		// (create on base), and only to empty fields. The recordset may be returned
+		// unconditionally, without @Id = 0 branching.
 		// the snapshot is taken before the loop: the first default creates the root
 		// property, the rest must still apply to it
 		var loaded = new HashSet<String>(((IDictionary<String, Object?>)_root).Keys);
 		foreach (var def in _defaults)
 		{
-			if (loaded.Contains(def.Path[0]))
+			if (loaded.Contains(def.Path[0]) && !IsNewObject(def.Path[0]))
 				continue;
 			var target = _root;
 			for (var i = 0; i < def.Path.Length - 1; i++)
-				target = target.GetOrCreate<ExpandoObject>(def.Path[i]);
-			target.Set(def.Path[^1], def.Value);
+			{
+				// a loaded object field may be null
+				var next = target.Get<Object>(def.Path[i]);
+				if (next == null)
+					target.Set(def.Path[i], next = new ExpandoObject());
+				target = (ExpandoObject)next;
+			}
+			if (IsEmptyValue(target.Get<Object>(def.Path[^1])))
+				target.Set(def.Path[^1], def.Value);
 		}
 	}
+
+	Boolean IsNewObject(String propName)
+	{
+		if (_root.Get<Object>(propName) is not ExpandoObject obj)
+			return false; // array or scalar
+		var rootMeta = GetMetadata(ROOT);
+		if (rootMeta == null || !rootMeta.Fields.TryGetValue(propName, out IDataFieldMetadata? fm))
+			return false;
+		var idName = GetMetadata(fm.RefObject)?.Id;
+		if (idName == null)
+			return false; // no Id: new or loaded is unknown, keep it as loaded
+		return obj.Get<Object>(idName) switch
+		{
+			null => true,
+			Int32 int32Id => int32Id == 0,
+			Int64 int64Id => int64Id == 0,
+			Guid guidId => guidId == Guid.Empty,
+			_ => false
+		};
+	}
+
+	// an empty reference is {}, not null
+	static Boolean IsEmptyValue(Object? value) =>
+		value == null || value is ExpandoObject eo && eo.Dict().Count == 0;
 
     void ProcessSystemRecord(IDataReader rdr)
 	{
