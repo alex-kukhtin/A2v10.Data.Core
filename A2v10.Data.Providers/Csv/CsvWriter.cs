@@ -3,6 +3,7 @@
 
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Providers.Csv;
 public class CsvWriter(DataFile file) : IExternalDataWriter
@@ -35,6 +36,9 @@ public class CsvWriter(DataFile file) : IExternalDataWriter
 			wr.Write(GetRecord(_file.GetRecord(r)));
 		}
 	}
+
+	internal Task WriteHeaderAsync(StreamWriter wr) => wr.WriteAsync(GetHeader());
+	internal Task WriteRecordAsync(StreamWriter wr, Record record) => wr.WriteAsync(GetRecord(record));
 
 	String GetHeader()
 	{

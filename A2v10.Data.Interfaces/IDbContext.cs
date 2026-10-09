@@ -2,6 +2,7 @@
 
 using System.Data;
 using System.Data.Common;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace A2v10.Data.Interfaces;
@@ -51,6 +52,10 @@ public interface IDbContext
 	// Raw loading
 	void LoadRaw(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);
 	Task LoadRawAsync(String? source, String procedure, ExpandoObject prms, Action<Int32, IDataReader> action);
+
+	// Stream loading: first result set only; onMetadata once, then onRecord per row
+	Task LoadStreamAsync(String? source, String procedure, Object? prms, Func<IDataReader, Task> onMetadata, Func<IDataReader, Task> onRecord, CancellationToken token = default);
+	Task LoadStreamSqlAsync(String? source, String sqlString, Object? prms, Func<IDataReader, Task> onMetadata, Func<IDataReader, Task> onRecord, CancellationToken token = default);
 
     IParameterBuilder ParameterBuilder(DbParameterCollection prms);
 }

@@ -1,5 +1,6 @@
 ﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
+using System.IO;
 using System.Text;
 
 using A2v10.Data.Providers.Csv;
@@ -7,8 +8,10 @@ using A2v10.Data.Providers.Dbf;
 using A2v10.Data.Providers.Xml;
 
 namespace A2v10.Data.Providers;
-public class ExternalDataContext : IExternalDataProvider
+public class ExternalDataContext(IDataLocalizer localizer) : IExternalDataProvider
 {
+	private readonly IDataLocalizer _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+
 	#region IExternalDataProvider
 
 	public IExternalDataReader GetReader(String format, Encoding? enc, String? fileName)
@@ -64,6 +67,15 @@ public class ExternalDataContext : IExternalDataProvider
 			default:
 				throw new ExternalDataException($"Format '{format}'. Writer not found.");
 		}
+	}
+
+	public IExternalDataStreamWriter GetStreamWriter(String format, Stream stream, ExternalStreamOptions? options = null)
+	{
+		return format switch
+		{
+			"csv" => new CsvStreamWriter(stream, options ?? new ExternalStreamOptions(), _localizer),
+			_ => throw new ExternalDataException($"Format '{format}'. Stream writer not found.")
+		};
 	}
 	#endregion
 }

@@ -1,8 +1,11 @@
 ﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
+using System.Data;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace A2v10.Data.Providers;
 public enum DataFileFormat
@@ -283,5 +286,57 @@ public class DataFile : IExternalDataFile
 	}
 
 	public List<String> FieldNames => [.. _fields.Select(x => x.Name)];
+
+	#region Stream (csv): records are passed to OnRecord one at a time, never stored
+	public Func<Task>? OnHeader { get; set; }
+	public Func<Record, Task>? OnRecord { get; set; }
+	// String values only, as DataModelReader does
+	public IDataLocalizer? Localizer { get; set; }
+
+	Boolean[] _withTime = [];
+
+	public Task ReadMetadataAsync(IDataReader rdr, ExternalDateFormat dateFormat)
+	{
+		_withTime = new Boolean[rdr.FieldCount];
+		for (var i = 0; i < rdr.FieldCount; i++)
+		{
+			CreateField(rdr.GetName(i));
+			_withTime[i] = dateFormat switch
+			{
+				ExternalDateFormat.DateTime => true,
+				ExternalDateFormat.ByType => rdr.GetDataTypeName(i) != "date",
+				_ => false
+			};
+		}
+		MapFields();
+		return OnHeader?.Invoke() ?? Task.CompletedTask;
+	}
+
+	public Task ReadRecordAsync(IDataReader rdr)
+	{
+		var r = new Record(_fieldMap);
+		for (var i = 0; i < _fields.Count; i++)
+		{
+			var value = rdr.GetValue(i);
+			if (value is String strVal && Localizer != null)
+				value = Localizer.Localize(strVal) ?? (Object)DBNull.Value;
+			r.DataFields.Add(new FieldData(Format, _fields[i].Type, StreamValue(value, _withTime[i])));
+		}
+		return OnRecord?.Invoke(r) ?? Task.CompletedTask;
+	}
+
+	// types FieldData.SetValueCsv formats pass through; dates with time and the types it drops become strings
+	static Object StreamValue(Object value, Boolean withTime)
+	{
+		return value switch
+		{
+			DateTime dt when withTime => dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+			DateTimeOffset dto => dto.ToString(withTime ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd", CultureInfo.InvariantCulture),
+			Byte[] => "(blob)",
+			String or DateTime or Int16 or Int32 or Int64 or Decimal or Double or Boolean or DBNull => value,
+			_ => Convert.ToString(value, CultureInfo.InvariantCulture) ?? String.Empty
+		};
+	}
+	#endregion
 }
 

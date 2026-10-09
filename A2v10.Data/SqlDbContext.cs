@@ -6,6 +6,7 @@ using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -950,6 +951,44 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 			null
 		);
 	}
+
+	public async Task LoadStreamAsync(String? source, String procedure, Object? prms, Func<IDataReader, Task> onMetadata, Func<IDataReader, Task> onRecord, CancellationToken token = default)
+	{
+		source = ResolveSource(source, prms);
+		using var p = _profiler.Start(procedure);
+		using var cnn = await GetConnectionAsync(source);
+		using var cmd = cnn.CreateCommandSP(procedure, CommandTimeout);
+		cmd.Parameters.SetParameters(prms);
+		await ReadStreamAsync(cmd, onMetadata, onRecord, token);
+	}
+
+	public async Task LoadStreamSqlAsync(String? source, String sqlString, Object? prms, Func<IDataReader, Task> onMetadata, Func<IDataReader, Task> onRecord, CancellationToken token = default)
+	{
+		source = ResolveSource(source, prms);
+		using var p = _profiler.Start("SQL text");
+		using var cnn = await GetConnectionAsync(source);
+		using var cmd = cnn.CreateCommandText(sqlString, CommandTimeout);
+		cmd.Parameters.SetParameters(prms);
+		await ReadStreamAsync(cmd, onMetadata, onRecord, token);
+	}
+
+	static async Task ReadStreamAsync(SqlCommand cmd, Func<IDataReader, Task> onMetadata, Func<IDataReader, Task> onRecord, CancellationToken token)
+	{
+		using var rdr = await cmd.ExecuteReaderAsync(token);
+		try
+		{
+			await onMetadata(rdr);
+			while (await rdr.ReadAsync(token))
+				await onRecord(rdr);
+		}
+		catch
+		{
+			// otherwise disposing the reader drains the remaining rows
+			cmd.Cancel();
+			throw;
+		}
+	}
+
     public IParameterBuilder ParameterBuilder(DbParameterCollection prms) => new StaticParameterBuilder(prms);
 }
 
