@@ -89,7 +89,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		using var cnn = GetConnection(source);
 		using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
 
-		var retParam = SetParametersFromExpandoObject(cmd, prms);
+		SetParametersFromExpandoObject(cmd, prms);
         using var rdr = cmd.ExecuteReader();
         if (rdr.Read())
         {
@@ -109,7 +109,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		using var cnn = await GetConnectionAsync(source);
 		using var cmd = cnn.CreateCommandSP(command, CommandTimeout);
 
-		var retParam = SetParametersFromExpandoObject(cmd, prms);
+		SetParametersFromExpandoObject(cmd, prms);
         using var rdr = await cmd.ExecuteReaderAsync();
         if (await rdr.ReadAsync())
         {
