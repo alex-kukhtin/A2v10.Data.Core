@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2025 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Data;
 using System.Data.Common;
@@ -171,7 +171,16 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		var cnnStr = _config.ConnectionString(source);
 		var cnn = new SqlConnection(cnnStr);
 		cnn.Open();
-		SetTenantId(source, cnn);
+		try
+		{
+			SetTenantId(source, cnn);
+		}
+		catch
+		{
+			// the caller never receives cnn, so its using cannot release it
+			cnn.Dispose();
+			throw;
+		}
 		return cnn;
 	}
 
@@ -185,7 +194,16 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		var cnnStr = _config.ConnectionString(source);
 		var cnn = new SqlConnection(cnnStr);
 		await cnn.OpenAsync();
-		await SetTenantIdAsync(source, cnn);
+		try
+		{
+			await SetTenantIdAsync(source, cnn);
+		}
+		catch
+		{
+			// the caller never receives cnn, so its using cannot release it
+			await cnn.DisposeAsync();
+			throw;
+		}
 		return cnn;
 	}
 
@@ -439,12 +457,9 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 	internal WriterMetadata GetWriterMetadata(String command, SqlConnection connection, Int32 commandTimeout = 0)
     {
 		var metadataCommand = command.Update2Metadata();
-		if (_config.IsWriteMetadataCacheEnabled)
-		{
-			var wm = _metadataCache.GetWriterMetadata(metadataCommand);
-			if (wm != null)
-				return wm;
-		}
+		var wm = _metadataCache.GetWriterMetadata(metadataCommand);
+		if (wm != null)
+			return wm;
 		var writerMetadata = new WriterMetadata();
 		using (var cmd = connection.CreateCommandSP(metadataCommand, CommandTimeout))
 		{

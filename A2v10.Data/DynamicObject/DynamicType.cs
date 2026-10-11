@@ -1,9 +1,8 @@
-﻿// Copyright © 2015-2023 Oleksandr  Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr  Kukhtin. All rights reserved.
 
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading;
 
 namespace A2v10.Data;
 public abstract class DynamicClass
@@ -16,15 +15,10 @@ public abstract class DynamicClass
 	}
 }
 
-public class DynamicProperty(String name, Type type)
+public record DynamicProperty(String Name, Type Type)
 {
-    public String Name { get; } = name ?? throw new ArgumentNullException(nameof(name));
-    public Type Type { get; } = type ?? throw new ArgumentNullException(nameof(type));
-
-    public Boolean Equals(DynamicProperty? other)
-	{
-		return Name != other?.Name && Type == other?.Type;
-	}
+    public String Name { get; } = Name ?? throw new ArgumentNullException(nameof(Name));
+    public Type Type { get; } = Type ?? throw new ArgumentNullException(nameof(Type));
 }
 
 internal class Signature : IEquatable<Signature>
@@ -106,7 +100,8 @@ public class ClassFactory
 {
 	public static readonly ClassFactory Instance = new();
 
-	private readonly ReaderWriterLock _rwLock;
+	// guards _classes, _module and _classCount together: lookup and creation are one step
+	private readonly Object _lock = new();
 	private readonly Dictionary<Signature, Type> _classes;
 	private readonly ModuleBuilder _module;
 	Int32 _classCount;
@@ -119,15 +114,13 @@ public class ClassFactory
 		AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 		_module = assembly.DefineDynamicModule("Module");
 		_classes = [];
-		_rwLock = new ReaderWriterLock();
 	}
 
 	public Type GetDynamicClass(IEnumerable<DynamicProperty> properties)
 	{
-		_rwLock.AcquireReaderLock(Timeout.Infinite);
-		try
+		Signature signature = new(properties);
+		lock (_lock)
 		{
-			Signature signature = new(properties);
 			if (!_classes.TryGetValue(signature, out Type? type))
 			{
 				type = CreateDynamicClass(signature.Properties);
@@ -135,28 +128,16 @@ public class ClassFactory
 			}
 			return type;
 		}
-		finally
-		{
-			_rwLock.ReleaseReaderLock();
-		}
 	}
 
 	Type CreateDynamicClass(DynamicProperty[] properties)
 	{
-		LockCookie cookie = _rwLock.UpgradeToWriterLock(Timeout.Infinite);
-		try
-		{
-			var typeName = $"DynamicClass{_classCount + 1}";
-			var tb = _module.DefineType(typeName, TypeAttributes.Class | TypeAttributes.Public, typeof(DynamicClass));
-			GenerateProperties(tb, properties);
-			var result = tb.CreateType()!;
-			_classCount++;
-			return result;
-		}
-		finally
-		{
-			_rwLock.DowngradeFromWriterLock(ref cookie);
-		}
+		var typeName = $"DynamicClass{_classCount + 1}";
+		var tb = _module.DefineType(typeName, TypeAttributes.Class | TypeAttributes.Public, typeof(DynamicClass));
+		GenerateProperties(tb, properties);
+		var result = tb.CreateType()!;
+		_classCount++;
+		return result;
 	}
 
 	private static System.Reflection.FieldInfo[] GenerateProperties(TypeBuilder tb, DynamicProperty[] properties)

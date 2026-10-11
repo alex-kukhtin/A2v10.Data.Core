@@ -1,17 +1,19 @@
-﻿// Copyright © 2022-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2022-2026 Oleksandr Kukhtin. All rights reserved.
+
+using System.Collections.Concurrent;
 
 using Microsoft.Data.SqlClient;
 
 namespace A2v10.Data;
 public class MetadataCache(IDataConfiguration configuration)
 {
-    private readonly Dictionary<String, WriterMetadata> _cache = [];
-    private readonly Dictionary<String , List<SqlParameter>> _params = [];
+    private readonly ConcurrentDictionary<String, WriterMetadata> _cache = [];
+    private readonly ConcurrentDictionary<String , List<SqlParameter>> _params = [];
     private readonly Boolean _cacheEnabled = configuration.IsWriteMetadataCacheEnabled;
 
     internal WriterMetadata? GetWriterMetadata(String command)
     {
-        if (_cache.TryGetValue(command, out WriterMetadata? metadata)) {
+        if (_cacheEnabled && _cache.TryGetValue(command, out WriterMetadata? metadata)) {
             return metadata;
         }
         return null;
@@ -19,10 +21,8 @@ public class MetadataCache(IDataConfiguration configuration)
 
     internal void AddWriterMetadata(String command, WriterMetadata metadata)
     {
-        if (_cache.ContainsKey(command))
+        if (_cacheEnabled)
             _cache[command] = metadata;
-        else
-            _cache.TryAdd(command, metadata);
     }
 
     static SqlParameter CloneParam(Object prm)
