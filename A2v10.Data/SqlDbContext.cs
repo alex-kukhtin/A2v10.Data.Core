@@ -30,6 +30,9 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 
     Int32 CommandTimeout => (Int32)_config.CommandTimeout.TotalSeconds;
 
+	// a timeout passed to the call wins over the configured one; 0 = not passed
+	Int32 TimeoutFor(Int32 commandTimeout) => commandTimeout != 0 ? commandTimeout : CommandTimeout;
+
 	#region IDbContext
 	public String? ConnectionString(String? source)
 	{
@@ -108,7 +111,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 
 		var retParam = SetParametersFromExpandoObject(cmd, prms);
         using var rdr = await cmd.ExecuteReaderAsync();
-        if (rdr.Read())
+        if (await rdr.ReadAsync())
         {
             var eo = new ExpandoObject();
             for (Int32 i = 0; i < rdr.FieldCount; i++)
@@ -297,7 +300,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 					source = def;
 			}
 			else
-				throw new NotImplementedException("Resolve source without ExpandoObject");
+				throw new ArgumentException($"Source '{source}' is resolved from ExpandoObject parameters; got {prms?.GetType().Name ?? "none"}", nameof(source));
 		}
 		return source;
 	}
@@ -416,6 +419,7 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 	public async Task<IDataModel> LoadModelSqlAsync(String? source, String sqlString, Action<DbParameterCollection> onSetParams)
 	{
 		var modelReader = new DataModelReader(_localizer, _tokenProvider);
+		source = ResolveSource(source, null);
 		using var token = _profiler.Start("SQL text");
 		await ReadDataSqlAsync(source, sqlString,
 			onSetParams.Invoke,
@@ -454,6 +458,8 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		SetReturnParamResult(retParam, prms);
 	}
 
+	// sync on purpose, async saves included: DeriveParameters beside it has no async API, so an async twin is half a fix;
+	// MULTIDB-DESIGN.md removes both (no .Metadata roundtrip, no DeriveParameters)
 	internal WriterMetadata GetWriterMetadata(String command, SqlConnection connection, Int32 commandTimeout = 0)
     {
 		var metadataCommand = command.Update2Metadata();
@@ -461,10 +467,8 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		if (wm != null)
 			return wm;
 		var writerMetadata = new WriterMetadata();
-		using (var cmd = connection.CreateCommandSP(metadataCommand, CommandTimeout))
+		using (var cmd = connection.CreateCommandSP(metadataCommand, TimeoutFor(commandTimeout)))
 		{
-			if (commandTimeout != 0)
-				cmd.CommandTimeout = commandTimeout;
 			using var rdr = cmd.ExecuteReader();
 			do
 			{
@@ -481,26 +485,10 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		var dataReader = new DataModelReader(_localizer, _tokenProvider);
 
 		using var token = _profiler.Start(command);
-		//var metadataCommand = command.Update2Metadata();
 		using var cnn = GetConnection(source);
 		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout), _config.AllowEmptyStrings);
-		/*
-		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
+		using (var cmd = cnn.CreateCommandSP(command, TimeoutFor(commandTimeout)))
 		{
-			if (commandTimeout != 0)
-				cmd.CommandTimeout = commandTimeout;
-			using var rdr = cmd.ExecuteReader();
-			do
-			{
-				dataWriter.ProcessOneMetadata(rdr);
-			}
-			while (rdr.NextResult());
-		}
-		*/
-		using (var cmd = cnn.CreateCommandSP(command, CommandTimeout))
-		{
-			if (commandTimeout != 0)
-				cmd.CommandTimeout = commandTimeout;
 			_metadataCache.DeriveParameters(cmd);
 			dataWriter.SetTableParameters(cmd, data, prms);
 			using var rdr = cmd.ExecuteReader();
@@ -523,30 +511,14 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		var dataReader = new DataModelReader(_localizer, _tokenProvider);
 		using var token = _profiler.Start(command);
 
-		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
 		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout), _config.AllowEmptyStrings);
 
-		/*
-		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
-		{
-			if (commandTimeout != 0)
-				cmd.CommandTimeout = commandTimeout;
-			using var rdr = await cmd.ExecuteReaderAsync();
-			do
-			{
-				dataWriter.ProcessOneMetadata(rdr);
-			}
-			while (await rdr.NextResultAsync());
-		}
-		*/
 		if (onSetData != null)
 			data = onSetData(dataWriter.GetTableDescription());
 
-		using (var cmd = cnn.CreateCommandSP(command, CommandTimeout))
+		using (var cmd = cnn.CreateCommandSP(command, TimeoutFor(commandTimeout)))
 		{
-			if (commandTimeout != 0)
-				cmd.CommandTimeout = commandTimeout;
 			_metadataCache.DeriveParameters(cmd);
 			dataWriter.SetTableParameters(cmd, data, prms);
 			using var rdr = await cmd.ExecuteReaderAsync();
@@ -568,31 +540,18 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 	public async Task<IDataModel> SaveModelBatchAsync(String? source, String command, ExpandoObject data, Object? prms = null, IEnumerable<BatchProcedure>? batches = null, Int32 commandTimeout = 0)
 	{
 		if (batches == null || !batches.Any())
-			return await SaveModelAsync(source, command, data, prms);
+			return await SaveModelAsync(source, command, data, prms, commandTimeout: commandTimeout);
 
 		var dataReader = new DataModelReader(_localizer, _tokenProvider);
 		var batchBuilder = new BatchCommandBuilder(_config.AllowEmptyStrings);
 
 		using var token = _profiler.Start(command);
 
-		//var metadataCommand = command.Update2Metadata();
 		using var cnn = await GetConnectionAsync(source);
 		var dataWriter = new DataModelWriter(GetWriterMetadata(command, cnn, commandTimeout), _config.AllowEmptyStrings);
 
-		/*
-		using (var cmd = cnn.CreateCommandSP(metadataCommand, CommandTimeout))
-		{
-			using var rdr = await cmd.ExecuteReaderAsync();
-			do
-			{
-				dataWriter.ProcessOneMetadata(rdr);
-			}
-			while (await rdr.NextResultAsync());
-		}
-		*/
-
 		// main update
-		using (var cmdUpdate = cnn.CreateCommandSP(command, CommandTimeout))
+		using (var cmdUpdate = cnn.CreateCommandSP(command, TimeoutFor(commandTimeout)))
 		{
 			_metadataCache.DeriveParameters(cmdUpdate);
 			dataWriter.SetTableParameters(cmdUpdate, data, prms);
@@ -602,17 +561,13 @@ public class SqlDbContext(IDataProfiler profiler, IDataConfiguration config, IDa
 		int index = 1;
 		foreach (var batch in batches)
 		{
-			using var cmdBatch = cnn.CreateCommandSP(batch.Procedure, CommandTimeout);
+			using var cmdBatch = cnn.CreateCommandSP(batch.Procedure, TimeoutFor(commandTimeout));
 			_metadataCache.DeriveParameters(cmdBatch);
 			batchBuilder.AddBatchCommand(cmdBatch, batch, index++);
 		}
 
-		using (var cmd = cnn.CreateCommand())
+		using (var cmd = cnn.CreateCommandText(batchBuilder.CommandText, TimeoutFor(commandTimeout)))
 		{
-			cmd.CommandText = batchBuilder.CommandText;
-			cmd.CommandType = CommandType.Text;
-			if (CommandTimeout != 0)
-				cmd.CommandTimeout = CommandTimeout;
 			batchBuilder.SetAllParameters(cmd);
 			using var rdr = await cmd.ExecuteReaderAsync();
 			do

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
+﻿// Copyright © 2015-2026 Oleksandr Kukhtin. All rights reserved.
 
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -142,10 +142,8 @@ namespace A2v10.Data.Tests
 				})
 			};
 
-			await TestExtensions.ThrowsAsync<SqlException>(async () =>
-			{
-				dm = await _dbContext.SaveModelBatchAsync(null, "a2test.[BatchModel.Update]", dataToSave, null, batches);
-			});
+			await Assert.ThrowsExactlyAsync<SqlException>(() =>
+				_dbContext.SaveModelBatchAsync(null, "a2test.[BatchModel.Update]", dataToSave, null, batches));
 
 			dm = await _dbContext.LoadModelAsync(null, "a2test.[BatchModel.Load]", new { Id = 45 });
 
@@ -157,6 +155,37 @@ namespace A2v10.Data.Tests
 			rowT0 = new DataTester(dm, "Document.Rows[0]");
 			rowT0.AreValueEqual(55L, "Id");
 			rowT0.AreValueEqual(5.0, "Qty");
+		}
+
+		// a2test.[Timeout.Update] waits 3 s: longer than the passed timeout, shorter than the configured one
+		const Int32 SHORT_TIMEOUT = 1;
+		const Int32 SQL_TIMEOUT_ERROR = -2;
+
+		static ExpandoObject TimeoutData() =>
+			JsonConvert.DeserializeObject<ExpandoObject>(@"{Document: {Id: 1, Name: 'Timeout'}}".Replace('\'', '"'), new ExpandoObjectConverter())!;
+
+		[TestMethod]
+		public async Task BatchTimeoutWithoutBatches()
+		{
+			var ex = await Assert.ThrowsExactlyAsync<SqlException>(() =>
+				_dbContext.SaveModelBatchAsync(null, "a2test.[Timeout.Update]", TimeoutData(), null, null, SHORT_TIMEOUT));
+			Assert.AreEqual(SQL_TIMEOUT_ERROR, ex.Number);
+		}
+
+		[TestMethod]
+		public async Task BatchTimeoutWithBatches()
+		{
+			var batches = new List<BatchProcedure>
+			{
+				new("a2test.[Batch.Proc1]", new ExpandoObject()
+				{
+					{"Id", -1 },
+					{"Delta", 0.0}
+				})
+			};
+			var ex = await Assert.ThrowsExactlyAsync<SqlException>(() =>
+				_dbContext.SaveModelBatchAsync(null, "a2test.[Timeout.Update]", TimeoutData(), null, batches, SHORT_TIMEOUT));
+			Assert.AreEqual(SQL_TIMEOUT_ERROR, ex.Number);
 		}
 	}
 }

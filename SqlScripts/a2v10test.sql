@@ -1292,6 +1292,8 @@ go
 ------------------------------------------------
 drop procedure if exists a2test.[BatchModel.Metadata];
 drop procedure if exists a2test.[BatchModel.Update];
+drop procedure if exists a2test.[Timeout.Metadata];
+drop procedure if exists a2test.[Timeout.Update];
 drop type if exists [a2test].[DocumentBatch.TableType];
 drop type if exists [a2test].[RowBatch.TableType];
 go
@@ -1403,6 +1405,28 @@ begin
 	set nocount on;
 	set transaction isolation level read committed;
 	throw 60000, N'SQL', 0;
+end
+go
+------------------------------------------------
+create or alter procedure a2test.[Timeout.Metadata]
+as
+begin
+	set nocount on;
+	declare @Document [a2test].[DocumentBatch.TableType];
+	select [Document!Document!Metadata] = null, * from @Document;
+end
+go
+------------------------------------------------
+-- longer than the commandTimeout the tests pass
+create or alter procedure a2test.[Timeout.Update]
+@TenantId int = null,
+@UserId bigint = null,
+@Document [a2test].[DocumentBatch.TableType] readonly
+as
+begin
+	set nocount on;
+	waitfor delay '00:00:03';
+	select [Document!TDocument!Object] = null, [Id!!Id] = Id, [Name] from @Document;
 end
 go
 ------------------------------------------------
