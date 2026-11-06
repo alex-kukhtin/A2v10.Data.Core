@@ -78,10 +78,11 @@ public partial struct FieldInfo
 		"GUID", 
 		"Prop"
     ];
-
+    public static Boolean IsReservedWord(String name) => _reservedWords.Contains(name);
+    public static IReadOnlySet<String> ReservedWords => _reservedWords;
     readonly void CheckReservedWords()
 	{
-		if (_reservedWords.Contains(PropertyName))
+		if (IsReservedWord(PropertyName))
 		{
 			throw new DataLoaderException($"PropertyName '{PropertyName}' is a reserved word");
 		}
